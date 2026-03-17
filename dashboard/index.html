@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — EliteHosting.in</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#03020A">
+  <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/variables.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/animations.css">
+  <link rel="stylesheet" href="/css/pages/dashboard.css">
+</head>
+<body>
+<div class="dashboard-layout">
+  <!-- Sidebar -->
+  <aside id="sidebar" class="sidebar" aria-label="Dashboard sidebar"></aside>
+
+  <!-- Main -->
+  <div class="dashboard-main">
+    <header id="topbar" class="topbar"></header>
+
+    <main class="dashboard-content" aria-label="Dashboard overview">
+      <!-- Credit warning -->
+      <div id="creditWarning" class="alert alert-warning" style="display:none;margin-bottom:var(--s5)" role="alert">
+        ⚠️ Your balance is low (<strong id="creditWarnBalance"></strong> credits).
+        <a href="/dashboard/billing.html" class="btn btn-warning btn-sm" style="margin-left:var(--s3)">Top Up →</a>
+      </div>
+
+      <!-- Greeting -->
+      <div class="dashboard-greeting" style="margin-bottom:var(--s6)">
+        <h2 id="greetMsg">Welcome back!</h2>
+        <p style="color:var(--text-muted);margin-top:var(--s1)">Here's what's happening with your apps.</p>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="stats-grid" style="margin-bottom:var(--s6)">
+        <div class="stat-card">
+          <div class="stat-icon">🚀</div>
+          <div class="stat-content">
+            <div class="stat-label">Running Apps</div>
+            <div class="stat-value" id="statRunning">
+              <div class="skeleton skeleton-title" style="width:40px"></div>
+            </div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📦</div>
+          <div class="stat-content">
+            <div class="stat-label">Total Deployments</div>
+            <div class="stat-value" id="statTotal">
+              <div class="skeleton skeleton-title" style="width:40px"></div>
+            </div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">❌</div>
+          <div class="stat-content">
+            <div class="stat-label">Failed</div>
+            <div class="stat-value" id="statFailed">
+              <div class="skeleton skeleton-title" style="width:40px"></div>
+            </div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">💎</div>
+          <div class="stat-content">
+            <div class="stat-label">Credits Left</div>
+            <div class="stat-value">
+              <span class="credit-balance">…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Two-column layout -->
+      <div style="display:grid;grid-template-columns:1fr 340px;gap:var(--s5);align-items:start" class="dash-two-col">
+
+        <!-- Recent Deploys -->
+        <section aria-labelledby="recentDeploysTitle">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s4)">
+            <h3 id="recentDeploysTitle">Recent Deployments</h3>
+            <a href="/dashboard/deploys.html" style="font-size:var(--text-sm);color:var(--electric)">View all →</a>
+          </div>
+          <div id="recentDeploys" style="display:flex;flex-direction:column;gap:var(--s3)">
+            <!-- Skeletons -->
+            <div class="card" style="padding:var(--s4)"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text" style="width:60%"></div></div>
+            <div class="card" style="padding:var(--s4)"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text" style="width:60%"></div></div>
+          </div>
+        </section>
+
+        <!-- Quick Actions + Credits Panel -->
+        <aside aria-label="Quick actions">
+          <h3 style="margin-bottom:var(--s4)">Quick Actions</h3>
+          <div style="display:flex;flex-direction:column;gap:var(--s3);margin-bottom:var(--s6)">
+            <a href="/dashboard/deploy-new.html" class="btn btn-electric btn-md w-full">⚡ New Deployment</a>
+            <a href="/dashboard/ai.html"         class="btn btn-plasma btn-md w-full">🤖 AI Assistant</a>
+            <a href="/dashboard/billing.html"    class="btn btn-ghost btn-md w-full">💳 Buy Credits</a>
+          </div>
+
+          <div class="card card-electric" style="margin-bottom:var(--s4)">
+            <div style="font-size:var(--text-sm);color:var(--text-muted);margin-bottom:var(--s2)">💎 Credit Balance</div>
+            <div style="font-size:var(--text-3xl);font-weight:800;font-family:var(--font-display);color:var(--electric)">
+              <span class="credit-balance">…</span>
+            </div>
+            <div style="font-size:var(--text-xs);color:var(--text-muted);margin-top:var(--s2)">
+              1 credit = 1 week of 1 running app
+            </div>
+            <a href="/dashboard/billing.html" class="btn btn-electric btn-sm w-full" style="margin-top:var(--s4)">
+              Top Up →
+            </a>
+          </div>
+
+          <!-- Telegram CTA -->
+          <div class="card" style="background:linear-gradient(135deg,rgba(37,99,235,0.12),rgba(37,99,235,0.04));border-color:rgba(37,99,235,0.2)">
+            <div style="display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--s3)">
+              <span style="font-size:24px">📱</span>
+              <div>
+                <div style="font-weight:600;font-size:var(--text-sm)">Telegram Bot</div>
+                <div style="font-size:var(--text-xs);color:var(--text-muted)">Control apps from Telegram</div>
+              </div>
+            </div>
+            <a href="https://t.me/elitehosting_bot" target="_blank" rel="noopener"
+               class="btn btn-ghost btn-sm w-full">Connect →</a>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script type="module">
+import { injectLayout } from '/js/core/layout.js';
+import '/js/pages/dashboard.js';
+await injectLayout({ title: 'Dashboard' });
+</script>
+</body>
+</html>
