@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+Allow: /pricing.html
+Allow: /features.html
+Allow: /blog/
+
+Disallow: /auth/
+Disallow: /dashboard/
+Disallow: /admin/
+Disallow: /api/
+
+Sitemap: https://www.elitehosting.in/sitemap.xml
+Host: https://www.elitehosting.in
+
