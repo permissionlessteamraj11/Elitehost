@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deployments — EliteHosting.in</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#03020A">
+  <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/variables.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/animations.css">
+  <link rel="stylesheet" href="/css/pages/dashboard.css">
+</head>
+<body>
+<div class="dashboard-layout">
+  <aside id="sidebar" class="sidebar"></aside>
+  <div class="dashboard-main">
+    <header id="topbar" class="topbar"></header>
+    <main class="dashboard-content" aria-label="Deployments">
+
+      <!-- Page Header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--s3);margin-bottom:var(--s5)">
+        <div>
+          <h2>Deployments</h2>
+          <p style="color:var(--text-muted);margin-top:var(--s1)">All your deployed applications</p>
+        </div>
+        <a href="/dashboard/deploy-new.html" class="btn btn-electric btn-md">⚡ New Deployment</a>
+      </div>
+
+      <!-- Filter + Search Bar -->
+      <div style="display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;margin-bottom:var(--s5)">
+        <!-- Filter Tabs -->
+        <div class="tabs" role="tablist" aria-label="Filter deployments" style="flex:1;min-width:0">
+          <button class="tab active" data-filter="all" role="tab">All <span class="badge" id="countAll">0</span></button>
+          <button class="tab" data-filter="running"  role="tab">🟢 Running  <span class="badge badge-running" id="countRunning">0</span></button>
+          <button class="tab" data-filter="stopped"  role="tab">⚪ Stopped  <span class="badge" id="countStopped">0</span></button>
+          <button class="tab" data-filter="failed"   role="tab">🔴 Failed   <span class="badge badge-failed" id="countFailed">0</span></button>
+        </div>
+        <!-- Search -->
+        <div class="input-wrapper" style="width:220px">
+          <span class="input-icon">🔍</span>
+          <input type="search" id="searchInput" class="input" placeholder="Search apps…" aria-label="Search deployments">
+        </div>
+      </div>
+
+      <!-- Deployments Container -->
+      <div id="deploysContainer" style="display:flex;flex-direction:column;gap:var(--s3)"></div>
+
+    </main>
+  </div>
+</div>
+
+<script type="module">
+import { injectLayout } from '/js/core/layout.js';
+import '/js/pages/deploys.js';
+await injectLayout({ title: 'Deployments' });
+</script>
+</body>
+</html>
