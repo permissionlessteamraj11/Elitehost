@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Billing &amp; Credits — EliteHosting.in</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#03020A">
+  <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/variables.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/animations.css">
+  <link rel="stylesheet" href="/css/pages/dashboard.css">
+</head>
+<body>
+<div class="dashboard-layout">
+  <aside id="sidebar" class="sidebar"></aside>
+  <div class="dashboard-main">
+    <header id="topbar" class="topbar"></header>
+    <main class="dashboard-content" aria-label="Billing and credits">
+
+      <div style="margin-bottom:var(--s6)">
+        <h2>Billing &amp; Credits</h2>
+        <p style="color:var(--text-muted);margin-top:var(--s1)">Manage your credits and transaction history</p>
+      </div>
+
+      <!-- Expiring credits warning -->
+      <div id="expiringWarn" class="alert alert-warning" style="display:none;margin-bottom:var(--s5)" role="alert">
+        ⏰ <strong id="expiringAmount"></strong> credits expiring in <strong id="expiringDays"></strong> days.
+        <a href="#packs" class="btn btn-warning btn-sm" style="margin-left:var(--s3)">Top Up →</a>
+      </div>
+
+      <!-- Balance + Estimate -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:var(--s4);margin-bottom:var(--s7)">
+        <div class="card card-electric">
+          <div style="font-size:var(--text-xs);color:var(--text-muted);margin-bottom:var(--s2)">💎 Current Balance</div>
+          <div style="font-size:var(--text-4xl);font-weight:800;font-family:var(--font-display);color:var(--electric)" id="creditBalanceLarge">…</div>
+          <div style="font-size:var(--text-xs);color:var(--text-muted);margin-top:var(--s2)">credits</div>
+        </div>
+        <div class="card">
+          <div style="font-size:var(--text-xs);color:var(--text-muted);margin-bottom:var(--s2)">⏱ Running Time</div>
+          <div style="font-size:var(--text-2xl);font-weight:800;font-family:var(--font-display);color:var(--mint)" id="weeksEstimate">…</div>
+          <div style="font-size:var(--text-xs);color:var(--text-muted);margin-top:var(--s2)">1 credit = 1 week of 1 running app</div>
+        </div>
+        <div class="card">
+          <div style="font-size:var(--text-xs);color:var(--text-muted);margin-bottom:var(--s3)">🤝 Referral Earnings</div>
+          <div style="font-size:var(--text-2xl);font-weight:800;font-family:var(--font-display);color:var(--fire)" id="refEarned">—</div>
+          <div style="font-size:var(--text-xs);color:var(--text-muted);margin-top:var(--s2)">0.5 credits per signup</div>
+        </div>
+      </div>
+
+      <!-- Credit Packs -->
+      <div id="packs" style="margin-bottom:var(--s7)">
+        <h3 style="margin-bottom:var(--s5)">Buy Credits</h3>
+        <div id="creditPacks" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:var(--s4)">
+          <!-- Rendered by billing.js -->
+          <div class="card" style="padding:var(--s6)"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div><div class="skeleton" style="height:36px;margin-top:var(--s4);border-radius:var(--r-md)"></div></div>
+          <div class="card" style="padding:var(--s6)"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div><div class="skeleton" style="height:36px;margin-top:var(--s4);border-radius:var(--r-md)"></div></div>
+          <div class="card" style="padding:var(--s6)"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div><div class="skeleton" style="height:36px;margin-top:var(--s4);border-radius:var(--r-md)"></div></div>
+          <div class="card" style="padding:var(--s6)"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div><div class="skeleton" style="height:36px;margin-top:var(--s4);border-radius:var(--r-md)"></div></div>
+        </div>
+        <div class="alert alert-info" style="margin-top:var(--s4)">
+          💳 Payment via UPI, PhonePe, Google Pay, Paytm, NEFT/RTGS · All prices in ₹ INR
+        </div>
+      </div>
+
+      <!-- Transaction History -->
+      <div>
+        <h3 style="margin-bottom:var(--s5)">Transaction History</h3>
+        <div class="card" style="padding:var(--s5)" id="txList">
+          <!-- Loaded by billing.js -->
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script type="module">
+import { injectLayout } from '/js/core/layout.js';
+import '/js/pages/billing.js';
+await injectLayout({ title: 'Billing' });
+</script>
+</body>
+</html>
