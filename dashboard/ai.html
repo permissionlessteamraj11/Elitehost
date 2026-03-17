@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Assistant — EliteHosting.in</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#03020A">
+  <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/variables.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/animations.css">
+  <link rel="stylesheet" href="/css/pages/dashboard.css">
+</head>
+<body>
+<div class="dashboard-layout">
+  <aside id="sidebar" class="sidebar"></aside>
+  <div class="dashboard-main">
+    <header id="topbar" class="topbar"></header>
+    <main class="dashboard-content" aria-label="AI assistant">
+
+      <div style="margin-bottom:var(--s6)">
+        <h2>🤖 AI Assistant</h2>
+        <p style="color:var(--text-muted);margin-top:var(--s1)">
+          AI-powered tools to help you deploy faster — Dockerfiles, env guides, build fixes, and more.
+        </p>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 360px;gap:var(--s6);align-items:start" class="ai-layout">
+
+        <!-- Left: Task Grid -->
+        <div>
+          <h3 style="margin-bottom:var(--s4)">Choose a Task</h3>
+          <div id="taskGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:var(--s3);margin-bottom:var(--s5)">
+            <!-- Rendered by ai.js -->
+            <div class="card" style="padding:var(--s5)"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></div>
+            <div class="card" style="padding:var(--s5)"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></div>
+            <div class="card" style="padding:var(--s5)"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></div>
+            <div class="card" style="padding:var(--s5)"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></div>
+          </div>
+
+          <!-- Task Panel (shown after selecting) -->
+          <div id="taskPanel" class="card" style="padding:var(--s5);display:none">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s4)">
+              <h4 id="taskTitle">Task</h4>
+              <span class="badge badge-stopped" id="taskCost">— credits</span>
+            </div>
+
+            <!-- Deployment selector -->
+            <div class="input-group" style="margin-bottom:var(--s4)">
+              <label class="input-label" for="deploySelect">Apply to Deployment (optional)</label>
+              <select id="deploySelect" class="input" style="cursor:pointer">
+                <option value="">— No specific deployment —</option>
+              </select>
+            </div>
+
+            <!-- Context input (for debug/optimize/chat) -->
+            <div id="contextGroup" class="input-group" style="margin-bottom:var(--s4);display:none">
+              <label class="input-label" for="contextInput">Additional Context</label>
+              <textarea id="contextInput" class="input" rows="4"
+                        style="resize:vertical"
+                        placeholder="Paste error logs, describe issue, or ask a question…"></textarea>
+            </div>
+
+            <!-- Cost info -->
+            <div id="taskCostOk" class="alert alert-success" style="margin-bottom:var(--s4)">
+              ✅ Balance: <strong id="taskBalance"></strong>
+            </div>
+            <div id="taskCostWarn" class="alert alert-error hidden" style="margin-bottom:var(--s4)">
+              ❌ Insufficient credits — <a href="/dashboard/billing.html" style="color:var(--error)">Top up →</a>
+            </div>
+
+            <button id="taskRunBtn" class="btn btn-plasma btn-md w-full">🤖 Run AI Task</button>
+          </div>
+
+          <!-- Single result -->
+          <div id="aiResult" class="card" style="padding:var(--s5);display:none;margin-top:var(--s4)"></div>
+        </div>
+
+        <!-- Right: Chat panel -->
+        <div>
+          <div id="singleResultSection"></div>
+
+          <div id="chatSection" style="display:none">
+            <div class="card" style="padding:0;overflow:hidden">
+              <div style="padding:var(--s4) var(--s5);border-bottom:1px solid var(--border);background:var(--color-surface-2)">
+                <h4 style="margin:0;display:flex;align-items:center;gap:var(--s2)">
+                  🤖 AI Chat
+                  <span class="badge badge-running" style="font-size:9px">0.1 cr/msg</span>
+                </h4>
+              </div>
+              <div id="chatMessages" style="height:380px;overflow-y:auto;padding:var(--s4)" aria-live="polite" aria-label="Chat messages">
+                <div style="text-align:center;padding:var(--s8);color:var(--text-muted)">
+                  <div style="font-size:32px;margin-bottom:var(--s3)">💬</div>
+                  <p style="font-size:var(--text-sm)">Ask me anything about your deployment!</p>
+                </div>
+              </div>
+              <div style="padding:var(--s3) var(--s4);border-top:1px solid var(--border)">
+                <div style="display:flex;gap:var(--s2)">
+                  <textarea id="chatInput" class="input" rows="2"
+                            style="resize:none;flex:1"
+                            placeholder="Ask anything… (Enter to send)"
+                            aria-label="Chat message input"></textarea>
+                  <button id="chatSendBtn" class="btn btn-electric btn-md" aria-label="Send message">➤</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Info card -->
+          <div class="card" style="margin-top:var(--s4);padding:var(--s4)">
+            <h4 style="margin-bottom:var(--s3)">💡 How AI Credits Work</h4>
+            <div style="font-size:var(--text-xs);color:var(--text-muted);line-height:1.7">
+              <div>• Generate Dockerfile: 0.25 cr</div>
+              <div>• Debug build error: 0.50 cr</div>
+              <div>• Env guide: 0.10 cr</div>
+              <div>• AI Chat: 0.10 cr/message</div>
+              <div style="margin-top:var(--s3);color:var(--text-disabled)">
+                AI credits are the same as hosting credits — all go from your balance.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script type="module">
+import { injectLayout } from '/js/core/layout.js';
+import '/js/pages/ai.js';
+await injectLayout({ title: 'AI Assistant' });
+</script>
+</body>
+</html>
