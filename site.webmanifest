@@ -1,0 +1,27 @@
+{
+  "name": "EliteHosting.in — App Hosting India",
+  "short_name": "EliteHosting",
+  "description": "India's #1 PaaS — Deploy Node.js, Python, Docker apps. Mumbai servers. ₹ pricing.",
+  "start_url": "/dashboard/index.html",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#03020A",
+  "theme_color": "#00D4FF",
+  "lang": "en-IN",
+  "scope": "/",
+  "categories": ["developer tools", "productivity", "utilities"],
+  "icons": [
+    { "src": "/assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "screenshots": [
+    { "src": "/assets/screenshot-wide.png",   "sizes": "1280x720",  "type": "image/png", "form_factor": "wide" },
+    { "src": "/assets/screenshot-narrow.png", "sizes": "390x844",   "type": "image/png", "form_factor": "narrow" }
+  ],
+  "shortcuts": [
+    { "name": "New Deployment",   "url": "/dashboard/deploy-new.html",  "icons": [{"src":"/assets/icon-192.png","sizes":"192x192"}] },
+    { "name": "My Deployments",   "url": "/dashboard/deploys.html",     "icons": [{"src":"/assets/icon-192.png","sizes":"192x192"}] },
+    { "name": "Billing",          "url": "/dashboard/billing.html",     "icons": [{"src":"/assets/icon-192.png","sizes":"192x192"}] }
+  ]
+}
+
