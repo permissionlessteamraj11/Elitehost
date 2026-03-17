@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify Email — EliteHosting.in</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#03020A">
+  <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/variables.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/animations.css">
+</head>
+<body style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--color-void);padding:var(--s6)">
+<div class="card card-lg text-center anim-scale-in" style="max-width:480px;width:100%">
+  <div style="font-size:56px;margin-bottom:var(--s5)" id="statusIcon">📬</div>
+  <h1 style="font-size:var(--text-2xl);margin-bottom:var(--s3)" id="statusTitle">Verifying your email…</h1>
+  <p style="color:var(--text-muted);margin-bottom:var(--s6)" id="statusMsg">
+    Please wait while we verify your email address.
+  </p>
+  <div id="statusActions">
+    <div class="anim-spin" style="display:inline-block;width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--electric);border-radius:50%"></div>
+  </div>
+  <p style="margin-top:var(--s6);font-size:var(--text-xs);color:var(--text-disabled)">
+    <a href="/" style="color:var(--text-muted)">← Back to EliteHosting.in</a>
+  </p>
+</div>
+<script type="module">
+import { authSB } from '/js/core/supabase.js';
+
+const icon    = document.getElementById('statusIcon');
+const title   = document.getElementById('statusTitle');
+const msg     = document.getElementById('statusMsg');
+const actions = document.getElementById('statusActions');
+
+async function verify() {
+  const hash = location.hash.substring(1);
+  const params = new URLSearchParams(hash || location.search);
+  const type  = params.get('type');
+  const token = params.get('access_token');
+
+  if (type === 'signup' || type === 'email_confirmation') {
+    // Supabase handles this automatically via detectSessionInUrl
+    const sb = await getClient();
+    const { data: { session }, error } = await sb.auth.getSession();
+    if (session) {
+      icon.textContent  = '🎉';
+      title.textContent = 'Email verified!';
+      msg.textContent   = 'Your account is now active. 2 free credits have been added!';
+      actions.innerHTML = `<a href="/dashboard/index.html" class="btn btn-electric btn-lg">Go to Dashboard →</a>`;
+    } else {
+      icon.textContent  = '⚠️';
+      title.textContent = 'Verification failed';
+      msg.textContent   = 'The link may have expired. Please register again.';
+      actions.innerHTML = `<a href="/auth/register.html" class="btn btn-electric btn-md">Try Again →</a>`;
+    }
+  } else {
+    // Unknown type — redirect to login
+    setTimeout(() => location.href = '/auth/login.html', 2000);
+    icon.textContent  = '✅';
+    title.textContent = 'All set!';
+    msg.textContent   = 'Redirecting to login…';
+    actions.innerHTML = `<a href="/auth/login.html" class="btn btn-electric btn-md">Login →</a>`;
+  }
+}
+
+async function getClient() {
+  if (!window.supabase) {
+    await new Promise((res, rej) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+      s.onload = res; s.onerror = rej;
+      document.head.appendChild(s);
+    });
+  }
+  return window.supabase.createClient(
+    window.__ENV?.SUPABASE_URL || 'https://YOUR_PROJECT.supabase.co',
+    window.__ENV?.SUPABASE_ANON_KEY || 'YOUR_ANON_KEY',
+    { auth: { autoRefreshToken: true, persistSession: true, detectSessionInUrl: true } }
+  );
+}
+
+verify();
+</script>
+</body>
+</html>
