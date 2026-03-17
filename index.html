@@ -1,918 +1,636 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-IN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<meta name="theme-color" content="#040507">
-<title>EliteHosting — Deploy Without Limits</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@200;300;400;500;600;700;800;900&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<style>
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   TOKENS — monochrome + one accent
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-:root{
-  --ink:    #040507;
-  --ink1:   #080a10;
-  --ink2:   #0f1219;
-  --ink3:   #181c26;
-  --wire:   rgba(255,255,255,.06);
-  --wire2:  rgba(255,255,255,.10);
-  --snow:   #f2f5ff;
-  --ash:    #8a90a8;
-  --fog:    #3a3f52;
-  --blue:   #5b9dff;   /* SOLE accent — used sparingly */
-  --blue-d: #2a5ccc;
-  --ease:   cubic-bezier(.76,0,.24,1);
-  --ease2:  cubic-bezier(.16,1,.3,1);
-}
-*,::before,::after{box-sizing:border-box;margin:0;padding:0;}
-html{font-size:16px;-webkit-font-smoothing:antialiased;}
-body{
-  background:var(--ink);
-  color:var(--snow);
-  font-family:'Urbanist',sans-serif;
-  overflow-x:hidden;
-  cursor:none;
-}
-
-/* ━━━ CURSOR ━━━ */
-#C{width:8px;height:8px;background:var(--snow);border-radius:50%;position:fixed;z-index:9999;pointer-events:none;transition:transform .08s,background .2s;mix-blend-mode:difference;}
-#C2{width:32px;height:32px;border:1px solid rgba(255,255,255,.25);border-radius:50%;position:fixed;z-index:9998;pointer-events:none;transition:all .25s var(--ease);}
-#C.h{transform:scale(3);}
-#C2.h{transform:scale(1.5);border-color:rgba(91,157,255,.5);}
-@media(hover:none){#C,#C2{display:none;}}
-
-/* ━━━ NOISE GRAIN ━━━ */
-body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9000;opacity:.03;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");}
-
-/* ━━━ SCROLL PROGRESS ━━━ */
-#sp{position:fixed;top:0;left:0;height:1px;background:var(--blue);z-index:9990;transform-origin:left;transform:scaleX(0);transition:transform .05s;}
-
-/* ━━━ PRELOADER ━━━ */
-#PL{position:fixed;inset:0;z-index:9997;background:var(--ink);display:flex;align-items:center;justify-content:center;flex-direction:column;transition:opacity .8s var(--ease),transform .8s var(--ease);}
-#PL.out{opacity:0;transform:scale(1.05);pointer-events:none;}
-.pl-logo{font-family:'Urbanist',sans-serif;font-weight:800;font-size:clamp(1.4rem,3vw,2rem);letter-spacing:-.03em;color:var(--snow);}
-.pl-logo span{color:var(--blue);}
-.pl-line{width:180px;height:1px;background:var(--wire2);margin-top:32px;overflow:hidden;position:relative;}
-.pl-fill{position:absolute;top:0;left:0;height:100%;background:var(--blue);width:0%;transition:width .05s linear;}
-.pl-pct{font-family:'Fira Code',monospace;font-size:.7rem;color:var(--fog);margin-top:12px;letter-spacing:.05em;}
-
-/* ━━━ NAV ━━━ */
-nav{
-  position:fixed;top:0;left:0;right:0;z-index:500;
-  padding:0 clamp(20px,4vw,48px);
-  height:52px;
-  display:flex;align-items:center;justify-content:space-between;
-  transition:background .5s,border-color .5s;
-}
-nav.s{background:rgba(4,5,7,.9);backdrop-filter:blur(24px) saturate(1.5);border-bottom:1px solid var(--wire);}
-.nl{font-family:'Urbanist',sans-serif;font-weight:800;font-size:.95rem;letter-spacing:-.02em;color:var(--snow);white-space:nowrap;}
-.nl span{color:var(--blue);}
-.nlinks{display:flex;align-items:center;gap:2px;list-style:none;}
-.nlinks a{font-size:.72rem;font-weight:500;letter-spacing:.02em;color:var(--fog);text-decoration:none;padding:5px 11px;border-radius:4px;transition:color .25s,background .25s;cursor:none;}
-.nlinks a:hover{color:var(--snow);background:var(--wire);}
-.ncta{font-size:.7rem;font-weight:600;letter-spacing:.04em;background:var(--snow);color:var(--ink);border:none;padding:6px 16px;border-radius:4px;cursor:none;transition:all .3s var(--ease);white-space:nowrap;}
-.ncta:hover{background:var(--blue);color:#fff;box-shadow:0 0 20px rgba(91,157,255,.35);}
-.nright{display:flex;align-items:center;gap:8px;}
-
-/* Hamburger */
-.hbg{display:none;flex-direction:column;gap:4px;background:none;border:none;cursor:none;padding:4px;}
-.hbl{width:20px;height:1.5px;background:var(--snow);transition:all .4s var(--ease);transform-origin:center;}
-.hbg.o .hbl:nth-child(1){transform:translateY(5.5px) rotate(45deg);}
-.hbg.o .hbl:nth-child(2){opacity:0;transform:scaleX(0);}
-.hbg.o .hbl:nth-child(3){transform:translateY(-5.5px) rotate(-45deg);}
-
-/* Mobile menu */
-.mmenu{position:fixed;inset:0;background:var(--ink);z-index:490;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;transform:translateY(-100%);transition:transform .7s var(--ease);pointer-events:none;}
-.mmenu.o{transform:translateY(0);pointer-events:all;}
-.mmenu a{font-family:'Urbanist',sans-serif;font-weight:700;font-size:clamp(2rem,8vw,3.5rem);letter-spacing:-.04em;color:var(--snow);text-decoration:none;opacity:0;transform:translateY(20px);transition:color .3s;}
-.mmenu.o a{opacity:1;transform:translateY(0);}
-.mmenu.o a:nth-child(1){transition:opacity .5s .15s,transform .5s .15s var(--ease);}
-.mmenu.o a:nth-child(2){transition:opacity .5s .22s,transform .5s .22s var(--ease);}
-.mmenu.o a:nth-child(3){transition:opacity .5s .29s,transform .5s .29s var(--ease);}
-.mmenu.o a:nth-child(4){transition:opacity .5s .36s,transform .5s .36s var(--ease);}
-.mmenu a:hover{color:var(--blue);}
-.mmenu-sub{font-family:'Fira Code',monospace;font-size:.7rem;color:var(--fog);letter-spacing:.08em;margin-top:20px;opacity:0;}
-.mmenu.o .mmenu-sub{opacity:1;transition:opacity .5s .5s;}
-
-/* ━━━ CANVAS ━━━ */
-#bgc{position:fixed;inset:0;z-index:0;pointer-events:none;}
-#tc{position:absolute;right:0;top:0;width:min(700px,65vw);height:100vh;z-index:2;pointer-events:none;}
-@media(max-width:900px){#tc{width:100%;height:55vw;top:auto;bottom:0;opacity:.18;}}
-
-/* ━━━ HERO ━━━ */
-#hero{position:relative;min-height:100vh;display:flex;align-items:center;padding:100px clamp(20px,5vw,80px) 80px;overflow:hidden;z-index:3;}
-.hero-inner{max-width:660px;position:relative;z-index:4;}
-
-.hero-chip{display:inline-flex;align-items:center;gap:8px;background:var(--wire);border:1px solid var(--wire2);padding:5px 12px 5px 8px;border-radius:100px;margin-bottom:36px;opacity:0;animation:fu .8s var(--ease2) .6s forwards;}
-.hero-chip-dot{width:6px;height:6px;border-radius:50%;background:var(--blue);animation:blink 2s infinite;}
-.hero-chip-txt{font-family:'Fira Code',monospace;font-size:.65rem;letter-spacing:.08em;color:var(--ash);}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
-
-h1.ht{font-size:clamp(3.4rem,7.5vw,7rem);font-weight:800;line-height:.92;letter-spacing:-.04em;margin-bottom:28px;}
-h1.ht .w{display:inline-block;overflow:hidden;vertical-align:top;}
-h1.ht .w i{display:inline-block;transform:translateY(110%);animation:wu .9s var(--ease2) forwards;font-style:normal;}
-h1.ht .w:nth-child(1) i{animation-delay:.5s;}
-h1.ht .w:nth-child(2) i{animation-delay:.62s;}
-h1.ht .w:nth-child(3) i{animation-delay:.74s;}
-h1.ht .w:nth-child(4) i{animation-delay:.86s;}
-h1.ht .w:nth-child(5) i{animation-delay:.98s;}
-h1.ht .w:nth-child(6) i{animation-delay:1.1s;}
-h1.ht .acc{color:var(--blue);}
-@keyframes wu{to{transform:translateY(0)}}
-
-.hd{font-size:clamp(.9rem,1.6vw,1.05rem);font-weight:400;line-height:1.75;color:var(--ash);max-width:460px;margin-bottom:44px;opacity:0;animation:fu .8s var(--ease2) 1.1s forwards;}
-
-.hbtns{display:flex;gap:10px;flex-wrap:wrap;opacity:0;animation:fu .8s var(--ease2) 1.3s forwards;}
-.b1{display:inline-flex;align-items:center;gap:8px;background:var(--snow);color:var(--ink);border:none;padding:11px 24px;font-family:'Urbanist',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.01em;cursor:none;border-radius:6px;text-decoration:none;transition:all .4s var(--ease);position:relative;overflow:hidden;}
-.b1::before{content:'';position:absolute;inset:0;background:var(--blue);transform:scaleX(0);transform-origin:right;transition:transform .4s var(--ease);}
-.b1:hover::before{transform:scaleX(1);transform-origin:left;}
-.b1:hover{color:#fff;box-shadow:0 8px 30px rgba(91,157,255,.3);}
-.b1 *{position:relative;z-index:1;}
-.b2{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--ash);border:1px solid var(--wire2);padding:10px 22px;font-family:'Urbanist',sans-serif;font-size:.8rem;font-weight:600;letter-spacing:.01em;cursor:none;border-radius:6px;text-decoration:none;transition:all .3s;}
-.b2:hover{color:var(--snow);border-color:rgba(255,255,255,.2);}
-.ba{display:inline-block;transition:transform .3s;}
-.b1:hover .ba,.b2:hover .ba{transform:translateX(3px);}
-
-/* Stat row */
-.hstats{display:flex;gap:clamp(24px,4vw,56px);flex-wrap:wrap;margin-top:52px;padding-top:36px;border-top:1px solid var(--wire);opacity:0;animation:fu .8s var(--ease2) 1.5s forwards;}
-.hs-item{}
-.hs-n{font-size:clamp(1.6rem,3vw,2.4rem);font-weight:800;letter-spacing:-.03em;color:var(--snow);}
-.hs-n sup{font-size:.5em;color:var(--blue);}
-.hs-l{font-family:'Fira Code',monospace;font-size:.6rem;letter-spacing:.1em;color:var(--fog);margin-top:2px;text-transform:uppercase;}
-
-@keyframes fu{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
-
-/* scroll cue */
-.scue{position:absolute;bottom:36px;left:clamp(20px,5vw,80px);z-index:4;display:flex;align-items:center;gap:12px;opacity:0;animation:fu .8s var(--ease2) 1.8s forwards;}
-.scue-line{width:36px;height:1px;background:linear-gradient(90deg,transparent,var(--fog));}
-.scue-t{font-family:'Fira Code',monospace;font-size:.6rem;letter-spacing:.15em;color:var(--fog);text-transform:uppercase;}
-
-/* ━━━ SECTION BASE ━━━ */
-.sec{padding:clamp(80px,10vw,140px) clamp(20px,5vw,80px);position:relative;z-index:3;}
-.tag{font-family:'Fira Code',monospace;font-size:.62rem;letter-spacing:.2em;color:var(--blue);text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:10px;}
-.tag::before{content:'';width:20px;height:1px;background:var(--blue);}
-.sh{font-size:clamp(2rem,4.5vw,4.2rem);font-weight:800;line-height:.95;letter-spacing:-.04em;margin-bottom:0;}
-.sh .dim{color:var(--fog);}
-
-/* REVEAL */
-.rv{opacity:0;transform:translateY(36px);transition:opacity .9s var(--ease2),transform .9s var(--ease2);}
-.rv.on{opacity:1;transform:translateY(0);}
-.rx{opacity:0;transform:translateX(-30px);transition:opacity .9s var(--ease2),transform .9s var(--ease2);}
-.rx.on{opacity:1;transform:translateX(0);}
-
-/* ━━━ MARQUEE ━━━ */
-.mq-wrap{overflow:hidden;border-top:1px solid var(--wire);border-bottom:1px solid var(--wire);padding:14px 0;-webkit-mask:linear-gradient(90deg,transparent,black 8%,black 92%,transparent);mask:linear-gradient(90deg,transparent,black 8%,black 92%,transparent);}
-.mq-track{display:flex;gap:0;animation:mq 25s linear infinite;width:max-content;}
-.mq-track.r{animation:mqr 30s linear infinite;}
-@keyframes mq{to{transform:translateX(-50%)}}
-@keyframes mqr{from{transform:translateX(-50%)}to{transform:translateX(0)}}
-.mq-item{display:flex;align-items:center;gap:10px;padding:0 24px;font-family:'Fira Code',monospace;font-size:.65rem;letter-spacing:.06em;color:var(--fog);white-space:nowrap;}
-.mq-sep{width:3px;height:3px;border-radius:50%;background:var(--wire2);}
-
-/* ━━━ FEATURES ━━━ */
-#features{}
-.fh{display:grid;grid-template-columns:1fr auto;gap:40px;align-items:end;margin-bottom:clamp(40px,6vw,72px);}
-@media(max-width:700px){.fh{grid-template-columns:1fr;gap:16px;}}
-.fh-r{font-size:.88rem;font-weight:400;line-height:1.75;color:var(--ash);max-width:340px;text-align:right;}
-@media(max-width:700px){.fh-r{text-align:left;}}
-
-.fg{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--wire);}
-@media(max-width:960px){.fg{grid-template-columns:repeat(2,1fr);}}
-@media(max-width:560px){.fg{grid-template-columns:1fr;}}
-
-.fc{background:var(--ink1);padding:clamp(28px,4vw,48px) clamp(24px,3vw,40px);position:relative;overflow:hidden;cursor:none;transition:background .4s;}
-.fc::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:var(--blue);transform:scaleX(0);transform-origin:left;transition:transform .5s var(--ease2);}
-.fc:hover{background:var(--ink2);}
-.fc:hover::before{transform:scaleX(1);}
-.fc-n{position:absolute;top:clamp(16px,2.5vw,24px);right:clamp(16px,2.5vw,24px);font-family:'Fira Code',monospace;font-size:.6rem;letter-spacing:.12em;color:var(--fog);}
-.fc-ico{margin-bottom:24px;width:36px;height:36px;color:var(--ash);transition:color .3s;}
-.fc:hover .fc-ico{color:var(--blue);}
-.fc-name{font-size:1.05rem;font-weight:700;letter-spacing:-.02em;margin-bottom:10px;}
-.fc-desc{font-size:.83rem;font-weight:400;line-height:1.75;color:var(--ash);}
-.fc-foot{margin-top:24px;display:flex;align-items:center;gap:8px;font-family:'Fira Code',monospace;font-size:.6rem;letter-spacing:.1em;color:var(--fog);}
-.fc-foot::before{content:'';width:16px;height:1px;background:var(--fog);}
-
-/* ━━━ PLANS ━━━ */
-#plans .inner{display:grid;grid-template-columns:1fr 2fr;gap:clamp(40px,6vw,80px);align-items:start;}
-@media(max-width:900px){#plans .inner{grid-template-columns:1fr;}}
-.plans-left{}
-.plans-toggle{display:flex;align-items:center;gap:10px;margin-top:28px;font-family:'Fira Code',monospace;font-size:.65rem;letter-spacing:.06em;color:var(--fog);}
-.tgl{width:36px;height:20px;background:var(--ink3);border-radius:10px;cursor:none;position:relative;transition:background .3s;border:1px solid var(--wire2);}
-.tgl.on{background:var(--blue);}
-.tgl::after{content:'';position:absolute;width:14px;height:14px;background:#fff;border-radius:50%;top:2px;left:2px;transition:transform .3s var(--ease);}
-.tgl.on::after{transform:translateX(16px);}
-.save{font-size:.58rem;letter-spacing:.08em;color:var(--blue);border:1px solid rgba(91,157,255,.25);padding:2px 8px;border-radius:3px;}
-
-.pcards{display:flex;flex-direction:column;gap:1px;background:var(--wire);}
-.pc{background:var(--ink1);padding:clamp(24px,3vw,36px) clamp(22px,3vw,36px);display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center;cursor:none;transition:background .4s;position:relative;overflow:hidden;}
-.pc::after{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--blue);transform:scaleY(0);transform-origin:bottom;transition:transform .4s var(--ease2);}
-.pc:hover{background:var(--ink2);}
-.pc:hover::after{transform:scaleY(1);}
-.pc.feat{background:var(--ink2);}
-.pc.feat::after{transform:scaleY(1);background:var(--blue);}
-.pc-l{}
-.pc-tier{font-family:'Fira Code',monospace;font-size:.62rem;letter-spacing:.14em;color:var(--fog);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
-.pc-badge{background:var(--blue);color:#fff;font-size:.55rem;padding:1px 7px;border-radius:2px;letter-spacing:.05em;}
-.pc-price{font-size:clamp(1.8rem,3vw,2.6rem);font-weight:800;letter-spacing:-.04em;line-height:1;}
-.pc-price sub{font-size:.35em;color:var(--fog);letter-spacing:0;font-weight:400;vertical-align:baseline;}
-.pc-features{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
-.pcf{font-family:'Fira Code',monospace;font-size:.62rem;letter-spacing:.04em;color:var(--ash);background:var(--wire);padding:3px 9px;border-radius:3px;}
-.pc-r{text-align:right;}
-.pc-btn{font-family:'Urbanist',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:.04em;background:transparent;border:1px solid var(--wire2);color:var(--ash);padding:8px 18px;border-radius:4px;cursor:none;transition:all .3s;white-space:nowrap;}
-.pc-btn:hover{border-color:var(--snow);color:var(--snow);}
-.pc.feat .pc-btn{background:var(--snow);color:var(--ink);border-color:var(--snow);}
-.pc.feat .pc-btn:hover{background:var(--blue);border-color:var(--blue);color:#fff;}
-.pc-upi{font-family:'Fira Code',monospace;font-size:.58rem;letter-spacing:.06em;color:var(--fog);margin-top:6px;}
-
-/* ━━━ METRICS ━━━ */
-#metrics .inner{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--wire);}
-@media(max-width:900px){#metrics .inner{grid-template-columns:repeat(2,1fr);}}
-@media(max-width:480px){#metrics .inner{grid-template-columns:1fr;}}
-.mc{background:var(--ink1);padding:clamp(28px,4vw,44px) clamp(24px,3vw,36px);cursor:none;transition:background .4s;position:relative;overflow:hidden;}
-.mc:hover{background:var(--ink2);}
-.mc-n{font-size:clamp(2rem,3.5vw,3.2rem);font-weight:800;letter-spacing:-.04em;line-height:1;color:var(--snow);}
-.mc-n em{color:var(--blue);font-style:normal;}
-.mc-l{font-family:'Fira Code',monospace;font-size:.6rem;letter-spacing:.12em;color:var(--fog);text-transform:uppercase;margin-top:8px;}
-.mc-bar{position:absolute;bottom:0;left:0;height:2px;background:var(--blue);transform-origin:left;transform:scaleX(0);transition:transform 1.5s var(--ease2);}
-.mc.on .mc-bar{transform:scaleX(1);}
-
-/* ━━━ STACK ━━━ */
-#stack{}
-.stack-header{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:end;margin-bottom:clamp(40px,6vw,64px);}
-@media(max-width:700px){.stack-header{grid-template-columns:1fr;gap:16px;}}
-.stack-sub{font-size:.88rem;font-weight:400;line-height:1.75;color:var(--ash);}
-.spills{display:flex;flex-wrap:wrap;gap:8px;}
-.sp{font-family:'Fira Code',monospace;font-size:.65rem;letter-spacing:.06em;color:var(--ash);background:var(--ink2);border:1px solid var(--wire);padding:8px 14px;border-radius:4px;cursor:none;transition:all .35s;display:flex;align-items:center;gap:7px;}
-.sp:hover{background:var(--ink3);border-color:var(--wire2);color:var(--snow);}
-.sp-d{width:4px;height:4px;border-radius:50%;background:var(--fog);transition:background .3s;}
-.sp:hover .sp-d{background:var(--blue);}
-
-/* ━━━ TESTIMONIALS ━━━ */
-#testi{}
-.testi-h{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:clamp(32px,5vw,56px);flex-wrap:wrap;gap:16px;}
-.tnav{display:flex;gap:8px;}
-.tnb{width:36px;height:36px;border:1px solid var(--wire2);background:transparent;color:var(--fog);display:flex;align-items:center;justify-content:center;cursor:none;border-radius:4px;transition:all .3s;}
-.tnb:hover{border-color:var(--snow);color:var(--snow);}
-.tv{overflow:hidden;}
-.ttrack{display:flex;gap:12px;transition:transform .7s var(--ease2);}
-.tc2{flex:0 0 calc(33.333% - 8px);background:var(--ink1);border:1px solid var(--wire);padding:clamp(24px,3vw,36px);cursor:none;transition:border-color .4s;position:relative;}
-.tc2:hover{border-color:var(--wire2);}
-.tc2::before{content:'\\201C';position:absolute;top:16px;right:20px;font-size:5rem;color:var(--wire);line-height:1;font-family:serif;pointer-events:none;}
-@media(max-width:900px){.tc2{flex:0 0 80vw;}}
-@media(max-width:560px){.tc2{flex:0 0 86vw;}}
-.t-stars{font-size:.75rem;letter-spacing:2px;color:var(--blue);margin-bottom:14px;}
-.t-q{font-size:.88rem;font-weight:400;line-height:1.8;color:var(--ash);margin-bottom:24px;}
-.t-auth{display:flex;align-items:center;gap:12px;}
-.t-av{width:34px;height:34px;border-radius:50%;background:var(--ink3);border:1px solid var(--wire2);display:flex;align-items:center;justify-content:center;font-family:'Fira Code',monospace;font-size:.65rem;font-weight:500;color:var(--ash);flex-shrink:0;}
-.t-name{font-size:.85rem;font-weight:700;letter-spacing:-.01em;}
-.t-role{font-family:'Fira Code',monospace;font-size:.6rem;letter-spacing:.04em;color:var(--fog);}
-.swipe-h{display:none;font-family:'Fira Code',monospace;font-size:.58rem;letter-spacing:.1em;color:var(--fog);text-align:center;margin-top:12px;}
-@media(max-width:900px){.swipe-h{display:block;}}
-
-/* ━━━ CTA ━━━ */
-#cta{text-align:center;position:relative;overflow:hidden;}
-.cta-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 50%,rgba(91,157,255,.05),transparent 70%);}
-.cta-line{position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--blue),transparent);}
-.cta-inner{position:relative;z-index:2;}
-.cta-label{font-family:'Fira Code',monospace;font-size:.65rem;letter-spacing:.2em;color:var(--blue);text-transform:uppercase;margin-bottom:20px;}
-.cta-h{font-size:clamp(2.8rem,6vw,6rem);font-weight:800;line-height:.9;letter-spacing:-.05em;margin-bottom:20px;}
-.cta-sub{font-size:.9rem;font-weight:400;color:var(--ash);margin-bottom:40px;line-height:1.7;}
-.cta-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
-.cta-n{margin-top:20px;font-family:'Fira Code',monospace;font-size:.62rem;letter-spacing:.08em;color:var(--fog);}
-.cta-n span{color:var(--ash);}
-
-/* ━━━ FOOTER ━━━ */
-footer{padding:clamp(40px,6vw,72px) clamp(20px,5vw,80px);border-top:1px solid var(--wire);display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;}
-@media(max-width:900px){footer{grid-template-columns:1fr 1fr;gap:32px;}}
-@media(max-width:500px){footer{grid-template-columns:1fr;}}
-.ft-brand{font-size:1rem;font-weight:800;letter-spacing:-.02em;margin-bottom:10px;}
-.ft-brand span{color:var(--blue);}
-.ft-desc{font-size:.82rem;font-weight:400;line-height:1.75;color:var(--fog);}
-.ft-h{font-family:'Fira Code',monospace;font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--fog);margin-bottom:16px;}
-.ftl{display:flex;flex-direction:column;gap:10px;}
-.ftl a{font-size:.83rem;font-weight:500;color:var(--fog);text-decoration:none;transition:color .25s;cursor:none;}
-.ftl a:hover{color:var(--snow);}
-.fb{padding:20px clamp(20px,5vw,80px);border-top:1px solid var(--wire);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
-.fb-c{font-family:'Fira Code',monospace;font-size:.6rem;letter-spacing:.06em;color:var(--fog);}
-.fb-s{display:flex;gap:8px;}
-.fb-sa{width:30px;height:30px;border:1px solid var(--wire);display:flex;align-items:center;justify-content:center;color:var(--fog);text-decoration:none;border-radius:4px;transition:all .3s;cursor:none;}
-.fb-sa:hover{border-color:var(--wire2);color:var(--snow);}
-
-/* ━━━ BTT ━━━ */
-#btt{position:fixed;bottom:24px;right:24px;width:36px;height:36px;background:var(--ink2);border:1px solid var(--wire2);color:var(--fog);display:flex;align-items:center;justify-content:center;cursor:none;z-index:400;opacity:0;transform:translateY(8px);transition:all .4s var(--ease);border-radius:4px;}
-#btt.show{opacity:1;transform:translateY(0);}
-#btt:hover{border-color:var(--snow);color:var(--snow);}
-
-/* ━━━ WEBGL SPHERE (3D) ━━━ */
-/* canvas is threeCanvas */
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>App Hosting India | ₹99/mo | Deploy in 30s | EliteHosting.in</title>
+  <meta name="description" content="EliteHosting.in — India ka #1 app hosting. Deploy Node.js, Python, Docker in 30 seconds. ₹99/mo. UPI payment. Mumbai servers. Railway & Heroku alternative. 2 free credits.">
+  <meta name="keywords" content="app hosting India, deploy app India, Node.js hosting India, Python hosting India, PaaS India, Railway alternative India, Heroku alternative India, Docker hosting India, ₹99 hosting, UPI payment hosting">
+  <link rel="canonical" href="https://www.elitehosting.in/">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <meta name="author" content="EliteHosting India">
+  <meta name="geo.region" content="IN">
+  <meta name="geo.placename" content="India">
+  <meta name="language" content="English, Hindi">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="EliteHosting.in">
+  <meta property="og:title" content="EliteHosting.in — Deploy Apps in India. ₹99/mo.">
+  <meta property="og:description" content="India ka #1 PaaS. Railway & Heroku alternative. Node.js, Python, Docker. UPI payment. Mumbai servers. Free 2 credits on signup.">
+  <meta property="og:image" content="https://www.elitehosting.in/assets/og-image.png">
+  <meta property="og:url" content="https://www.elitehosting.in/">
+  <meta property="og:locale" content="en_IN">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@elitehosting_in">
+  <meta name="twitter:title" content="Deploy Apps in India — ₹99/mo | EliteHosting.in">
+  <meta name="twitter:image" content="https://www.elitehosting.in/assets/og-image.png">
+  <link rel="alternate" hreflang="en-in" href="https://www.elitehosting.in/">
+  <link rel="alternate" hreflang="x-default" href="https://www.elitehosting.in/">
+  <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#03020A">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/variables.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/animations.css">
+  <link rel="stylesheet" href="/css/pages/landing.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://www.elitehosting.in/#organization",
+        "name": "EliteHosting",
+        "url": "https://www.elitehosting.in",
+        "logo": { "@type": "ImageObject", "url": "https://www.elitehosting.in/assets/logo.svg" },
+        "description": "India's #1 Platform-as-a-Service for developers.",
+        "address": { "@type": "PostalAddress", "addressCountry": "IN" },
+        "sameAs": ["https://twitter.com/elitehosting_in","https://github.com/elitehosting","https://t.me/elitehosting_in"]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://www.elitehosting.in/#website",
+        "url": "https://www.elitehosting.in",
+        "name": "EliteHosting.in",
+        "description": "India's #1 App Hosting Platform",
+        "publisher": { "@id": "https://www.elitehosting.in/#organization" },
+        "potentialAction": { "@type": "SearchAction", "target": "https://www.elitehosting.in/blog/?q={search_term_string}", "query-input": "required name=search_term_string" }
+      },
+      {
+        "@type": "SoftwareApplication",
+        "name": "EliteHosting",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Web",
+        "url": "https://www.elitehosting.in",
+        "description": "Deploy Node.js, Python, Docker apps in India. ₹99/month. UPI payment.",
+        "offers": [
+          { "@type": "Offer", "name": "Starter", "price": "99", "priceCurrency": "INR" },
+          { "@type": "Offer", "name": "Pro", "price": "399", "priceCurrency": "INR" }
+        ],
+        "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "ratingCount": "2847", "bestRating": "5" }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          { "@type": "Question", "name": "EliteHosting.in kya hai?", "acceptedAnswer": { "@type": "Answer", "text": "EliteHosting.in India ka #1 Platform-as-a-Service hai. Node.js, Python, Docker apps 30 seconds mein deploy karo." } },
+          { "@type": "Question", "name": "Kya Railway ka India alternative hai?", "acceptedAnswer": { "@type": "Answer", "text": "Haan! Indian servers (Mumbai), UPI payment, same Git-push deployment. ₹99/month vs Railway $5/month." } }
+        ]
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
-
-<div id="C"></div>
-<div id="C2"></div>
-<div id="sp"></div>
-<button id="btt" aria-label="Top"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg></button>
-
-<!-- PRELOADER -->
-<div id="PL">
-  <div class="pl-logo">Elite<span>Hosting</span></div>
-  <div class="pl-line"><div class="pl-fill" id="PLf"></div></div>
-  <div class="pl-pct" id="PLp">0%</div>
-</div>
-
-<!-- BG WebGL -->
-<canvas id="bgc"></canvas>
-
-<!-- MOBILE MENU -->
-<div class="mmenu" id="MM">
-  <a href="#features">Features</a>
-  <a href="#plans">Pricing</a>
-  <a href="#stack">Stack</a>
-  <a href="#testi">Reviews</a>
-  <div class="mmenu-sub">elitehosting.in</div>
-</div>
-
-<!-- NAV -->
-<nav id="NAV">
-  <div class="nl">Elite<span>Hosting</span></div>
-  <ul class="nlinks">
-    <li><a href="#features">Features</a></li>
-    <li><a href="#plans">Pricing</a></li>
-    <li><a href="#stack">Stack</a></li>
-    <li><a href="#testi">Reviews</a></li>
-  </ul>
-  <div class="nright">
-    <button class="ncta" onclick="location.href='#plans'">Deploy Now</button>
-    <button class="hbg" id="HB" aria-label="Menu"><span class="hbl"></span><span class="hbl"></span><span class="hbl"></span></button>
-  </div>
-</nav>
-
-<!-- HERO -->
-<section id="hero">
-  <canvas id="tc"></canvas>
-  <div class="hero-inner">
-    <div class="hero-chip">
-      <span class="hero-chip-dot"></span>
-      <span class="hero-chip-txt">India's fastest developer cloud</span>
-    </div>
-    <h1 class="ht">
-      <span class="w"><i>DEPLOY</i></span>&nbsp;
-      <span class="w"><i>AT</i></span>&nbsp;
-      <span class="w"><i>THE</i></span><br>
-      <span class="w"><i class="acc">SPEED</i></span>&nbsp;
-      <span class="w"><i>OF</i></span>&nbsp;
-      <span class="w"><i>CODE</i></span>
-    </h1>
-    <p class="hd">Production containers, UPI payments, Telegram control panel — everything a developer needs, nothing they don't.</p>
-    <div class="hbtns">
-      <a href="#plans" class="b1"><span>Start for Free</span><span class="ba">→</span></a>
-      <a href="#features" class="b2"><span>Explore</span><span class="ba">↓</span></a>
-    </div>
-    <div class="hstats">
-      <div class="hs-item"><div class="hs-n" data-to="2400" data-suf="+">0+</div><div class="hs-l">Live Deployments</div></div>
-      <div class="hs-item"><div class="hs-n" data-to="99.9" data-suf="%" data-dec>99.9%</div><div class="hs-l">Uptime SLA</div></div>
-      <div class="hs-item"><div class="hs-n" data-to="28" data-suf="s">0s</div><div class="hs-l">Avg Deploy</div></div>
-      <div class="hs-item"><div class="hs-n" data-to="450" data-suf="+">0+</div><div class="hs-l">Developers</div></div>
-    </div>
-  </div>
-  <div class="scue"><span class="scue-line"></span><span class="scue-t">Scroll</span></div>
-</section>
-
-<!-- MARQUEE -->
-<div class="mq-wrap"><div class="mq-track" id="MQ1"></div></div>
-<div class="mq-wrap" style="margin-top:1px;"><div class="mq-track r" id="MQ2"></div></div>
-
-<!-- FEATURES -->
-<section class="sec" id="features">
-  <div class="fh rv">
-    <div>
-      <div class="tag">Platform</div>
-      <h2 class="sh">Built for<br><span class="dim">developers.</span></h2>
-    </div>
-    <p class="fh-r">Zero-config deployments. Enterprise infrastructure. A Telegram-first control panel built for India's developer ecosystem.</p>
-  </div>
-  <div class="fg">
-    <div class="fc rv" style="transition-delay:.04s">
-      <span class="fc-n">01</span>
-      <svg class="fc-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
-      <div class="fc-name">Container Isolation</div>
-      <p class="fc-desc">Each app runs in a fully isolated Docker container. Root access, custom ports, zero interference between projects.</p>
-      <div class="fc-foot">Docker-native</div>
-    </div>
-    <div class="fc rv" style="transition-delay:.08s">
-      <span class="fc-n">02</span>
-      <svg class="fc-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-      <div class="fc-name">Instant Deploy</div>
-      <p class="fc-desc">Git push to deploy. GitHub Actions CI/CD included. Zero-downtime rolling updates, live in under 30 seconds.</p>
-      <div class="fc-foot">&lt; 30s deploy time</div>
-    </div>
-    <div class="fc rv" style="transition-delay:.12s">
-      <span class="fc-n">03</span>
-      <svg class="fc-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-      <div class="fc-name">UPI Payments</div>
-      <p class="fc-desc">Pay via UPI, PhonePe, GPay, Razorpay, or Stripe. ₹ pricing, GST invoices. No foreign card required.</p>
-      <div class="fc-foot">Indian payment rails</div>
-    </div>
-    <div class="fc rv" style="transition-delay:.16s">
-      <span class="fc-n">04</span>
-      <svg class="fc-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      <div class="fc-name">Telegram Panel</div>
-      <p class="fc-desc">Full admin panel inside Telegram. Deploy, restart, view logs, manage credits — all from slash commands.</p>
-      <div class="fc-foot">Bot-first control</div>
-    </div>
-    <div class="fc rv" style="transition-delay:.20s">
-      <span class="fc-n">05</span>
-      <svg class="fc-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      <div class="fc-name">Live Monitoring</div>
-      <p class="fc-desc">Prometheus + Grafana dashboards. Real-time CPU, RAM, bandwidth. AI-powered error analysis with instant alerts.</p>
-      <div class="fc-foot">Observability suite</div>
-    </div>
-    <div class="fc rv" style="transition-delay:.24s">
-      <span class="fc-n">06</span>
-      <svg class="fc-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      <div class="fc-name">DDoS Shield</div>
-      <p class="fc-desc">Enterprise firewall, rate limiting, abuse detection, automatic traffic scrubbing. 99.9% uptime SLA guaranteed.</p>
-      <div class="fc-foot">Always-on protection</div>
-    </div>
-  </div>
-</section>
-
-<!-- PLANS -->
-<section class="sec" id="plans" style="background:var(--ink1);">
-  <div class="inner">
-    <div class="plans-left">
-      <div class="tag rv">Pricing</div>
-      <h2 class="sh rv" style="transition-delay:.1s">Simple<br><span class="dim">honest</span><br>pricing.</h2>
-      <div class="plans-toggle rv" style="transition-delay:.2s">
-        <span>Monthly</span>
-        <div class="tgl" id="BT"></div>
-        <span>Yearly</span>
-        <span class="save">Save 25%</span>
+  <!-- ── NAVIGATION ─────────────────────────────────────────── -->
+  <nav class="nav" id="mainNav" aria-label="Main navigation">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo" aria-label="EliteHosting.in Home">
+        <div class="nav-logo-icon" aria-hidden="true">E</div>
+        Elite<span class="nav-domain">Hosting.in</span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="/features.html">Features</a>
+        <a href="/pricing.html">Pricing</a>
+        <a href="/blog/">Blog</a>
+        <a href="https://docs.elitehosting.in" target="_blank" rel="noopener">Docs</a>
+        <a href="https://t.me/elitehosting_support" target="_blank" rel="noopener">Support</a>
       </div>
-      <p style="font-size:.8rem;font-weight:400;color:var(--fog);margin-top:20px;line-height:1.75;font-family:'Fira Code',monospace;letter-spacing:.02em;" class="rv" style="transition-delay:.3s">All plans include UPI · PhonePe · GPay · Razorpay · Stripe</p>
+      <div class="nav-actions">
+        <a href="/auth/login.html" class="btn btn-ghost btn-sm">Login</a>
+        <a href="/auth/register.html" class="btn btn-electric btn-sm cta-register">Get Started Free</a>
+      </div>
+      <button class="nav-hamburger" id="hamburger" aria-label="Toggle navigation" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
     </div>
-    <div class="pcards rv" style="transition-delay:.1s">
-      <!-- Starter -->
-      <div class="pc">
-        <div class="pc-l">
-          <div class="pc-tier">Starter</div>
-          <div class="pc-price" data-mo="499" data-yr="374"><span>₹</span><span class="pa">499</span><sub>/mo</sub></div>
-          <div class="pc-upi">✓ UPI · PhonePe · GPay</div>
-          <div class="pc-features">
-            <span class="pcf">2 containers</span><span class="pcf">1 vCPU</span><span class="pcf">512MB RAM</span><span class="pcf">10GB SSD</span><span class="pcf">Telegram panel</span>
+  </nav>
+
+  <!-- ── HERO ──────────────────────────────────────────────────── -->
+  <section class="hero" aria-label="Hero section">
+    <canvas id="particles" class="hero-canvas" aria-hidden="true"></canvas>
+    <div class="hero-gradient" aria-hidden="true"></div>
+    <div class="hero-grid" aria-hidden="true"></div>
+    <div class="hero-content">
+      <div class="hero-eyebrow reveal delay-100">
+        <span class="dot" aria-hidden="true"></span>
+        🇮🇳 Made for Indian Developers
+      </div>
+      <h1 class="hero-title reveal delay-150">
+        Deploy Apps in <span class="grad-electric">India</span><br>
+        In <span class="grad-mint">30 Seconds</span>
+      </h1>
+      <p class="hero-subtitle reveal delay-200">
+        Railway aur Heroku ka Indian alternative. Mumbai servers, UPI payment, Git push deploy.
+        Node.js, Python, Docker sab kuch — <strong>₹99/month</strong> se shuru.
+      </p>
+      <div class="hero-actions reveal delay-300">
+        <a href="/auth/register.html" class="btn btn-electric btn-xl cta-register" aria-label="Start for free with 2 credits">
+          <span class="btn-text">🚀 Start Free — 2 Credits</span>
+        </a>
+        <a href="#how-it-works" class="btn btn-ghost btn-xl">
+          <span class="btn-text">See How It Works ↓</span>
+        </a>
+      </div>
+      <div class="hero-social-proof reveal delay-400">
+        <div class="hero-social-proof-item">
+          <span>⭐</span>
+          <strong>4.8/5</strong> rating (2,847 reviews)
+        </div>
+        <div class="hero-social-proof-item">
+          <span>👥</span>
+          <strong>12,000+</strong> developers
+        </div>
+        <div class="hero-social-proof-item">
+          <span>🚀</span>
+          <strong>45,000+</strong> deployments
+        </div>
+        <div class="hero-social-proof-item">
+          <span>⚡</span>
+          <strong>99.9%</strong> uptime
+        </div>
+      </div>
+
+      <!-- Terminal Demo -->
+      <div class="hero-terminal-wrap reveal delay-500">
+        <div class="terminal" role="region" aria-label="Deployment demo terminal">
+          <div class="terminal-titlebar">
+            <div class="terminal-dots" aria-hidden="true">
+              <span class="t-dot t-dot-red"></span>
+              <span class="t-dot t-dot-yellow"></span>
+              <span class="t-dot t-dot-green"></span>
+            </div>
+            <span class="terminal-title">EliteHosting — Live Deploy Demo</span>
+            <span id="liveBadge" style="font-size:11px;color:var(--mint);margin-left:auto;font-family:var(--font-mono)">🟢 Live</span>
+          </div>
+          <div class="terminal-body" id="heroTerminal" aria-live="polite" aria-label="Terminal output"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── STATS BAR ──────────────────────────────────────────────── -->
+  <div class="stats-bar" role="region" aria-label="Platform statistics">
+    <div class="stats-bar-inner">
+      <div class="stat-item reveal">
+        <span class="stat-num electric" data-target="12000" data-suffix="+">0</span>
+        <span class="stat-label">Indian Developers</span>
+      </div>
+      <div class="stat-item reveal delay-100">
+        <span class="stat-num mint" data-target="45000" data-suffix="+">0</span>
+        <span class="stat-label">Deployments Made</span>
+      </div>
+      <div class="stat-item reveal delay-200">
+        <span class="stat-num" data-target="99.9" data-suffix="%">0</span>
+        <span class="stat-label">Uptime SLA</span>
+      </div>
+      <div class="stat-item reveal delay-300">
+        <span class="stat-num" style="color:var(--india)">&#60;30ms</span>
+        <span class="stat-label">Mumbai Server Latency</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FEATURES ───────────────────────────────────────────────── -->
+  <section class="section" aria-labelledby="features-heading">
+    <div class="container">
+      <div class="section-header">
+        <span class="eyebrow">Why EliteHosting?</span>
+        <h2 id="features-heading">Railway से <span class="grad-electric">10x Better</span> — India के लिए</h2>
+        <p>Indian developers ke liye specially banaya gaya. Mumbai servers, UPI payment, Telegram bot — sab ek jagah.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card tilt-card reveal">
+          <div class="feature-icon india">🇮🇳</div>
+          <h3>Mumbai Servers</h3>
+          <p>Indian users ke liye 10x lower latency. Railway aur Heroku ke US servers se 30ms vs 300ms. Apne users ko best experience do.</p>
+        </div>
+        <div class="feature-card tilt-card reveal delay-100">
+          <div class="feature-icon electric">⚡</div>
+          <h3>UPI / PhonePe / GPay</h3>
+          <p>₹99 se start — koi dollar card nahi chahiye. UPI, PhonePe, GPay, Paytm, credit/debit card sab kuch accept karta hai.</p>
+        </div>
+        <div class="feature-card tilt-card reveal delay-200">
+          <div class="feature-icon mint">🚀</div>
+          <h3>Git Push to Deploy</h3>
+          <p><code>git push origin main</code> — bas! Auto-detect framework, Dockerfile generate, build aur deploy — sab automatic.</p>
+        </div>
+        <div class="feature-card tilt-card reveal delay-300">
+          <div class="feature-icon plasma">📱</div>
+          <h3>Telegram Bot Control</h3>
+          <p>@elitehosting_bot se deploy, logs dekho, restart karo — sab phone se. Bina laptop khole. India ka pehla Telegram PaaS.</p>
+        </div>
+        <div class="feature-card tilt-card reveal delay-400">
+          <div class="feature-icon fire">🤖</div>
+          <h3>AI-Powered Deploy</h3>
+          <p>Claude + Gemini se Dockerfile generate, build errors fix, env variables suggest. AI assistant jo actually code samajhta hai.</p>
+        </div>
+        <div class="feature-card tilt-card reveal delay-500">
+          <div class="feature-icon electric">🔒</div>
+          <h3>Free SSL + Custom Domain</h3>
+          <p>Har app ko free .elitehosting.in subdomain milta hai. Custom domain aur SSL certificate bhi — ekdum free.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── HOW IT WORKS ───────────────────────────────────────────── -->
+  <section class="section" id="how-it-works" aria-labelledby="steps-heading">
+    <div class="container">
+      <div class="section-header">
+        <span class="eyebrow">Simple Process</span>
+        <h2 id="steps-heading">4 Steps Mein <span class="grad-mint">Deploy Karo</span></h2>
+        <p>GitHub ya ZIP se — 30 seconds mein live. Koi complex setup nahi, koi credit card nahi (pehle).</p>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card reveal">
+          <div class="step-num">1</div>
+          <h4>Account Banao</h4>
+          <p>Email se signup karo. 2 free credits milenge — koi card nahi chahiye.</p>
+        </div>
+        <div class="step-card reveal delay-100">
+          <div class="step-num">2</div>
+          <h4>App Connect Karo</h4>
+          <p>GitHub repo URL paste karo ya ZIP upload karo. Framework auto-detect hoga.</p>
+        </div>
+        <div class="step-card reveal delay-200">
+          <div class="step-num">3</div>
+          <h4>Build Watch Karo</h4>
+          <p>Real-time build logs dekho. AI automatically Dockerfile generate karta hai.</p>
+        </div>
+        <div class="step-card reveal delay-300">
+          <div class="step-num">4</div>
+          <h4>Live! 🎉</h4>
+          <p>App live hai! Custom URL milega. Telegram notification bhi aayega.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── TECH STACK ──────────────────────────────────────────────── -->
+  <section class="section" aria-labelledby="stacks-heading">
+    <div class="container">
+      <div class="section-header">
+        <span class="eyebrow">All Frameworks Supported</span>
+        <h2 id="stacks-heading">Jo Bhi Code Karo, <span class="grad-electric">Hum Deploy Karenge</span></h2>
+        <p>Node.js se Go tak, Express se NestJS tak — auto-detect aur auto-configure.</p>
+      </div>
+      <div class="stack-grid">
+        <div class="stack-item reveal"><div class="stack-item-icon">🟩</div><div class="stack-item-name">Node.js</div></div>
+        <div class="stack-item reveal delay-50"><div class="stack-item-icon">🐍</div><div class="stack-item-name">Python</div></div>
+        <div class="stack-item reveal delay-100"><div class="stack-item-icon">⚡</div><div class="stack-item-name">FastAPI</div></div>
+        <div class="stack-item reveal delay-150"><div class="stack-item-icon">🎸</div><div class="stack-item-name">Django</div></div>
+        <div class="stack-item reveal delay-200"><div class="stack-item-icon">🍶</div><div class="stack-item-name">Flask</div></div>
+        <div class="stack-item reveal delay-250"><div class="stack-item-icon">▲</div><div class="stack-item-name">Next.js</div></div>
+        <div class="stack-item reveal delay-300"><div class="stack-item-icon">⚛️</div><div class="stack-item-name">React</div></div>
+        <div class="stack-item reveal delay-350"><div class="stack-item-icon">🐳</div><div class="stack-item-name">Docker</div></div>
+        <div class="stack-item reveal delay-400"><div class="stack-item-icon">🦫</div><div class="stack-item-name">Go</div></div>
+        <div class="stack-item reveal delay-450"><div class="stack-item-icon">🦀</div><div class="stack-item-name">Rust</div></div>
+        <div class="stack-item reveal delay-500"><div class="stack-item-icon">☕</div><div class="stack-item-name">Java</div></div>
+        <div class="stack-item reveal delay-550"><div class="stack-item-icon">🤖</div><div class="stack-item-name">Telegram Bots</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── COMPARISON TABLE ─────────────────────────────────────────── -->
+  <section class="section" aria-labelledby="compare-heading">
+    <div class="container">
+      <div class="section-header">
+        <span class="eyebrow">Competitor Comparison</span>
+        <h2 id="compare-heading">Railway vs Heroku vs <span class="grad-india">EliteHosting</span></h2>
+        <p>India ke developers ke liye — kya actually matter karta hai, uska comparison.</p>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="compare-table" role="table" aria-label="Feature comparison table">
+          <thead>
+            <tr>
+              <th scope="col">Feature</th>
+              <th scope="col">Railway</th>
+              <th scope="col">Heroku</th>
+              <th scope="col" class="highlight-col">⚡ EliteHosting.in</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Indian Servers</strong></td>
+              <td class="cross">❌ US only</td>
+              <td class="cross">❌ US only</td>
+              <td class="check highlight-col">✅ Mumbai, India</td>
+            </tr>
+            <tr>
+              <td><strong>UPI Payment</strong></td>
+              <td class="cross">❌ Card only ($)</td>
+              <td class="cross">❌ Card only ($)</td>
+              <td class="check highlight-col">✅ UPI, GPay, Paytm</td>
+            </tr>
+            <tr>
+              <td><strong>Price (basic)</strong></td>
+              <td>$5/mo (~₹415)</td>
+              <td>$7/mo (~₹580)</td>
+              <td class="check highlight-col" style="color:var(--mint)">₹99/mo ⚡</td>
+            </tr>
+            <tr>
+              <td><strong>Free Tier</strong></td>
+              <td class="partial">⚠️ $5 trial</td>
+              <td class="cross">❌ Removed</td>
+              <td class="check highlight-col">✅ 2 credits free</td>
+            </tr>
+            <tr>
+              <td><strong>Telegram Bot</strong></td>
+              <td class="cross">❌ No</td>
+              <td class="cross">❌ No</td>
+              <td class="check highlight-col">✅ Full bot</td>
+            </tr>
+            <tr>
+              <td><strong>Hindi Support</strong></td>
+              <td class="cross">❌</td>
+              <td class="cross">❌</td>
+              <td class="check highlight-col">✅ Hindi/Hinglish</td>
+            </tr>
+            <tr>
+              <td><strong>AI-Powered Deploy</strong></td>
+              <td class="partial">⚠️ Limited</td>
+              <td class="cross">❌</td>
+              <td class="check highlight-col">✅ Claude + Gemini</td>
+            </tr>
+            <tr>
+              <td><strong>Git Push Deploy</strong></td>
+              <td class="check">✅</td>
+              <td class="check">✅</td>
+              <td class="check highlight-col">✅</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PRICING PREVIEW ─────────────────────────────────────────── -->
+  <section class="section" aria-labelledby="pricing-heading">
+    <div class="container">
+      <div class="section-header">
+        <span class="eyebrow">Credit-Based Pricing</span>
+        <h2 id="pricing-heading">Simple Pricing, <span class="grad-fire">₹99 से शुरू</span></h2>
+        <p>1 credit = 1 hafte ka 1 running app. Jitna use karo utna pay karo. Koi hidden charges nahi.</p>
+      </div>
+      <div class="grid grid-4" style="gap:var(--s5)">
+        <div class="pricing-card reveal">
+          <h4 style="margin-bottom:var(--s2)">Starter</h4>
+          <div class="pricing-amount"><sup>₹</sup>99</div>
+          <div class="pricing-period">5 credits</div>
+          <ul class="pricing-features">
+            <li class="pricing-feature"><span class="icon">✅</span> 5 weeks of 1 app</li>
+            <li class="pricing-feature"><span class="icon">✅</span> All frameworks</li>
+            <li class="pricing-feature"><span class="icon">✅</span> Real-time logs</li>
+            <li class="pricing-feature"><span class="icon">✅</span> Free SSL</li>
+          </ul>
+          <a href="/auth/register.html" class="btn btn-ghost btn-md w-full">Get Started</a>
+        </div>
+        <div class="pricing-card reveal delay-100">
+          <h4 style="margin-bottom:var(--s2)">Developer</h4>
+          <div class="pricing-amount"><sup>₹</sup>179</div>
+          <div class="pricing-period">10 credits</div>
+          <ul class="pricing-features">
+            <li class="pricing-feature"><span class="icon">✅</span> 10 weeks of 1 app</li>
+            <li class="pricing-feature"><span class="icon">✅</span> Custom domain</li>
+            <li class="pricing-feature"><span class="icon">✅</span> AI assistance</li>
+            <li class="pricing-feature"><span class="icon">✅</span> Priority support</li>
+          </ul>
+          <a href="/auth/register.html" class="btn btn-ghost btn-md w-full">Get Started</a>
+        </div>
+        <div class="pricing-card featured reveal delay-200">
+          <div class="pricing-popular">🔥 MOST POPULAR</div>
+          <h4 style="margin-bottom:var(--s2)">Pro</h4>
+          <div class="pricing-amount"><sup>₹</sup>399</div>
+          <div class="pricing-period">25 credits</div>
+          <ul class="pricing-features">
+            <li class="pricing-feature"><span class="icon">✅</span> 25 weeks of 1 app</li>
+            <li class="pricing-feature"><span class="icon">✅</span> Multiple apps</li>
+            <li class="pricing-feature"><span class="icon">✅</span> Full AI credits</li>
+            <li class="pricing-feature"><span class="icon">✅</span> Telegram bot</li>
+          </ul>
+          <a href="/auth/register.html" class="btn btn-electric btn-md w-full">Get Started</a>
+        </div>
+        <div class="pricing-card reveal delay-300">
+          <h4 style="margin-bottom:var(--s2)">Power</h4>
+          <div class="pricing-amount"><sup>₹</sup>699</div>
+          <div class="pricing-period">50 credits</div>
+          <ul class="pricing-features">
+            <li class="pricing-feature"><span class="icon">✅</span> 50 weeks of 1 app</li>
+            <li class="pricing-feature"><span class="icon">✅</span> Team features</li>
+            <li class="pricing-feature"><span class="icon">✅</span> Admin dashboard</li>
+            <li class="pricing-feature"><span class="icon">✅</span> SLA support</li>
+          </ul>
+          <a href="/auth/register.html" class="btn btn-ghost btn-md w-full">Get Started</a>
+        </div>
+      </div>
+      <p style="text-align:center;margin-top:var(--s6);font-size:var(--text-sm);color:var(--text-muted)">
+        🎁 Naya account = <strong style="color:var(--mint)">2 free credits</strong> — koi credit card nahi chahiye!
+        <a href="/pricing.html" style="color:var(--electric);margin-left:8px">Full pricing →</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- ── TESTIMONIALS ─────────────────────────────────────────────── -->
+  <section class="section" aria-labelledby="testimonials-heading">
+    <div class="container">
+      <div class="section-header">
+        <span class="eyebrow">Developer Love</span>
+        <h2 id="testimonials-heading">Indian Developers Kya <span class="grad-plasma">Kehte Hain</span></h2>
+      </div>
+      <div class="testimonials-grid">
+        <div class="testimonial-card reveal">
+          <div class="testimonial-stars" aria-label="5 star rating">★★★★★</div>
+          <p class="testimonial-text">"Railway se migrate kiya toh pata chala — same features, 4x sasta, aur UPI se pay kar sakte hain. Ab sab bots EliteHosting pe hain!"</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar" aria-hidden="true">R</div>
+            <div><div class="testimonial-name">Rahul Sharma</div><div class="testimonial-handle">@rahuldev_in · Full Stack Dev, Bangalore</div></div>
           </div>
         </div>
-        <div class="pc-r"><button class="pc-btn">Select</button></div>
-      </div>
-      <!-- Pro -->
-      <div class="pc feat">
-        <div class="pc-l">
-          <div class="pc-tier"><span>Pro</span><span class="pc-badge">Popular</span></div>
-          <div class="pc-price" data-mo="1299" data-yr="974"><span>₹</span><span class="pa">1299</span><sub>/mo</sub></div>
-          <div class="pc-upi">✓ UPI · PhonePe · GPay · Razorpay</div>
-          <div class="pc-features">
-            <span class="pcf">10 containers</span><span class="pcf">4 vCPU</span><span class="pcf">4GB RAM</span><span class="pcf">50GB NVMe</span><span class="pcf">Custom domains</span><span class="pcf">AI errors</span>
+        <div class="testimonial-card reveal delay-100">
+          <div class="testimonial-stars" aria-label="5 star rating">★★★★★</div>
+          <p class="testimonial-text">"College mein paisa nahi tha Railway ke liye. EliteHosting ne 2 free credits diye, pehla project deploy hua, placement bhi agar gayi! 🙏"</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar" aria-hidden="true">P</div>
+            <div><div class="testimonial-name">Priya Patel</div><div class="testimonial-handle">@priya_codes · Student, Ahmedabad</div></div>
           </div>
         </div>
-        <div class="pc-r"><button class="pc-btn">Select ⚡</button></div>
-      </div>
-      <!-- Elite -->
-      <div class="pc">
-        <div class="pc-l">
-          <div class="pc-tier">Elite</div>
-          <div class="pc-price" data-mo="3999" data-yr="2999"><span>₹</span><span class="pa">3999</span><sub>/mo</sub></div>
-          <div class="pc-upi">✓ All payment methods</div>
-          <div class="pc-features">
-            <span class="pcf">Unlimited</span><span class="pcf">16 vCPU</span><span class="pcf">32GB RAM</span><span class="pcf">500GB NVMe</span><span class="pcf">Dedicated support</span>
+        <div class="testimonial-card reveal delay-200">
+          <div class="testimonial-stars" aria-label="5 star rating">★★★★★</div>
+          <p class="testimonial-text">"Telegram bot se deploy karna game-changer hai. Client ko demo dikhana tha, train mein tha, phone se deploy kiya. Client impress ho gaya! 😂"</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar" aria-hidden="true">A</div>
+            <div><div class="testimonial-name">Arjun Kumar</div><div class="testimonial-handle">@arjun_freelance · Freelancer, Delhi</div></div>
           </div>
         </div>
-        <div class="pc-r"><button class="pc-btn">Select</button></div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- METRICS -->
-<section class="sec" id="metrics">
-  <div class="tag rv">By the numbers</div>
-  <h2 class="sh rv" style="transition-delay:.1s;margin-bottom:clamp(36px,5vw,56px);">Infrastructure<br><span class="dim">that scales.</span></h2>
-  <div class="inner">
-    <div class="mc rv" style="transition-delay:.05s"><div class="mc-n" data-to="99.9" data-suf="%" data-dec>99.9<em>%</em></div><div class="mc-l">Uptime SLA</div><div class="mc-bar" style="width:99.9%;"></div></div>
-    <div class="mc rv" style="transition-delay:.1s"><div class="mc-n" data-to="28" data-suf="s">28<em>s</em></div><div class="mc-l">Deploy Time</div><div class="mc-bar" style="width:30%;"></div></div>
-    <div class="mc rv" style="transition-delay:.15s"><div class="mc-n" data-to="2400" data-suf="+">2400<em>+</em></div><div class="mc-l">Live Projects</div><div class="mc-bar" style="width:80%;"></div></div>
-    <div class="mc rv" style="transition-delay:.2s"><div class="mc-n" data-to="100" data-suf="TB+">100<em>TB+</em></div><div class="mc-l">Data Served</div><div class="mc-bar" style="width:60%;"></div></div>
-  </div>
-</section>
-
-<!-- STACK -->
-<section class="sec" id="stack" style="background:var(--ink1);">
-  <div class="stack-header">
-    <div>
-      <div class="tag rv">Tech Stack</div>
-      <h2 class="sh rv" style="transition-delay:.1s">Best tools.<br><span class="dim">Proven stack.</span></h2>
+  <!-- ── TELEGRAM CTA ──────────────────────────────────────────────── -->
+  <section class="section-sm">
+    <div class="container">
+      <div class="card card-lg" style="background:linear-gradient(135deg,rgba(124,58,237,0.1),rgba(0,212,255,0.06));border-color:rgba(124,58,237,0.2);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--s6)">
+        <div>
+          <div style="font-size:32px;margin-bottom:var(--s3)">📱</div>
+          <h3 style="margin-bottom:var(--s2)">Telegram Bot — Deploy on the Go</h3>
+          <p style="color:var(--text-muted);max-width:400px">Phone se apps deploy, monitor, restart karo. <strong>@elitehosting_bot</strong> — India ka pehla PaaS Telegram bot.</p>
+        </div>
+        <div style="display:flex;gap:var(--s3);flex-wrap:wrap">
+          <a href="https://t.me/elitehosting_bot" target="_blank" rel="noopener" class="btn btn-plasma btn-lg" aria-label="Open EliteHosting Telegram bot">
+            📱 Open Bot
+          </a>
+          <a href="/features.html#telegram" class="btn btn-ghost btn-lg">Learn More</a>
+        </div>
+      </div>
     </div>
-    <p class="stack-sub rv" style="transition-delay:.15s">Every component chosen for performance, reliability, and developer experience. Nothing experimental in production.</p>
-  </div>
-  <div class="spills rv" id="SP" style="transition-delay:.2s"></div>
-</section>
+  </section>
 
-<!-- TESTIMONIALS -->
-<section class="sec" id="testi">
-  <div class="testi-h">
-    <div>
-      <div class="tag rv">Reviews</div>
-      <h2 class="sh rv" style="transition-delay:.1s">Developers<br><span class="dim">trust us.</span></h2>
+  <!-- ── FAQ ─────────────────────────────────────────────────────── -->
+  <section class="section" aria-labelledby="faq-heading">
+    <div class="container container-sm">
+      <div class="section-header">
+        <span class="eyebrow">FAQ</span>
+        <h2 id="faq-heading">Aksar Pooche Jaate Hain <span class="grad-electric">Sawaal</span></h2>
+      </div>
+      <div class="faq-list" role="list">
+        <div class="faq-item" role="listitem">
+          <button class="faq-question" aria-expanded="false" aria-controls="faq-1">
+            EliteHosting.in kya hai? <span class="faq-chevron" aria-hidden="true">▾</span>
+          </button>
+          <div class="faq-answer" id="faq-1" role="region">
+            EliteHosting.in India ka #1 Platform-as-a-Service (PaaS) hai. Node.js, Python, Django, Docker apps 30 seconds mein GitHub ya ZIP se deploy karo. Mumbai servers, UPI payment, Telegram bot control milta hai. Railway aur Heroku ka India mein best alternative.
+          </div>
+        </div>
+        <div class="faq-item" role="listitem">
+          <button class="faq-question" aria-expanded="false" aria-controls="faq-2">
+            Kya UPI se payment kar sakte hain? <span class="faq-chevron" aria-hidden="true">▾</span>
+          </button>
+          <div class="faq-answer" id="faq-2" role="region">
+            Bilkul! EliteHosting UPI, PhonePe, GPay, Paytm, credit/debit card aur net banking accept karta hai. Indian Rupees (₹) mein pay karo, koi currency conversion nahi. ₹99 se start — koi dollar card nahi chahiye.
+          </div>
+        </div>
+        <div class="faq-item" role="listitem">
+          <button class="faq-question" aria-expanded="false" aria-controls="faq-3">
+            Kaun se programming languages support hote hain? <span class="faq-chevron" aria-hidden="true">▾</span>
+          </button>
+          <div class="faq-answer" id="faq-3" role="region">
+            Node.js (Express, Fastify, NestJS), Python (Flask, Django, FastAPI), Go, Ruby, PHP, Java, Rust, aur koi bhi Docker container. Framework auto-detect hota hai — tumhara Dockerfile bhi automatically generate ho sakta hai.
+          </div>
+        </div>
+        <div class="faq-item" role="listitem">
+          <button class="faq-question" aria-expanded="false" aria-controls="faq-4">
+            Free trial hai kya? <span class="faq-chevron" aria-hidden="true">▾</span>
+          </button>
+          <div class="faq-answer" id="faq-4" role="region">
+            Haan! Naya account banao — 2 free credits milenge, koi credit card nahi chahiye. 1 credit = 1 hafte ka 1 running app. Matlab pehle 2 hafte bilkul free. Refer karo toh aur credits milenge — 0.5 credit per validated referral.
+          </div>
+        </div>
+        <div class="faq-item" role="listitem">
+          <button class="faq-question" aria-expanded="false" aria-controls="faq-5">
+            Kya Telegram se apps deploy kar sakte hain? <span class="faq-chevron" aria-hidden="true">▾</span>
+          </button>
+          <div class="faq-answer" id="faq-5" role="region">
+            Haan! EliteHosting ka Telegram bot (@elitehosting_bot) se tum deploy, monitor, restart, logs dekh sakte ho — sab kuch phone se, bina website khole. India ka pehla PaaS jo fully Telegram se control hota hai!
+          </div>
+        </div>
+        <div class="faq-item" role="listitem">
+          <button class="faq-question" aria-expanded="false" aria-controls="faq-6">
+            EliteHosting Indian servers use karta hai? <span class="faq-chevron" aria-hidden="true">▾</span>
+          </button>
+          <div class="faq-answer" id="faq-6" role="region">
+            Haan! Hamara primary datacenter Mumbai mein hai. Indian users ke liye latency 10x kam hoti hai Railway ya Heroku ke compared to jo US servers use karte hain. Tumhare users ko lightning-fast experience milega.
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="tnav rv">
-      <button class="tnb" id="TP"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
-      <button class="tnb" id="TN"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
+  </section>
+
+  <!-- ── FINAL CTA ──────────────────────────────────────────────── -->
+  <section class="section">
+    <div class="container">
+      <div class="cta-section reveal">
+        <div style="font-size:48px;margin-bottom:var(--s4)" aria-hidden="true">🚀</div>
+        <h2 style="font-size:var(--text-4xl);margin-bottom:var(--s4)">
+          Ready to Deploy?<br><span class="grad-electric">2 Free Credits</span> — Abhi!
+        </h2>
+        <p style="font-size:var(--text-lg);color:var(--text-muted);max-width:500px;margin:0 auto var(--s8)">
+          India ke 12,000+ developers join kar chuke hain. Aaj shuru karo — koi credit card nahi chahiye.
+        </p>
+        <div style="display:flex;gap:var(--s4);justify-content:center;flex-wrap:wrap">
+          <a href="/auth/register.html" class="btn btn-electric btn-xl cta-register" aria-label="Sign up for free">
+            🚀 Start Free Now
+          </a>
+          <a href="https://docs.elitehosting.in" target="_blank" rel="noopener" class="btn btn-ghost btn-xl">
+            📖 Read Docs
+          </a>
+        </div>
+        <div style="margin-top:var(--s6);display:flex;align-items:center;justify-content:center;gap:var(--s6);flex-wrap:wrap;font-size:var(--text-xs);color:var(--text-muted)">
+          <span>✅ No credit card required</span>
+          <span>✅ 2 free credits on signup</span>
+          <span>✅ Cancel anytime</span>
+          <span>✅ UPI accepted</span>
+        </div>
+      </div>
     </div>
-  </div>
-  <div class="tv" id="TV">
-    <div class="ttrack" id="TT">
-      <div class="tc2 rv"><div class="t-stars">★★★★★</div><p class="t-q">"Telegram bot deploy karna ab 30 seconds ka kaam hai. UPI se payment, instant container — ye sach mein best hai Indian devs ke liye."</p><div class="t-auth"><div class="t-av">AK</div><div><div class="t-name">Arjun Kapoor</div><div class="t-role">Bot Developer · Delhi</div></div></div></div>
-      <div class="tc2 rv" style="transition-delay:.08s"><div class="t-stars">★★★★★</div><p class="t-q">"Grafana monitoring + AI error analysis saved me hours weekly. Like having a DevOps engineer on call 24/7 for ₹1299/month."</p><div class="t-auth"><div class="t-av">PS</div><div><div class="t-name">Priya Sharma</div><div class="t-role">Full Stack Dev · Bangalore</div></div></div></div>
-      <div class="tc2 rv" style="transition-delay:.16s"><div class="t-stars">★★★★★</div><p class="t-q">"Migrated 8 bots from AWS — ₹3000/month bachat aur performance 2x better. The Telegram panel is a game-changer."</p><div class="t-auth"><div class="t-av">RV</div><div><div class="t-name">Rohan Verma</div><div class="t-role">SaaS Founder · Mumbai</div></div></div></div>
-      <div class="tc2"><div class="t-stars">★★★★★</div><p class="t-q">"UPI payment support ne sab badal diya. No more international card failures. EliteHosting ek Indian developer ka sapna hai."</p><div class="t-auth"><div class="t-av">MG</div><div><div class="t-name">Manish Gupta</div><div class="t-role">Backend Eng · Hyderabad</div></div></div></div>
-      <div class="tc2"><div class="t-stars">★★★★★</div><p class="t-q">"Running a music bot for 50k+ users — zero downtime in 8 months. The auto-scaling is phenomenal."</p><div class="t-auth"><div class="t-av">SK</div><div><div class="t-name">Siddharth Kumar</div><div class="t-role">Bot Dev · Chennai</div></div></div></div>
+  </section>
+
+  <!-- ── FOOTER ─────────────────────────────────────────────────── -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="/" class="nav-logo" style="margin-bottom:var(--s3);font-size:20px">
+            <div class="nav-logo-icon">E</div>
+            Elite<span class="nav-domain">Hosting.in</span>
+          </a>
+          <p>India ka #1 app hosting platform. Railway aur Heroku ka best alternative for Indian developers.</p>
+          <div class="footer-socials" aria-label="Social media links">
+            <a href="https://twitter.com/elitehosting_in" class="footer-social" target="_blank" rel="noopener" aria-label="Twitter">🐦</a>
+            <a href="https://github.com/elitehosting" class="footer-social" target="_blank" rel="noopener" aria-label="GitHub">🐙</a>
+            <a href="https://t.me/elitehosting_in" class="footer-social" target="_blank" rel="noopener" aria-label="Telegram">✈️</a>
+            <a href="https://www.linkedin.com/company/elitehosting" class="footer-social" target="_blank" rel="noopener" aria-label="LinkedIn">💼</a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h5>Product</h5>
+          <ul>
+            <li><a href="/features.html">Features</a></li>
+            <li><a href="/pricing.html">Pricing</a></li>
+            <li><a href="https://docs.elitehosting.in">Documentation</a></li>
+            <li><a href="https://status.elitehosting.in">Status Page</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Alternatives</h5>
+          <ul>
+            <li><a href="/blog/railway-alternative-india.html">Railway Alternative</a></li>
+            <li><a href="/blog/heroku-alternative-india.html">Heroku Alternative</a></li>
+            <li><a href="/blog/nodejs-hosting-india.html">Node.js Hosting</a></li>
+            <li><a href="/blog/python-hosting-india.html">Python Hosting</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Company</h5>
+          <ul>
+            <li><a href="/about.html">About Us</a></li>
+            <li><a href="/blog/">Blog</a></li>
+            <li><a href="/terms.html">Terms of Service</a></li>
+            <li><a href="/privacy.html">Privacy Policy</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2025 EliteHosting.in — Made with ❤️ in India 🇮🇳</span>
+        <span class="footer-india-badge">🇮🇳 Mumbai Servers</span>
+        <span>All prices in ₹ INR</span>
+      </div>
     </div>
-  </div>
-  <p class="swipe-h">← swipe →</p>
-</section>
+  </footer>
 
-<!-- CTA -->
-<section class="sec" id="cta">
-  <div class="cta-line"></div>
-  <div class="cta-bg"></div>
-  <div class="cta-inner">
-    <div class="cta-label rv">// ready to deploy</div>
-    <h2 class="cta-h rv" style="transition-delay:.1s">Go Elite.<br>Today.</h2>
-    <p class="cta-sub rv" style="transition-delay:.2s">Join 450+ Indian developers building on EliteHosting.</p>
-    <div class="cta-btns rv" style="transition-delay:.3s">
-      <a href="#plans" class="b1" style="padding:13px 28px;font-size:.82rem;"><span>Start Free Trial</span><span class="ba">→</span></a>
-      <a href="https://t.me/elitehosting" class="b2" style="padding:12px 24px;font-size:.82rem;"><span>Telegram Community</span></a>
-    </div>
-    <p class="cta-n rv" style="transition-delay:.4s"><span>UPI · PhonePe · GPay · Razorpay · Stripe</span> — सभी accepted</p>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer>
-  <div>
-    <div class="ft-brand">Elite<span>Hosting</span></div>
-    <p class="ft-desc">India's most advanced cloud hosting platform for developers who build on Telegram, web, and beyond.</p>
-  </div>
-  <div>
-    <div class="ft-h">Platform</div>
-    <div class="ftl"><a href="#">Features</a><a href="#">Pricing</a><a href="#">Docs</a><a href="#">Status</a><a href="#">Changelog</a></div>
-  </div>
-  <div>
-    <div class="ft-h">Company</div>
-    <div class="ftl"><a href="#">About</a><a href="#">Blog</a><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Careers</a></div>
-  </div>
-  <div>
-    <div class="ft-h">Community</div>
-    <div class="ftl"><a href="#">Telegram</a><a href="#">Discord</a><a href="#">GitHub</a><a href="#">Twitter</a><a href="#">Support</a></div>
-  </div>
-</footer>
-<div class="fb">
-  <div class="fb-c">© 2025 EliteHosting — Made for Indian Developers</div>
-  <div class="fb-s">
-    <a href="#" class="fb-sa"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.2 5L2 12.5l7 1M21.2 5l-5.4 14-3.8-6.5M21.2 5L9 14.5m0 0 2 5.5"/></svg></a>
-    <a href="#" class="fb-sa"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></a>
-    <a href="#" class="fb-sa"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg></a>
-  </div>
-</div>
-
-<script>
-/* ══ PRELOADER ══ */
-(function(){
-  const fill=document.getElementById('PLf'),pct=document.getElementById('PLp'),pl=document.getElementById('PL');
-  let v=0;
-  const msgs=['Connecting...','Loading assets...','Warming up...','Ready.'];
-  let mi=0;
-  const t=setInterval(()=>{
-    v+=Math.random()*18+5;
-    if(v>100)v=100;
-    fill.style.width=v+'%';
-    pct.textContent=msgs[Math.min(Math.floor(v/25),3)];
-    if(v>=100){clearInterval(t);setTimeout(()=>{pl.classList.add('out');boot();},300);}
-  },100);
-})();
-
-/* ══ CURSOR ══ */
-const C=document.getElementById('C'),C2=document.getElementById('C2');
-let mx=0,my=0,cx=0,cy=0;
-document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;C.style.left=mx+'px';C.style.top=my+'px';});
-(function l(){cx+=(mx-cx)*.14;cy+=(my-cy)*.14;C2.style.left=cx+'px';C2.style.top=cy+'px';requestAnimationFrame(l);})();
-document.querySelectorAll('a,button,.fc,.pc,.tc2,.mc').forEach(el=>{el.addEventListener('mouseenter',()=>{C.classList.add('h');C2.classList.add('h');});el.addEventListener('mouseleave',()=>{C.classList.remove('h');C2.classList.remove('h');});});
-
-/* ══ HAMBURGER ══ */
-const HB=document.getElementById('HB'),MM=document.getElementById('MM');
-HB.addEventListener('click',()=>{HB.classList.toggle('o');MM.classList.toggle('o');document.body.style.overflow=MM.classList.contains('o')?'hidden':'';});
-MM.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{HB.classList.remove('o');MM.classList.remove('o');document.body.style.overflow='';}));
-
-/* ══ WEBGL BG SHADER ══ */
-function initBG(){
-  const cv=document.getElementById('bgc');
-  const gl=cv.getContext('webgl');
-  if(!gl)return;
-  function rs(){cv.width=innerWidth;cv.height=innerHeight;gl.viewport(0,0,cv.width,cv.height);}
-  rs();window.addEventListener('resize',rs);
-  const vs=`attribute vec2 p;void main(){gl_Position=vec4(p,0,1);}`;
-  const fs=`precision highp float;
-  uniform float t;uniform vec2 res;
-  float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5);}
-  float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x),f.y);}
-  void main(){
-    vec2 uv=gl_FragCoord.xy/res;
-    float noise=n(uv*3.+t*.04)*n(uv*7.-t*.03)*.5;
-    float vg=1.-length(uv-vec2(.5,.5))*1.4;
-    vec3 c=vec3(.015,.02,.04)+vec3(0.,.02,.04)*noise*vg;
-    gl_FragColor=vec4(c,1.);
-  }`;
-  function mk(type,src){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);return s;}
-  const prog=gl.createProgram();
-  gl.attachShader(prog,mk(gl.VERTEX_SHADER,vs));
-  gl.attachShader(prog,mk(gl.FRAGMENT_SHADER,fs));
-  gl.linkProgram(prog);gl.useProgram(prog);
-  const buf=gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER,buf);
-  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
-  const loc=gl.getAttribLocation(prog,'p');
-  gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
-  const uT=gl.getUniformLocation(prog,'t'),uR=gl.getUniformLocation(prog,'res');
-  let time=0;
-  (function fr(){time+=.008;gl.uniform1f(uT,time);gl.uniform2f(uR,cv.width,cv.height);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);requestAnimationFrame(fr);})();
-}
-
-/* ══ THREE.JS PARTICLE SPHERE ══ */
-function initThree(){
-  const cv=document.getElementById('tc');
-  if(!cv||typeof THREE==='undefined')return;
-  const W=cv.offsetWidth,H=cv.offsetHeight;
-  const renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});
-  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-  renderer.setSize(W,H);renderer.setClearColor(0,0);
-  const scene=new THREE.Scene();
-  const cam=new THREE.PerspectiveCamera(50,W/H,.1,300);
-  cam.position.set(0,0,20);
-
-  /* lights */
-  scene.add(new THREE.AmbientLight(0x0a0f1f,4));
-  const pl1=new THREE.PointLight(0x5b9dff,60,60);pl1.position.set(8,6,10);scene.add(pl1);
-  const pl2=new THREE.PointLight(0x1a3a80,30,50);pl2.position.set(-8,-4,8);scene.add(pl2);
-
-  /* Particle sphere — morphing between sphere and random cloud */
-  const N=1800;
-  const pos=new Float32Array(N*3),colors=new Float32Array(N*3);
-  const spherePos=new Float32Array(N*3),cloudPos=new Float32Array(N*3);
-
-  for(let i=0;i<N;i++){
-    /* sphere positions */
-    const theta=Math.random()*Math.PI*2,phi=Math.acos(2*Math.random()-1);
-    const r=5+Math.random()*.5;
-    spherePos[i*3]=r*Math.sin(phi)*Math.cos(theta);
-    spherePos[i*3+1]=r*Math.sin(phi)*Math.sin(theta);
-    spherePos[i*3+2]=r*Math.cos(phi);
-    /* cloud positions */
-    cloudPos[i*3]=(Math.random()-.5)*16;
-    cloudPos[i*3+1]=(Math.random()-.5)*16;
-    cloudPos[i*3+2]=(Math.random()-.5)*10;
-    /* colors — mostly white, some blue */
-    const isc=Math.random()>.8;
-    colors[i*3]=isc?.36:1;
-    colors[i*3+1]=isc?.61:1;
-    colors[i*3+2]=1;
-  }
-  for(let i=0;i<N*3;i++)pos[i]=spherePos[i];
-
-  const geo=new THREE.BufferGeometry();
-  geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
-  geo.setAttribute('color',new THREE.BufferAttribute(colors,3));
-  const mat=new THREE.PointsMaterial({size:.06,vertexColors:true,transparent:true,opacity:.7});
-  const points=new THREE.Points(geo,mat);
-  scene.add(points);
-
-  /* wireframe sphere rings */
-  [5.6,6.8,8.2].forEach((r,i)=>{
-    const geo2=new THREE.TorusGeometry(r,.015,6,100);
-    const m=new THREE.MeshBasicMaterial({color:0x5b9dff,transparent:true,opacity:.06-i*.01});
-    const ring=new THREE.Mesh(geo2,m);
-    ring.rotation.x=i*Math.PI/4;ring.rotation.z=i*Math.PI/5;
-    scene.add(ring);
-  });
-
-  /* server node cluster */
-  const ng=new THREE.Group();
-  [[0,0,0],[2.5,0,0],[-2.5,0,0],[0,2.5,0],[0,-2.5,0]].forEach(([x,y,z])=>{
-    const g=new THREE.BoxGeometry(1.6,1.6,.3);
-    const nm=new THREE.MeshPhongMaterial({color:0x080c14,emissive:0x060d1a,specular:0x5b9dff,shininess:100});
-    const mesh=new THREE.Mesh(g,nm);
-    mesh.position.set(x,y,z);ng.add(mesh);
-    const eg=new THREE.EdgesGeometry(g);
-    const el=new THREE.LineSegments(eg,new THREE.LineBasicMaterial({color:0x5b9dff,transparent:true,opacity:.25}));
-    el.position.set(x,y,z);ng.add(el);
-  });
-  scene.add(ng);
-
-  let t=0,morphT=0,morphDir=1;
-  let targMx=0,targMy=0,curMx=0,curMy=0;
-  document.addEventListener('mousemove',e=>{targMx=(e.clientX/innerWidth-.5)*2;targMy=(e.clientY/innerHeight-.5)*2;});
-  document.addEventListener('touchmove',e=>{if(e.touches[0]){targMx=(e.touches[0].clientX/innerWidth-.5)*2;targMy=(e.touches[0].clientY/innerHeight-.5)*2;}},{passive:true});
-
-  (function frame(){
-    t+=.006;
-    curMx+=(targMx-curMx)*.04;curMy+=(targMy-curMy)*.04;
-
-    points.rotation.y=t*.12+curMx*.35;
-    points.rotation.x=curMy*.2;
-    ng.rotation.y=t*.2+curMx*.4;
-    ng.rotation.x=curMy*.2;
-
-    /* morph positions */
-    morphT+=.004*morphDir;
-    if(morphT>1||morphT<0)morphDir*=-1;
-    const pa=geo.attributes.position.array;
-    for(let i=0;i<N*3;i++){
-      const ease=morphT*morphT*(3-2*morphT);
-      pa[i]=spherePos[i]*(1-ease)+cloudPos[i]*ease;
-    }
-    geo.attributes.position.needsUpdate=true;
-
-    /* pulse rings */
-    scene.children.filter(c=>c.type==='Mesh'&&c.geometry?.type==='TorusGeometry').forEach((r,i)=>{r.rotation.z+=.003*(i+1);r.rotation.x+=.001;});
-
-    pl1.position.x=Math.sin(t*.7)*8;pl1.position.y=Math.cos(t*.5)*6;
-    renderer.render(scene,cam);
-    requestAnimationFrame(frame);
-  })();
-
-  window.addEventListener('resize',()=>{const W2=cv.offsetWidth,H2=cv.offsetHeight;cam.aspect=W2/H2;cam.updateProjectionMatrix();renderer.setSize(W2,H2);});
-}
-
-/* ══ MARQUEE ══ */
-function initMQ(){
-  const t1=['Docker','Redis','PostgreSQL','FastAPI','Python','Node.js','Next.js 14','React','BullMQ','Nginx','GitHub Actions','CI/CD'];
-  const t2=['Telegram API','Prometheus','Grafana','Razorpay','UPI','Stripe','SSL/TLS','Celery','Flask','Kubernetes','InfluxDB','Linux'];
-  const mk=items=>[...items,...items].map(i=>`<span class="mq-item"><span class="mq-sep"></span>${i}</span>`).join('');
-  document.getElementById('MQ1').innerHTML=mk(t1);
-  document.getElementById('MQ2').innerHTML=mk(t2);
-}
-
-/* ══ STACK PILLS ══ */
-function initStack(){
-  const pills=['Docker','Redis','PostgreSQL','Python','FastAPI','Node.js','Next.js 14','React','BullMQ','Nginx','Celery','Flask','Prometheus','Grafana','Razorpay','UPI','Stripe','GitHub Actions','SSL/TLS','Kubernetes','InfluxDB','Linux'];
-  document.getElementById('SP').innerHTML=pills.map(p=>`<div class="sp rv"><span class="sp-d"></span>${p}</div>`).join('');
-}
-
-/* ══ SCROLL ══ */
-function initScroll(){
-  const nav=document.getElementById('NAV'),sp=document.getElementById('sp'),btt=document.getElementById('btt');
-  window.addEventListener('scroll',()=>{
-    const st=window.scrollY,dh=document.documentElement.scrollHeight-innerHeight;
-    sp.style.transform=`scaleX(${st/dh})`;
-    nav.classList.toggle('s',st>60);
-    btt.classList.toggle('show',st>400);
-  },{passive:true});
-  btt.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
-}
-
-/* ══ REVEAL ══ */
-function initReveal(){
-  const io=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');}});},{threshold:.1,rootMargin:'0px 0px -40px 0px'});
-  document.querySelectorAll('.rv,.rx').forEach(el=>io.observe(el));
-}
-
-/* ══ COUNTERS ══ */
-function initCounters(){
-  const io=new IntersectionObserver(entries=>{
-    entries.forEach(e=>{
-      if(!e.isIntersecting)return;
-      const el=e.target,to=parseFloat(el.dataset.to),suf=el.dataset.suf||'',dec=el.hasAttribute('data-dec');
-      let s=null;
-      function step(ts){
-        if(!s)s=ts;
-        const p=Math.min((ts-s)/1600,1);
-        const ease=1-(1-p)**4;
-        const v=to*ease;
-        const inner=el.querySelector('em');
-        el.childNodes[0].textContent=(dec?v.toFixed(1):Math.floor(v).toLocaleString('en-IN'))+suf.replace(/[+%sTB]/g,'');
-        requestAnimationFrame(step);
-      }
-      // simpler: just update textContent directly
-      (function anim(ts){
-        if(!s)s=ts;
-        const p=Math.min((ts-s)/1600,1),ease=1-(1-p)**4;
-        el.innerHTML=(dec?(to*ease).toFixed(1):Math.floor(to*ease).toLocaleString('en-IN'))+suf;
-        if(p<1)requestAnimationFrame(anim);
-      })(performance.now());
-      io.unobserve(el);
-    });
-  },{threshold:.5});
-  document.querySelectorAll('[data-to]').forEach(el=>io.observe(el));
-}
-
-/* ══ CARD TILT ══ */
-function initTilt(){
-  document.querySelectorAll('.fc,.pc,.tc2').forEach(card=>{
-    card.addEventListener('mousemove',e=>{
-      const r=card.getBoundingClientRect();
-      const x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
-      card.style.transform=`perspective(800px) rotateX(${-y*6}deg) rotateY(${x*6}deg)`;
-    });
-    card.addEventListener('mouseleave',()=>{card.style.transform='';});
-  });
-}
-
-/* ══ TESTIMONIALS CAROUSEL ══ */
-function initCarousel(){
-  const track=document.getElementById('TT'),vp=document.getElementById('TV');
-  let idx=0;
-  const go=n=>{
-    const cards=[...track.children],vis=innerWidth>900?3:1,max=cards.length-vis;
-    idx=Math.max(0,Math.min(n,max));
-    const cw=(vp.offsetWidth/vis)+12;
-    track.style.transform=`translateX(-${idx*cw}px)`;
-  };
-  document.getElementById('TN').addEventListener('click',()=>go(idx+1));
-  document.getElementById('TP').addEventListener('click',()=>go(idx-1));
-  let sx=0;
-  track.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;},{passive:true});
-  track.addEventListener('touchend',e=>{const d=sx-e.changedTouches[0].clientX;if(Math.abs(d)>40)go(d>0?idx+1:idx-1);});
-  window.addEventListener('resize',()=>go(0));
-}
-
-/* ══ BILLING TOGGLE ══ */
-function initBilling(){
-  const bt=document.getElementById('BT');
-  let yr=false;
-  bt.addEventListener('click',()=>{
-    yr=!yr;bt.classList.toggle('on',yr);
-    document.querySelectorAll('.pc-price').forEach(el=>{
-      const mo=parseInt(el.dataset.mo),y=parseInt(el.dataset.yr);
-      el.querySelector('.pa').textContent=(yr?y:mo).toLocaleString('en-IN');
-    });
-    document.querySelectorAll('.pc-price[data-mo]').forEach(el=>{
-      const mo=parseInt(el.dataset.mo),y=parseInt(el.dataset.yr);
-      el.querySelector('.pa').textContent=(yr?y:mo).toLocaleString('en-IN');
-    });
-  });
-}
-
-/* ══ MAGNETIC ══ */
-function initMagnetic(){
-  document.querySelectorAll('.b1,.b2,.ncta,.pc-btn,.tnb,.fb-sa').forEach(el=>{
-    el.addEventListener('mousemove',e=>{
-      const r=el.getBoundingClientRect();
-      const x=(e.clientX-r.left-r.width/2)*.22,y=(e.clientY-r.top-r.height/2)*.22;
-      el.style.transform=`translate(${x}px,${y}px)`;
-    });
-    el.addEventListener('mouseleave',()=>{el.style.transform='';});
-  });
-}
-
-/* ══ TEXT SCRAMBLE on hero ══ */
-function initScramble(){
-  const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  document.querySelectorAll('.hs-l').forEach(el=>{
-    const orig=el.textContent;
-    el.addEventListener('mouseenter',()=>{
-      let iter=0;
-      const iv=setInterval(()=>{
-        el.textContent=orig.split('').map((c,i)=>i<iter?c:chars[Math.floor(Math.random()*chars.length)]).join('');
-        iter+=.5;
-        if(iter>=orig.length)clearInterval(iv);
-      },40);
-    });
-  });
-}
-
-/* ══ BOOT ══ */
-function boot(){
-  initBG();
-  initThree();
-  initMQ();
-  initStack();
-  initScroll();
-  initReveal();
-  initCounters();
-  initTilt();
-  initCarousel();
-  initBilling();
-  initMagnetic();
-  initScramble();
-  // re-run reveal after stack pills rendered
-  setTimeout(()=>{
-    const io2=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('on');});},{threshold:.1});
-    document.querySelectorAll('.rv:not(.on)').forEach(el=>io2.observe(el));
-  },200);
-}
-</script>
+  <script type="module" src="/js/pages/landing.js"></script>
 </body>
 </html>
