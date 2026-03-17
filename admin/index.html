@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel — EliteHosting.in</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#03020A">
+  <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/variables.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/animations.css">
+  <link rel="stylesheet" href="/css/pages/dashboard.css">
+</head>
+<body>
+<div class="dashboard-layout">
+  <aside id="sidebar" class="sidebar"></aside>
+  <div class="dashboard-main">
+    <header id="topbar" class="topbar"></header>
+    <main class="dashboard-content" aria-label="Admin panel">
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s6)">
+        <div>
+          <h2>🛡️ Admin Panel</h2>
+          <p style="color:var(--text-muted);margin-top:var(--s1)">Platform overview and management</p>
+        </div>
+        <button id="btnRefreshStats" class="btn btn-ghost btn-sm">🔄 Refresh Stats</button>
+      </div>
+
+      <!-- Stats Grid -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:var(--s4);margin-bottom:var(--s6)">
+        <div class="card card-sm">
+          <div style="font-size:var(--text-xs);color:var(--text-muted);margin-bottom:var(--s2)">👥 Total Users</div>
+          <div style="font-size:var(--text-2xl);font-weight:800;color:var(--electric)" id="statTotalUsers">—</div>
+          <div style="font-size:var(--text-xs);color:var(--mint)" id="statTodayUsers">+0 today</div>
+        </div>
+        <div class="card card-sm">
+          <div style="font-size:var(--text-xs);color:var(--text-muted);margin-bottom:var(--s2)">🟢 Running Deploys</div>
+          <div style="font-size:var(--text-2xl);font-weight:800;color:var(--mint)" id="statRunning">—</div>
+        </div>
+        <div class="card card-sm">
+          <div style="font-size:var(--text-xs);color:var(--text-muted);margin-bottom:var(--s2)">📦 Total Deploys</div>
+          <div style="font-size:var(--text-2xl);font-weight:800;color:var(--text-primary)" id="statTotalDeploys">—</div>
+        </div>
+        <div class="card card-sm">
+          <div style="font-size:var(--text-xs);color:var(--text-muted);margin-bottom:var(--s2)">🔁 Build Queue</div>
+          <div style="font-size:var(--text-2xl);font-weight:800;color:var(--fire)" id="statQueueLen">—</div>
+        </div>
+        <div class="card card-sm">
+          <div style="font-size:var(--text-xs);color:var(--text-muted);margin-bottom:var(--s2)">💰 Revenue (Month)</div>
+          <div style="font-size:var(--text-2xl);font-weight:800;color:var(--plasma)" id="statRevenue">—</div>
+        </div>
+        <div class="card card-sm">
+          <div style="font-size:var(--text-xs);color:var(--text-muted);margin-bottom:var(--s2)">🔥 Active Today</div>
+          <div style="font-size:var(--text-2xl);font-weight:800;color:var(--fire)" id="statActiveUsers">—</div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs" role="tablist" aria-label="Admin sections" style="margin-bottom:var(--s5)">
+        <button class="tab active" data-admin-tab="users"       role="tab">👥 Users</button>
+        <button class="tab"        data-admin-tab="deployments" role="tab">🚀 Deployments</button>
+        <button class="tab"        data-admin-tab="broadcast"   role="tab">📢 Broadcast</button>
+      </div>
+
+      <!-- Users Panel -->
+      <div data-admin-panel="users" class="active">
+        <div style="display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--s4)">
+          <div class="input-wrapper" style="flex:1;max-width:320px">
+            <span class="input-icon">🔍</span>
+            <input type="search" id="userSearch" class="input" placeholder="Search by username or email…" aria-label="Search users">
+          </div>
+        </div>
+        <div id="usersList"></div>
+      </div>
+
+      <!-- Deployments Panel -->
+      <div data-admin-panel="deployments" style="display:none">
+        <div id="adminDeploysList"></div>
+      </div>
+
+      <!-- Broadcast Panel -->
+      <div data-admin-panel="broadcast" style="display:none">
+        <div style="display:grid;grid-template-columns:1fr 380px;gap:var(--s5);align-items:start">
+          <div class="card" style="padding:var(--s6)">
+            <h3 style="margin-bottom:var(--s4)">📢 Send Broadcast</h3>
+            <form id="broadcastForm">
+              <div class="input-group" style="margin-bottom:var(--s4)">
+                <label class="input-label">Type</label>
+                <div style="display:flex;gap:var(--s2)">
+                  <button type="button" class="btn btn-ghost btn-sm active" data-broadcast-type="info">ℹ️ Info</button>
+                  <button type="button" class="btn btn-ghost btn-sm" data-broadcast-type="warning">⚠️ Warning</button>
+                  <button type="button" class="btn btn-ghost btn-sm" data-broadcast-type="maintenance">🔧 Maintenance</button>
+                  <button type="button" class="btn btn-ghost btn-sm" data-broadcast-type="feature">🎉 Feature</button>
+                </div>
+              </div>
+              <div class="input-group" style="margin-bottom:var(--s5)">
+                <label class="input-label" for="broadcastMsg">Message</label>
+                <textarea id="broadcastMsg" class="input" rows="5" placeholder="Write your broadcast message…" required style="resize:vertical"></textarea>
+                <span class="input-hint">Will be sent to all users via in-app notification + Telegram (if linked)</span>
+              </div>
+              <button type="submit" class="btn btn-electric btn-md">📢 Send to All Users</button>
+            </form>
+          </div>
+          <div class="card" style="padding:var(--s5)">
+            <h4 style="margin-bottom:var(--s4)">Preview</h4>
+            <div id="broadcastPreview" class="terminal" style="min-height:120px;padding:var(--s4);border-radius:var(--r-md)"></div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script type="module">
+import { injectLayout } from '/js/core/layout.js';
+import '/js/pages/admin.js';
+await injectLayout({ title: 'Admin Panel' });
+</script>
+</body>
+</html>
