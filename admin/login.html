@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Admin Login — EliteHosting.in</title>
+  <link rel="icon" href="/assets/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/variables.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/pages/dashboard.css">
+  <style>
+    body { min-height:100vh; display:flex; align-items:center; justify-content:center;
+           background:var(--color-void); padding:20px; font-family:var(--font-body); }
+    .admin-card {
+      width:100%; max-width:400px;
+      background:rgba(10,9,15,.95);
+      backdrop-filter:blur(40px);
+      -webkit-backdrop-filter:blur(40px);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:24px;
+      padding:36px 32px;
+      box-shadow:0 40px 100px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.06);
+      animation:pop-in .55s cubic-bezier(.34,1.56,.64,1) both;
+    }
+    @keyframes pop-in { from{opacity:0;transform:translateY(24px) scale(.96)} to{opacity:1;transform:none} }
+    .admin-card::before {
+      content:''; position:absolute; top:0; left:20%; right:20%;
+      height:1px; background:linear-gradient(90deg,transparent,rgba(255,107,53,.6),transparent);
+    }
+    .admin-card { position:relative; }
+    #toast {
+      position:fixed; top:20px; left:50%; transform:translateX(-50%) translateY(-80px);
+      padding:10px 20px; border-radius:100px; font-size:13px; font-weight:600;
+      backdrop-filter:blur(20px); opacity:0; transition:all .3s cubic-bezier(.34,1.56,.64,1);
+      z-index:999; white-space:nowrap;
+    }
+    #toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+    #toast.error   { background:rgba(255,77,79,.15); border:1px solid rgba(255,77,79,.3); color:#FF8888; }
+    #toast.success { background:rgba(0,255,163,.12); border:1px solid rgba(0,255,163,.3); color:var(--mint); }
+  </style>
+</head>
+<body>
+<div id="toast"></div>
+
+<div class="admin-card">
+  <!-- Logo -->
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:28px">
+    <div style="width:36px;height:36px;border-radius:9px;background:var(--grad-fire);display:flex;align-items:center;justify-content:center;font-size:17px;color:#000">🛡️</div>
+    <div>
+      <div style="font-family:var(--font-display);font-weight:800;font-size:16px">Admin Panel</div>
+      <div style="font-size:11px;color:var(--text-muted)">EliteHosting.in</div>
+    </div>
+  </div>
+
+  <h2 style="font-family:var(--font-display);font-size:24px;font-weight:800;margin-bottom:6px">Administrator Login</h2>
+  <p style="font-size:13px;color:var(--text-muted);margin-bottom:24px">Access restricted to authorized personnel only</p>
+
+  <form id="adminLoginForm" novalidate>
+    <div class="db-field">
+      <label class="db-label" for="adminEmail">Email Address</label>
+      <div class="db-input-wrap">
+        <input type="email" id="adminEmail" class="db-input" placeholder="admin@elitehosting.in" autocomplete="email" required>
+        <span class="db-input-icon">📧</span>
+      </div>
+    </div>
+
+    <div class="db-field" style="margin-bottom:20px">
+      <label class="db-label" for="adminPass">Password</label>
+      <div class="db-input-wrap">
+        <input type="password" id="adminPass" class="db-input" placeholder="Admin password" autocomplete="current-password" required style="padding-right:44px">
+        <span class="db-input-icon">🔑</span>
+        <button type="button" id="togglePass" class="db-pass-toggle">👁</button>
+      </div>
+      <div class="db-error-msg" id="loginErr"></div>
+    </div>
+
+    <button type="submit" id="loginBtn"
+      style="width:100%;padding:14px;background:linear-gradient(135deg,#FF6B35,#FF9933);border:none;border-radius:100px;color:#000;font-size:15px;font-weight:700;cursor:pointer;touch-action:manipulation;transition:all .2s">
+      <span id="loginBtnLabel">Login as Admin →</span>
+    </button>
+  </form>
+
+  <div style="text-align:center;margin-top:20px;font-size:12px;color:var(--text-disabled)">
+    <a href="/" style="color:var(--text-muted)">← Back to EliteHosting.in</a>
+  </div>
+</div>
+
+<script type="module">
+import { adminSB } from '/js/core/supabase.js';
+
+// Check if already logged in as admin
+const session = sessionStorage.getItem('eh-admin-session');
+if (session) {
+  try {
+    const s = JSON.parse(session);
+    if (s.isAdmin && s.exp > Date.now()) {
+      location.replace('/admin/index.html');
+    }
+  } catch {}
+}
+
+const T = document.getElementById('toast');
+let tt;
+function showToast(msg, type='error') {
+  clearTimeout(tt);
+  T.className = `show ${type}`; T.textContent = msg;
+  tt = setTimeout(() => T.className = '', 3000);
+}
+
+document.getElementById('togglePass').addEventListener('click', () => {
+  const p = document.getElementById('adminPass');
+  p.type = p.type === 'text' ? 'password' : 'text';
+});
+
+document.getElementById('adminLoginForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const email  = document.getElementById('adminEmail').value.trim().toLowerCase();
+  const pass   = document.getElementById('adminPass').value;
+  const btn    = document.getElementById('loginBtn');
+  const lbl    = document.getElementById('loginBtnLabel');
+  const errEl  = document.getElementById('loginErr');
+  errEl.textContent = '';
+
+  if (!email || !pass) { errEl.textContent = 'Email and password required'; return; }
+
+  btn.disabled = true;
+  lbl.innerHTML = '<span class="db-spin light"></span> Verifying…';
+
+  try {
+    const { data } = await adminSB.adminLogin(email, pass);
+    // Store admin session
+    sessionStorage.setItem('eh-admin-session', JSON.stringify({
+      isAdmin: true,
+      userId:  data.profile.id,
+      email:   data.profile.email,
+      exp:     Date.now() + 8 * 60 * 60 * 1000, // 8 hours
+    }));
+    showToast('Access granted! Redirecting…', 'success');
+    setTimeout(() => location.replace('/admin/index.html'), 700);
+  } catch (err) {
+    errEl.textContent = err?.data?.error || 'Login failed';
+    showToast(err?.data?.error || 'Invalid credentials', 'error');
+    btn.disabled = false;
+    lbl.textContent = 'Login as Admin →';
+  }
+});
+</script>
+</body>
+</html>
