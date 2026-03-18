@@ -13,7 +13,12 @@
   <link rel="stylesheet" href="/css/base.css">
   <link rel="stylesheet" href="/css/components.css">
   <link rel="stylesheet" href="/css/pages/dashboard.css">
-  <script src="/env.js"></script>
+  <style>
+    @keyframes pop-in {
+      from { opacity:0; transform:scale(.92) translateY(20px); }
+      to   { opacity:1; transform:none; }
+    }
+  </style>
 </head>
 <body>
 <div id="db-toast"></div>
@@ -21,23 +26,23 @@
   <aside id="db-sidebar" class="db-sidebar"></aside>
   <div class="db-main">
     <header id="db-topbar" class="db-topbar"></header>
-    <main class="db-page" aria-label="Billing and credits">
+    <main class="db-page" aria-label="Billing">
 
       <div class="db-page-header">
-        <h2 class="db-page-title">💳 Billing</h2>
-        <p class="db-page-sub">Credits &amp; transaction history</p>
+        <h2 class="db-page-title">💳 Billing &amp; Credits</h2>
+        <p class="db-page-sub">Pay via UPI · Admin verifies within 30 minutes</p>
       </div>
 
       <!-- Expiring warning -->
       <div id="expiringWarn" style="display:none;background:rgba(255,214,10,.08);border:1px solid rgba(255,214,10,.25);border-radius:14px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--warning)" role="alert">
-        ⏰ <strong id="expiringAmount"></strong> credits expire in <strong id="expiringDays"></strong> days.
+        ⏰ <strong id="expiringAmount"></strong> credits expire in <strong id="expiringDays"></strong> days. Top up now!
       </div>
 
       <!-- Balance cards -->
       <div class="db-stats" style="margin-bottom:20px">
         <div class="db-stat s-electric" style="grid-column:span 2">
           <div class="db-stat-icon">💎</div>
-          <div class="db-stat-val" id="creditBalanceLarge">…</div>
+          <div class="db-stat-val" id="creditBalanceLarge" style="font-size:32px">…</div>
           <div class="db-stat-label">Credit Balance</div>
         </div>
         <div class="db-stat s-mint">
@@ -45,31 +50,42 @@
           <div class="db-stat-val" id="weeksEstimate" style="font-size:18px">…</div>
           <div class="db-stat-label">Weeks Left</div>
         </div>
-        <div class="db-stat s-fire">
+        <div class="db-stat s-plasma">
           <div class="db-stat-icon">🤝</div>
           <div class="db-stat-val" id="refEarned" style="font-size:18px">—</div>
-          <div class="db-stat-label">Referral Earned</div>
+          <div class="db-stat-label">Referral Bonus</div>
+        </div>
+      </div>
+
+      <!-- How it works banner -->
+      <div style="background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.15);border-radius:14px;padding:14px 16px;margin-bottom:20px">
+        <div style="font-size:13px;font-weight:700;color:var(--electric);margin-bottom:8px">📲 How Payments Work</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;font-size:12px;color:var(--text-secondary)">
+          <div>1️⃣ Choose a credit pack</div>
+          <div>2️⃣ Scan UPI QR code &amp; pay</div>
+          <div>3️⃣ Upload payment screenshot</div>
+          <div>4️⃣ Admin verifies &amp; credits added ✅</div>
         </div>
       </div>
 
       <!-- Credit Packs -->
       <h3 style="font-size:16px;font-weight:700;margin-bottom:14px" id="packs">Buy Credits</h3>
       <div class="db-packs" id="creditPacks">
-        <div class="db-skel" style="height:180px;border-radius:18px"></div>
-        <div class="db-skel" style="height:180px;border-radius:18px"></div>
-        <div class="db-skel" style="height:180px;border-radius:18px"></div>
-        <div class="db-skel" style="height:180px;border-radius:18px"></div>
-      </div>
-      <div style="background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.12);border-radius:12px;padding:12px 14px;font-size:12px;color:var(--text-muted);margin-bottom:24px;text-align:center">
-        💳 UPI · PhonePe · GPay · Paytm · NEFT — All in ₹ INR
+        <div class="db-skel" style="height:200px;border-radius:18px"></div>
+        <div class="db-skel" style="height:200px;border-radius:18px"></div>
+        <div class="db-skel" style="height:200px;border-radius:18px"></div>
+        <div class="db-skel" style="height:200px;border-radius:18px"></div>
       </div>
 
-      <!-- Transactions -->
+      <!-- My Payment Requests -->
+      <div id="myRequests" style="margin-bottom:24px"></div>
+
+      <!-- Transaction History -->
       <h3 style="font-size:16px;font-weight:700;margin-bottom:14px">Transaction History</h3>
       <div class="db-card" id="txList">
-        <div class="db-skel db-skel-line" style="margin-bottom:14px"></div>
-        <div class="db-skel db-skel-line" style="margin-bottom:14px"></div>
         <div class="db-skel db-skel-line"></div>
+        <div class="db-skel db-skel-line" style="margin-top:12px"></div>
+        <div class="db-skel db-skel-line" style="margin-top:12px"></div>
       </div>
 
     </main>
