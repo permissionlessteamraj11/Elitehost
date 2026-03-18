@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Create Free Account — EliteHosting.in | 2 Free Credits</title>
-  <meta name="description" content="Sign up for EliteHosting.in — India's #1 PaaS. 2 free credits, no card required. Deploy Node.js, Python, Docker apps. Mumbai servers. UPI payment.">
+  <meta name="description" content="Sign up for EliteHosting.in — 2 free credits, no card required. Mumbai servers, ₹ pricing, UPI payment. India's #1 PaaS.">
   <meta name="robots" content="noindex, follow">
   <link rel="canonical" href="https://www.elitehosting.in/auth/register.html">
   <meta name="theme-color" content="#03020A">
@@ -18,151 +18,427 @@
   <link rel="stylesheet" href="/css/animations.css">
   <link rel="stylesheet" href="/css/pages/auth.css">
 </head>
-<body>
-<div class="auth-layout">
-  <!-- Left Branding -->
-  <div class="auth-brand" aria-hidden="true">
-    <div class="auth-brand-inner">
-      <a href="/" class="auth-brand-logo">
-        <span class="auth-logo-icon">⚡</span>
-        <span>Elite<span style="color:var(--electric)">Hosting</span>.in</span>
+<body class="auth-page">
+
+<!-- Toast -->
+<div class="auth-toast" id="authToast" role="alert" aria-live="polite"></div>
+
+<!-- Register Layout -->
+<div class="register-page">
+
+  <!-- ════ LEFT PANEL ════ -->
+  <div class="reg-left" aria-hidden="true">
+    <div class="reg-left-mesh"></div>
+    <div class="reg-left-content">
+
+      <!-- Logo -->
+      <a href="/" class="auth-logo">
+        <div class="auth-logo-mark">⚡</div>
+        <div class="auth-logo-text">Elite<span>Hosting</span>.in</div>
       </a>
-      <div class="auth-brand-content">
-        <h1 class="auth-brand-title">
-          <span class="grad-mint">2 Free Credits</span><br>
-          No card needed
-        </h1>
-        <p class="auth-brand-sub">
-          Sign up aur instantly 2 free credits pao.<br>
-          1 credit = 1 hafte ka 1 running app.
+
+      <!-- India badge -->
+      <div class="reg-india-badge">
+        🇮🇳 Made for Indian Developers
+      </div>
+
+      <!-- Headline -->
+      <div class="reg-headline">
+        <h2>
+          Deploy fast.<br>
+          Pay in <span class="hl-f">₹ rupees.</span><br>
+          <span class="hl-e">Mumbai servers.</span>
+        </h2>
+        <p>
+          India ka #1 PaaS platform. Git push se live in 30 seconds.
+          No dollar billing, no US server latency, no headache.
         </p>
-        <div class="auth-features">
-          <div class="auth-feature-item"><span>🎁</span> 2 free credits on signup</div>
-          <div class="auth-feature-item"><span>🚀</span> Deploy in under 30 seconds</div>
-          <div class="auth-feature-item"><span>🇮🇳</span> Mumbai servers — ultra-low latency</div>
-          <div class="auth-feature-item"><span>💳</span> Pay in ₹ via UPI, PhonePe, GPay</div>
-          <div class="auth-feature-item"><span>🤝</span> 0.5 credits per referral</div>
-          <div class="auth-feature-item"><span>📱</span> Telegram bot for mobile control</div>
+      </div>
+
+      <!-- Features -->
+      <div class="reg-features">
+        <div class="reg-feat">
+          <div class="reg-feat-icon c-m">🎁</div>
+          <div class="reg-feat-text">
+            <strong>2 free credits</strong> on signup — no card needed
+          </div>
         </div>
-        <div class="auth-social-proof" style="margin-top:var(--s8);padding:var(--s4);background:var(--electric-soft);border-radius:var(--r-lg);border:1px solid rgba(0,212,255,0.15)">
-          <div style="display:flex;align-items:center;gap:var(--s3)">
-            <div style="display:flex">
-              <div style="width:28px;height:28px;border-radius:50%;background:var(--grad-mint);border:2px solid var(--color-surface-1);margin-right:-8px"></div>
-              <div style="width:28px;height:28px;border-radius:50%;background:var(--grad-plasma);border:2px solid var(--color-surface-1);margin-right:-8px"></div>
-              <div style="width:28px;height:28px;border-radius:50%;background:var(--grad-fire);border:2px solid var(--color-surface-1)"></div>
-            </div>
-            <div>
-              <div style="font-size:var(--text-sm);font-weight:600">2,847+ developers</div>
-              <div style="font-size:var(--text-xs);color:var(--text-muted)">already hosting on EliteHosting</div>
-            </div>
+        <div class="reg-feat">
+          <div class="reg-feat-icon c-e">⚡</div>
+          <div class="reg-feat-text">
+            <strong>Git push → live</strong> in under 30 seconds
+          </div>
+        </div>
+        <div class="reg-feat">
+          <div class="reg-feat-icon c-p">🇮🇳</div>
+          <div class="reg-feat-text">
+            <strong>Mumbai servers</strong> — 10x faster for Indian users
+          </div>
+        </div>
+        <div class="reg-feat">
+          <div class="reg-feat-icon c-f">💳</div>
+          <div class="reg-feat-text">
+            <strong>UPI, PhonePe, GPay</strong> — zero forex fees
+          </div>
+        </div>
+        <div class="reg-feat">
+          <div class="reg-feat-icon c-i">📱</div>
+          <div class="reg-feat-text">
+            <strong>Telegram bot</strong> — control apps from your phone
           </div>
         </div>
       </div>
+
+      <!-- Stat cards -->
+      <div class="reg-stat-cards">
+        <div class="reg-stat-card">
+          <div class="reg-stat-val v-e">₹99</div>
+          <div class="reg-stat-lbl">Starting price</div>
+        </div>
+        <div class="reg-stat-card">
+          <div class="reg-stat-val v-m">2,847+</div>
+          <div class="reg-stat-lbl">Devs hosting</div>
+        </div>
+      </div>
+
     </div>
   </div>
 
-  <!-- Right Form -->
-  <div class="auth-form-panel">
-    <div class="auth-form-inner">
-      <div class="auth-form-header">
-        <h2>Create free account</h2>
-        <p>2 credits free — koi card nahi chahiye 🎁</p>
-      </div>
+  <!-- ════ RIGHT PANEL (Form) ════ -->
+  <div class="reg-right">
+    <div class="reg-form-wrap">
 
-      <!-- OAuth -->
-      <div class="oauth-buttons">
-        <button class="btn btn-ghost btn-md oauth-btn" id="btnGitHub" aria-label="Continue with GitHub">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.75 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-          Continue with GitHub
-        </button>
-        <button class="btn btn-ghost btn-md oauth-btn" id="btnGoogle" aria-label="Continue with Google">
-          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-          Continue with Google
-        </button>
-      </div>
+      <!-- Mobile-only logo -->
+      <a href="/" class="auth-logo reg-mob-brand">
+        <div class="auth-logo-mark">⚡</div>
+        <div class="auth-logo-text">Elite<span>Hosting</span>.in</div>
+      </a>
 
-      <div class="auth-divider"><span>or register with email</span></div>
+      <!-- Form view -->
+      <div id="formView">
 
-      <form id="registerForm" novalidate autocomplete="on">
-        <div class="input-group" style="margin-bottom:var(--s4)">
-          <label class="input-label" for="email">Email Address</label>
-          <div class="input-wrapper">
-            <span class="input-icon">📧</span>
-            <input type="email" id="email" class="input" name="email"
-                   autocomplete="email" placeholder="you@example.com" required>
-          </div>
-          <span class="input-error-msg" role="alert"></span>
+        <div class="auth-free-badge">🎁 2 free credits — no card required</div>
+        <h2 class="reg-form-title">Create your account</h2>
+        <p class="reg-form-sub">
+          Join <b>2,847+</b> Indian developers already hosting on EliteHosting.
+        </p>
+
+        <!-- OAuth -->
+        <div class="auth-oauth-row">
+          <button class="auth-oauth-btn" id="btnGH" type="button" aria-label="Continue with GitHub">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+            </svg>
+            GitHub
+          </button>
+          <button class="auth-oauth-btn" id="btnGG" type="button" aria-label="Continue with Google">
+            <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
+            Google
+          </button>
         </div>
 
-        <div class="input-group" style="margin-bottom:var(--s4)">
-          <label class="input-label" for="username">Username</label>
-          <div class="input-wrapper">
-            <span class="input-icon">👤</span>
-            <input type="text" id="username" class="input input-mono" name="username"
-                   autocomplete="username" placeholder="your-username" required
-                   minlength="3" maxlength="30" pattern="[a-z0-9_-]+">
-            <span class="input-suffix">.elitehosting.in</span>
-          </div>
-          <span class="input-hint">Lowercase letters, numbers, - and _ only</span>
-          <span class="input-error-msg" role="alert"></span>
-        </div>
+        <div class="auth-divider"><span>or register with email</span></div>
 
-        <div class="input-group" style="margin-bottom:var(--s4)">
-          <label class="input-label" for="password">Password</label>
-          <div class="input-wrapper">
-            <span class="input-icon">🔒</span>
-            <input type="password" id="password" class="input" name="password"
-                   autocomplete="new-password" placeholder="Min 8 characters" required minlength="8">
-            <button type="button" id="passToggle"
-                    style="position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted)"
-                    aria-label="Toggle password">👁️</button>
-          </div>
-          <div class="strength-meter">
-            <div class="strength-bar">
-              <div class="strength-seg"></div>
-              <div class="strength-seg"></div>
-              <div class="strength-seg"></div>
-              <div class="strength-seg"></div>
+        <form id="regForm" novalidate autocomplete="on">
+
+          <!-- Email -->
+          <div class="auth-field">
+            <label class="auth-label" for="email">Email Address</label>
+            <div class="auth-input-wrap">
+              <input
+                type="email" id="email" class="auth-input"
+                placeholder="you@example.com"
+                autocomplete="email" required
+                aria-describedby="emailErr"
+              >
+              <span class="auth-input-icon" aria-hidden="true">📧</span>
             </div>
-            <span class="strength-label"></span>
+            <div class="auth-error-msg" id="emailErr" role="alert"></div>
           </div>
-          <span class="input-error-msg" role="alert"></span>
-        </div>
 
-        <div class="input-group" style="margin-bottom:var(--s5)">
-          <label class="input-label" for="referralCode">Referral Code <span style="color:var(--text-disabled)">(optional)</span></label>
-          <div class="input-wrapper">
-            <span class="input-icon">🎁</span>
-            <input type="text" id="referralCode" class="input input-mono" name="referralCode"
-                   placeholder="Enter code for bonus credits" maxlength="20">
+          <!-- Username -->
+          <div class="auth-field">
+            <label class="auth-label" for="username">Username</label>
+            <div class="auth-input-wrap">
+              <input
+                type="text" id="username" class="auth-input mono"
+                placeholder="your-username"
+                autocomplete="username" required
+                minlength="3" maxlength="30"
+                style="padding-right: 130px"
+                aria-describedby="unErr"
+              >
+              <span class="auth-input-icon" aria-hidden="true">👤</span>
+              <span class="auth-input-suffix">.elitehosting.in</span>
+            </div>
+            <div class="auth-hint">Lowercase letters, numbers, - and _ only</div>
+            <div class="auth-error-msg" id="unErr" role="alert"></div>
           </div>
-          <span class="input-hint">Get 0.5 bonus credits with a valid referral code</span>
-          <span class="input-error-msg" role="alert"></span>
-        </div>
 
-        <label style="display:flex;align-items:flex-start;gap:var(--s3);margin-bottom:var(--s5);cursor:pointer">
-          <input type="checkbox" id="agreeTerms" style="margin-top:2px;accent-color:var(--electric)" required>
-          <span style="font-size:var(--text-sm);color:var(--text-secondary)">
-            I agree to the
-            <a href="/legal/terms.html" style="color:var(--electric)">Terms of Service</a>
-            and
-            <a href="/legal/privacy.html" style="color:var(--electric)">Privacy Policy</a>
-          </span>
-        </label>
+          <!-- Password -->
+          <div class="auth-field">
+            <label class="auth-label" for="password">Password</label>
+            <div class="auth-input-wrap">
+              <input
+                type="password" id="password" class="auth-input"
+                placeholder="Min 8 characters"
+                autocomplete="new-password" required
+                minlength="8"
+                style="padding-right: 44px"
+                aria-describedby="passErr"
+              >
+              <span class="auth-input-icon" aria-hidden="true">🔑</span>
+              <button type="button" class="auth-pass-toggle" id="passToggle" aria-label="Show password">👁</button>
+            </div>
+            <!-- Strength meter -->
+            <div class="auth-strength">
+              <div class="auth-strength-bar" role="progressbar" aria-label="Password strength">
+                <div class="str-seg" id="seg1"></div>
+                <div class="str-seg" id="seg2"></div>
+                <div class="str-seg" id="seg3"></div>
+                <div class="str-seg" id="seg4"></div>
+              </div>
+              <span class="auth-strength-label" id="strLabel" aria-live="polite"></span>
+            </div>
+            <div class="auth-error-msg" id="passErr" role="alert"></div>
+          </div>
 
-        <button type="submit" id="submitBtn" class="btn btn-electric btn-lg w-full" style="margin-bottom:var(--s4)">
-          <span class="btn-text">Create Free Account 🎁</span>
-        </button>
+          <!-- Referral Code -->
+          <div class="auth-field">
+            <label class="auth-label" for="refCode">
+              Referral Code
+              <span style="text-transform:none;font-weight:400;color:var(--text-disabled);margin-left:4px">(optional)</span>
+            </label>
+            <div class="auth-input-wrap">
+              <input
+                type="text" id="refCode" class="auth-input mono"
+                placeholder="e.g. ELITE2025"
+                maxlength="20"
+                style="text-transform:uppercase;font-size:13px"
+              >
+              <span class="auth-input-icon" aria-hidden="true">🎁</span>
+            </div>
+            <div class="auth-hint">Get 0.5 bonus credits with a valid referral code</div>
+          </div>
 
-        <p style="text-align:center;font-size:var(--text-sm);color:var(--text-muted)">
+          <!-- Terms -->
+          <label class="auth-terms-row">
+            <input type="checkbox" id="agreeTerms" required>
+            <span>
+              I agree to the
+              <a href="/legal/terms.html" target="_blank" rel="noopener">Terms of Service</a>
+              and
+              <a href="/legal/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>
+            </span>
+          </label>
+
+          <!-- Submit -->
+          <button type="submit" class="auth-submit" id="submitBtn">
+            <span id="submitLabel">Create Free Account 🎁</span>
+          </button>
+
+        </form>
+
+        <div class="auth-card-footer">
           Already have an account?
-          <a href="/auth/login.html" style="color:var(--electric);font-weight:600">Sign In →</a>
-        </p>
-      </form>
-    </div>
-  </div>
-</div>
+          <a href="/auth/login.html">Sign in →</a>
+        </div>
 
-<script type="module" src="/js/pages/register.js"></script>
+      </div><!-- /formView -->
+
+      <!-- Success View (shown after signup) -->
+      <div id="successView" style="display:none">
+        <div class="auth-success">
+          <span class="auth-success-icon">📬</span>
+          <h2>Check your inbox!</h2>
+          <p>
+            We sent a verification link to<br>
+            <b id="sentToEmail"></b>
+          </p>
+          <p style="margin-bottom: var(--s5)">
+            Click the link to activate your account and claim your<br>
+            <span style="color:var(--mint);font-weight:700">🎁 2 free credits instantly!</span>
+          </p>
+          <div class="auth-success-actions">
+            <a href="/auth/login.html" class="btn btn-electric btn-md">Go to Login →</a>
+            <a href="/" class="btn btn-ghost btn-md">Back to Home</a>
+          </div>
+          <p style="margin-top:var(--s5);font-size:var(--text-xs);color:var(--text-disabled)">
+            Didn't receive it? Check spam or
+            <a href="#" id="resendLink" style="color:var(--electric)">click to resend</a>.
+          </p>
+        </div>
+      </div>
+
+    </div><!-- /reg-form-wrap -->
+  </div><!-- /reg-right -->
+
+</div><!-- /register-page -->
+
+<script type="module">
+import { authSB } from '/js/core/supabase.js';
+import { auth }   from '/js/core/auth.js';
+
+// Auth guard
+await auth.requireGuest().catch(() => {});
+
+// ── Toast ────────────────────────────────────────────────────────
+const toastEl = document.getElementById('authToast');
+let toastTimer;
+function showToast(msg, type = 'info') {
+  clearTimeout(toastTimer);
+  const icons = { success:'✓', error:'✕', info:'ℹ' };
+  toastEl.className = `auth-toast ${type} visible`;
+  toastEl.innerHTML = `<span>${icons[type] || 'ℹ'}</span>${msg}`;
+  toastTimer = setTimeout(() => toastEl.classList.remove('visible'), 3500);
+}
+
+// ── Referral code from URL ────────────────────────────────────────
+const urlRef = new URLSearchParams(location.search).get('ref');
+if (urlRef) {
+  const refEl = document.getElementById('refCode');
+  if (refEl) refEl.value = urlRef.toUpperCase();
+}
+
+// ── Username: auto sanitize ───────────────────────────────────────
+document.getElementById('username').addEventListener('input', e => {
+  e.target.value = e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '');
+  document.getElementById('username').classList.remove('has-error');
+  document.getElementById('unErr').textContent = '';
+});
+
+// ── Password strength meter ───────────────────────────────────────
+const segs    = [1,2,3,4].map(i => document.getElementById('seg' + i));
+const strLabel = document.getElementById('strLabel');
+const strLabels   = ['', '😬 Weak', '🙂 Fair', '😊 Good', '💪 Strong'];
+const strClasses  = ['', 'lv1', 'lv2', 'lv3', 'lv4'];
+
+document.getElementById('password').addEventListener('input', e => {
+  const val = e.target.value;
+  const str = calcStrength(val);
+  segs.forEach((seg, i) => {
+    seg.className = 'str-seg' + (i < str ? ' ' + strClasses[str] : '');
+  });
+  strLabel.textContent = val.length ? strLabels[str] : '';
+  document.getElementById('password').classList.remove('has-error');
+  document.getElementById('passErr').textContent = '';
+});
+
+function calcStrength(pw) {
+  let s = 0;
+  if (pw.length >= 8)           s++;
+  if (/[A-Z]/.test(pw))         s++;
+  if (/[0-9]/.test(pw))         s++;
+  if (/[^A-Za-z0-9]/.test(pw))  s++;
+  return Math.min(s, 4);
+}
+
+// ── Password toggle ───────────────────────────────────────────────
+document.getElementById('passToggle').addEventListener('click', () => {
+  const p = document.getElementById('password');
+  p.type = p.type === 'text' ? 'password' : 'text';
+});
+
+// ── OAuth ─────────────────────────────────────────────────────────
+document.getElementById('btnGH').addEventListener('click', async () => {
+  try   { await authSB.signInWithGitHub(); }
+  catch { showToast('GitHub signup failed. Try again.', 'error'); }
+});
+document.getElementById('btnGG').addEventListener('click', async () => {
+  try   { await authSB.signInWithGoogle(); }
+  catch { showToast('Google signup failed. Try again.', 'error'); }
+});
+
+// ── Form Submit ───────────────────────────────────────────────────
+document.getElementById('regForm').addEventListener('submit', async e => {
+  e.preventDefault();
+
+  const email    = document.getElementById('email').value.trim().toLowerCase();
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value;
+  const refCode  = document.getElementById('refCode').value.trim().toUpperCase() || null;
+  const agreed   = document.getElementById('agreeTerms').checked;
+  const btn      = document.getElementById('submitBtn');
+  const label    = document.getElementById('submitLabel');
+
+  clearAllErrors();
+
+  // Validate
+  let valid = true;
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    setError('email', 'emailErr', 'Enter a valid email address'); valid = false;
+  }
+  if (username.length < 3) {
+    setError('username', 'unErr', 'Minimum 3 characters required'); valid = false;
+  } else if (!/^[a-z0-9_-]+$/.test(username)) {
+    setError('username', 'unErr', 'Only lowercase letters, numbers, - and _'); valid = false;
+  }
+  if (password.length < 8) {
+    setError('password', 'passErr', 'Minimum 8 characters required'); valid = false;
+  } else if (calcStrength(password) < 2) {
+    setError('password', 'passErr', 'Add uppercase letters or numbers to strengthen'); valid = false;
+  }
+  if (!agreed) {
+    showToast('Please accept the Terms of Service to continue.', 'info'); valid = false;
+  }
+  if (!valid) return;
+
+  // Loading
+  btn.disabled = true;
+  label.innerHTML = '<span class="auth-spin"></span> Creating account…';
+
+  try {
+    await authSB.signUp({ email, password, username, referralCode: refCode });
+
+    // Show success screen
+    document.getElementById('formView').style.display   = 'none';
+    document.getElementById('successView').style.display = 'block';
+    document.getElementById('sentToEmail').textContent  = email;
+
+    // Resend button
+    document.getElementById('resendLink').addEventListener('click', async ev => {
+      ev.preventDefault();
+      try {
+        await authSB.resetPassword(email);
+        showToast('Verification email resent! Check your inbox.', 'success');
+      } catch {
+        showToast('Could not resend email. Try again.', 'error');
+      }
+    });
+
+  } catch (err) {
+    const msg = err?.data?.error || 'Registration failed. Please try again.';
+    showToast(msg, 'error');
+    const lower = msg.toLowerCase();
+    if (lower.includes('email'))              setError('email',    'emailErr', msg);
+    else if (lower.includes('user'))          setError('username', 'unErr', msg);
+    else if (lower.includes('pass'))          setError('password', 'passErr', msg);
+    btn.disabled = false;
+    label.textContent = 'Create Free Account 🎁';
+  }
+});
+
+// ── Clear errors on input ─────────────────────────────────────────
+['email', 'refCode'].forEach(id => {
+  document.getElementById(id)?.addEventListener('input', () => {
+    document.getElementById(id).classList.remove('has-error');
+  });
+});
+
+function setError(inputId, errId, msg) {
+  document.getElementById(inputId).classList.add('has-error');
+  document.getElementById(errId).textContent = msg;
+}
+function clearAllErrors() {
+  document.querySelectorAll('.auth-input').forEach(el => el.classList.remove('has-error'));
+  document.querySelectorAll('.auth-error-msg').forEach(el => el.textContent = '');
+}
+</script>
+
 </body>
 </html>
