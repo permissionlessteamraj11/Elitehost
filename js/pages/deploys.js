@@ -1,59 +1,51 @@
 /**
- * EliteHosting — Deploys List Page JS
+ * EliteHosting — Deploys List (Fixed)
  */
-import { auth } from '../core/auth.js';
-import { deploymentsSB } from '../core/supabase.js';
-import { toast } from '../components/toast.js';
-import { modal } from '../components/modal.js';
+import { auth }           from '../core/auth.js';
+import { deploymentsSB }  from '../core/supabase.js';
 
-let allDeps = [];
+let allDeps     = [];
 let activeFilter = 'all';
-let searchQuery = '';
+let searchQuery  = '';
 
 document.addEventListener('DOMContentLoaded', async () => {
-  await auth.requireAuth();
-  initSidebar();
-  await loadDeploys();
+  try { await auth.requireAuth(); } catch { return; }
   initFilters();
   initSearch();
+  await loadDeploys();
   subscribeRealtime();
 });
 
-function initSidebar() {
-  const toggle = document.getElementById('sidebarToggle');
-  const sidebar = document.getElementById('sidebar');
-  toggle?.addEventListener('click', () => sidebar?.classList.toggle('mobile-open'));
-  const path = location.pathname;
-  document.querySelectorAll('.nav-item[href]').forEach(a =>
-    a.classList.toggle('active', a.getAttribute('href') === path)
-  );
-}
-
+/* ── Load ──────────────────────────────────────────────────────── */
 async function loadDeploys() {
   const container = document.getElementById('deploysContainer');
+  if (!container) return;
   showSkeleton(container);
 
   try {
     const { data } = await deploymentsSB.list({ limit: 50 });
-    allDeps = data?.deployments || [];
+    allDeps = data.deployments || [];
     renderDeploys();
     updateCounts();
-  } catch {
-    container.innerHTML = `<div class="card" style="color:var(--error);padding:var(--s6)">
-      ❌ Failed to load deployments. <button class="btn btn-ghost btn-sm" onclick="location.reload()">Retry</button>
-    </div>`;
+  } catch (e) {
+    container.innerHTML = `
+      <div class="db-card" style="color:var(--error);font-size:13px;padding:16px">
+        ❌ Failed to load deployments.
+        <button onclick="location.reload()"
+          style="margin-left:8px;color:var(--electric);background:none;border:none;cursor:pointer;text-decoration:underline">
+          Retry
+        </button>
+      </div>`;
   }
 }
 
+/* ── Render ────────────────────────────────────────────────────── */
 function renderDeploys() {
   const container = document.getElementById('deploysContainer');
-  let deps = allDeps;
+  if (!container) return;
 
-  // Filter by status
-  if (activeFilter !== 'all') {
-    deps = deps.filter(d => d.status === activeFilter);
-  }
-  // Filter by search
+  let deps = allDeps;
+  if (activeFilter !== 'all') deps = deps.filter(d => d.status === activeFilter);
   if (searchQuery) {
     const q = searchQuery.toLowerCase();
     deps = deps.filter(d =>
@@ -67,100 +59,116 @@ function renderDeploys() {
     container.innerHTML = renderEmpty();
     return;
   }
+  container.innerHTML = deps.map(d => renderCard(d)).join('');
 
-  container.innerHTML = deps.map(dep => renderDeployCard(dep)).join('');
-
-  // Attach action buttons
-  container.querySelectorAll('[data-action]').forEach(btn => {
-    btn.addEventListener('click', async (e) => {
+  // Action buttons
+  container.querySelectorAll('[data-dep-action]').forEach(btn => {
+    btn.addEventListener('click', e => {
       e.preventDefault(); e.stopPropagation();
-      const action = btn.dataset.action;
-      const id = btn.dataset.id;
-      await handleAction(action, id, btn);
+      handleAction(btn.dataset.depAction, btn.dataset.depId, btn);
     });
   });
 }
 
-function renderDeployCard(dep) {
-  const S = {
-    running:   { e: '🟢', c: 'running',   l: 'Running'   },
-    building:  { e: '🔵', c: 'building',  l: 'Building'  },
-    deploying: { e: '🟡', c: 'deploying', l: 'Deploying' },
-    stopped:   { e: '⚪', c: 'stopped',   l: 'Stopped'   },
-    failed:    { e: '🔴', c: 'failed',    l: 'Failed'    },
-    pending:   { e: '🟣', c: 'pending',   l: 'Pending'   },
+function renderCard(dep) {
+  const STATUS = {
+    running:   { cls:'st-running',  badge:'Running'  },
+    building:  { cls:'st-building', badge:'Building' },
+    deploying: { cls:'st-building', badge:'Deploying'},
+    stopped:   { cls:'st-stopped',  badge:'Stopped'  },
+    failed:    { cls:'st-failed',   badge:'Failed'   },
+    pending:   { cls:'st-building', badge:'Starting' },
   };
-  const s = S[dep.status] || S.stopped;
-  const updated = new Date(dep.updated_at).toLocaleString('en-IN', {
-    day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'
-  });
+  const s    = STATUS[dep.status] || STATUS.stopped;
+  const meta = dep.repo_url ? dep.repo_url.replace('https://github.com/','') : dep.framework || 'App';
+  const date = new Date(dep.updated_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
 
   const canStop    = dep.status === 'running';
   const canStart   = dep.status === 'stopped';
-  const canRedeploy= ['stopped','failed','running'].includes(dep.status);
+  const canRedeploy= ['stopped','failed','running','building'].includes(dep.status);
 
   return `
-    <a href="/dashboard/deploy-detail.html?id=${dep.id}"
-       class="deploy-card ${s.c}" style="display:grid;grid-template-columns:1fr auto;gap:var(--s4);align-items:start">
-      <div>
-        <div style="display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--s2)">
-          <span class="deploy-card-name">${escHtml(dep.name)}</span>
-          <span class="badge badge-${s.c}">${s.e} ${s.l}</span>
+    <div style="position:relative">
+      <a href="/dashboard/deploy-detail.html?id=${dep.id}" class="db-deploy-card ${s.cls}">
+        <div class="db-deploy-dot"></div>
+        <div class="db-deploy-info">
+          <div class="db-deploy-name">${esc(dep.name)}</div>
+          <div class="db-deploy-meta">${esc(meta)} · ${date}</div>
         </div>
-        ${dep.public_url ? `
-          <div class="deploy-card-url">
-            <a href="${dep.public_url}" target="_blank" rel="noopener"
-               onclick="event.stopPropagation()"
-               style="color:var(--electric)">
-              🌐 ${dep.public_url.replace('https://','')}
-            </a>
-          </div>
-        ` : ''}
-        <div class="deploy-card-meta">
-          <span>${dep.source_type === 'git' ? '⑇ ' + (dep.branch || 'main') : '📦 ZIP'}</span>
-          <span>${dep.framework || 'Auto-detect'}</span>
-          <span>Port ${dep.port || 3000}</span>
-          <span>⏱ ${updated}</span>
-        </div>
+        <span class="db-deploy-badge">${s.badge}</span>
+      </a>
+      <div style="display:flex;gap:6px;padding:6px 0 0 28px;flex-wrap:wrap">
+        ${canRedeploy ? `<button class="db-action-btn" style="padding:7px 14px;font-size:12px" data-dep-action="redeploy" data-dep-id="${dep.id}">🔄 Deploy</button>` : ''}
+        ${canStop     ? `<button class="db-action-btn" style="padding:7px 14px;font-size:12px" data-dep-action="stop"     data-dep-id="${dep.id}">⏹ Stop</button>` : ''}
+        ${canStart    ? `<button class="db-action-btn" style="padding:7px 14px;font-size:12px" data-dep-action="start"    data-dep-id="${dep.id}">▶ Start</button>` : ''}
+        <button class="db-action-btn danger" style="padding:7px 14px;font-size:12px;margin-left:auto" data-dep-action="delete" data-dep-id="${dep.id}">🗑 Delete</button>
       </div>
-      <div style="display:flex;gap:var(--s2);flex-wrap:wrap;justify-content:flex-end" onclick="event.stopPropagation()">
-        ${canRedeploy ? `<button class="btn btn-ghost btn-sm" data-action="redeploy" data-id="${dep.id}" aria-label="Redeploy ${dep.name}">🔄 Deploy</button>` : ''}
-        ${canStop    ? `<button class="btn btn-ghost btn-sm" data-action="stop"     data-id="${dep.id}" aria-label="Stop ${dep.name}">⏹ Stop</button>` : ''}
-        ${canStart   ? `<button class="btn btn-ghost btn-sm" data-action="start"    data-id="${dep.id}" aria-label="Start ${dep.name}">▶ Start</button>` : ''}
-        <button class="btn btn-danger btn-sm" data-action="delete" data-id="${dep.id}" aria-label="Delete ${dep.name}">🗑</button>
-      </div>
-    </a>
-  `;
+    </div>`;
 }
 
 function renderEmpty() {
   if (activeFilter !== 'all' || searchQuery) {
-    return `
-      <div class="card text-center" style="padding:var(--s10)">
-        <div style="font-size:36px;margin-bottom:var(--s4)">🔍</div>
-        <h3 style="margin-bottom:var(--s2)">No results</h3>
-        <p style="color:var(--text-muted)">No deployments match your filter.</p>
-        <button class="btn btn-ghost btn-md" style="margin-top:var(--s4)" onclick="clearFilters()">Clear Filters</button>
-      </div>
-    `;
+    return `<div class="db-empty"><div class="db-empty-icon">🔍</div>
+      <h3 class="db-empty-title">No results</h3>
+      <p class="db-empty-sub">No apps match your filter.</p>
+      <button onclick="clearFilters()" class="db-action-btn primary" style="margin:0 auto">Clear Filters</button>
+    </div>`;
   }
-  return `
-    <div class="card text-center" style="padding:var(--s12)">
-      <div style="font-size:48px;margin-bottom:var(--s5)">🚀</div>
-      <h3 style="margin-bottom:var(--s3)">No deployments yet</h3>
-      <p style="color:var(--text-muted);margin-bottom:var(--s6)">
-        Deploy your first app in under 30 seconds — just push to Git or upload a ZIP.
-      </p>
-      <a href="/dashboard/deploy-new.html" class="btn btn-electric btn-lg">⚡ New Deployment</a>
-    </div>
-  `;
+  return `<div class="db-empty">
+    <div class="db-empty-icon">🚀</div>
+    <h3 class="db-empty-title">No deployments yet</h3>
+    <p class="db-empty-sub">Deploy your first app in under 30 seconds — git push or upload a ZIP.</p>
+    <a href="/dashboard/deploy-new.html"
+       style="display:inline-flex;padding:12px 24px;background:var(--grad-electric);border-radius:100px;color:#000;font-weight:700;font-size:14px;text-decoration:none;touch-action:manipulation">
+      ⚡ Deploy Now
+    </a>
+  </div>`;
 }
 
+/* ── Actions ───────────────────────────────────────────────────── */
+async function handleAction(action, id, btn) {
+  const dep = allDeps.find(d => d.id === id);
+  if (!dep) return;
+
+  if (action === 'delete') {
+    if (!confirm(`Delete "${dep.name}"? This cannot be undone.`)) return;
+  }
+
+  const origHTML = btn.innerHTML;
+  btn.innerHTML  = '<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:db-spin-kf .65s linear infinite"></span>';
+  btn.disabled   = true;
+
+  try {
+    if (action === 'redeploy' || action === 'start') {
+      await deploymentsSB.redeploy(id);
+      const d = allDeps.find(x => x.id === id);
+      if (d) d.status = 'pending';
+      window.dbToast?.(`🔄 ${dep.name} deploying…`, 'info');
+    } else if (action === 'stop') {
+      await deploymentsSB.stop(id);
+      const d = allDeps.find(x => x.id === id);
+      if (d) d.status = 'stopped';
+      window.dbToast?.(`⏹ ${dep.name} stopped`, 'info');
+    } else if (action === 'delete') {
+      await deploymentsSB.remove(id);
+      allDeps = allDeps.filter(x => x.id !== id);
+      window.dbToast?.(`🗑 ${dep.name} deleted`, 'success');
+    }
+    renderDeploys();
+    updateCounts();
+  } catch (err) {
+    window.dbToast?.(err?.data?.error || 'Action failed', 'error');
+    btn.innerHTML = origHTML;
+    btn.disabled  = false;
+  }
+}
+
+/* ── Filters ───────────────────────────────────────────────────── */
 function initFilters() {
   document.querySelectorAll('[data-filter]').forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+      document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('is-active'));
+      btn.classList.add('is-active');
       activeFilter = btn.dataset.filter;
       renderDeploys();
     });
@@ -168,82 +176,32 @@ function initFilters() {
 }
 
 function initSearch() {
-  const input = document.getElementById('searchInput');
-  input?.addEventListener('input', () => {
-    searchQuery = input.value.trim();
+  document.getElementById('searchInput')?.addEventListener('input', e => {
+    searchQuery = e.target.value.trim();
     renderDeploys();
   });
 }
 
-window.clearFilters = function() {
+window.clearFilters = function () {
   activeFilter = 'all';
-  searchQuery = '';
-  document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('active'));
-  document.querySelector('[data-filter="all"]')?.classList.add('active');
+  searchQuery  = '';
+  document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('is-active'));
+  document.querySelector('[data-filter="all"]')?.classList.add('is-active');
   const si = document.getElementById('searchInput');
   if (si) si.value = '';
   renderDeploys();
 };
 
-async function handleAction(action, id, btn) {
-  const dep = allDeps.find(d => d.id === id);
-  if (!dep) return;
-
-  if (action === 'delete') {
-    const ok = await modal.confirm(
-      `Delete <strong>${escHtml(dep.name)}</strong>?<br>
-       <span style="color:var(--text-muted);font-size:var(--text-sm)">This action cannot be undone.</span>`,
-      { title: 'Delete Deployment', danger: true, okText: '🗑 Delete' }
-    );
-    if (!ok) return;
-  }
-
-  const origText = btn.innerHTML;
-  btn.innerHTML = '<span class="anim-spin" style="display:inline-block">↻</span>';
-  btn.disabled = true;
-
-  try {
-    if (action === 'redeploy') {
-      await deploymentsSB.redeploy(id);
-      // Update local state
-      const d = allDeps.find(x => x.id === id);
-      if (d) d.status = 'pending';
-      toast.success(`🔄 Redeploying ${dep.name}...`);
-    } else if (action === 'stop') {
-      await deploymentsSB.stop(id);
-      const d = allDeps.find(x => x.id === id);
-      if (d) d.status = 'stopped';
-      toast.success(`⏹ ${dep.name} stopped`);
-    } else if (action === 'start') {
-      await deploymentsSB.redeploy(id);
-      const d = allDeps.find(x => x.id === id);
-      if (d) d.status = 'pending';
-      toast.success(`▶ Starting ${dep.name}...`);
-    } else if (action === 'delete') {
-      await deploymentsSB.remove(id);
-      allDeps = allDeps.filter(x => x.id !== id);
-      toast.success(`🗑 ${dep.name} deleted`);
-    }
-    renderDeploys();
-    updateCounts();
-  } catch (err) {
-    toast.error(err?.data?.error || `Action failed`);
-    btn.innerHTML = origText;
-    btn.disabled = false;
-  }
-}
-
+/* ── Counts ────────────────────────────────────────────────────── */
 function updateCounts() {
-  const running = allDeps.filter(d => d.status === 'running').length;
-  const all     = allDeps.length;
-  setText('countAll', all);
-  setText('countRunning', running);
+  setText('countAll',     allDeps.length);
+  setText('countRunning', allDeps.filter(d => d.status === 'running').length);
   setText('countStopped', allDeps.filter(d => d.status === 'stopped').length);
-  setText('countFailed', allDeps.filter(d => d.status === 'failed').length);
+  setText('countFailed',  allDeps.filter(d => d.status === 'failed').length);
 }
 
+/* ── Realtime ──────────────────────────────────────────────────── */
 function subscribeRealtime() {
-  // Live status updates for any deployment in the list
   deploymentsSB.subscribeStatus(null, ({ id, status, public_url }) => {
     const dep = allDeps.find(d => d.id === id);
     if (!dep) return;
@@ -254,21 +212,12 @@ function subscribeRealtime() {
   });
 }
 
+/* ── Helpers ───────────────────────────────────────────────────── */
 function showSkeleton(el) {
-  el.innerHTML = Array(3).fill(0).map(() => `
-    <div class="card" style="padding:var(--s5)">
-      <div class="skeleton skeleton-title"></div>
-      <div class="skeleton skeleton-text" style="width:60%"></div>
-      <div class="skeleton skeleton-text" style="width:40%;margin-top:var(--s3)"></div>
-    </div>
-  `).join('');
+  el.innerHTML = [1,2,3].map(() =>
+    `<div class="db-skel" style="height:72px;border-radius:16px"></div>`
+  ).join('<div style="height:8px"></div>');
 }
 
-function setText(id, txt) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = txt;
-}
-
-function escHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
+function setText(id, v) { const el = document.getElementById(id); if (el) el.textContent = v; }
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
