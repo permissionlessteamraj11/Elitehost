@@ -1,227 +1,201 @@
 /**
- * EliteHosting — Settings Page JS
+ * EliteHosting — Settings JS (Fixed)
  */
-import { auth } from '../core/auth.js';
-import { profileSB, authSB } from '../core/supabase.js';
-import { toast } from '../components/toast.js';
-import { modal } from '../components/modal.js';
+import { auth }                    from '../core/auth.js';
+import { profileSB, authSB }       from '../core/supabase.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
-  await auth.requireAuth();
-  initSidebar();
+  try { await auth.requireAuth(); } catch { return; }
   initTabs();
   await loadProfile();
+  initPasswordForm();
+  initDangerZone();
 });
 
-function initSidebar() {
-  document.getElementById('sidebarToggle')?.addEventListener('click', () =>
-    document.getElementById('sidebar')?.classList.toggle('mobile-open')
-  );
-  document.querySelectorAll('.nav-item[href]').forEach(a =>
-    a.classList.toggle('active', a.getAttribute('href') === location.pathname)
-  );
-}
-
+/* ── Tabs ──────────────────────────────────────────────────────── */
 function initTabs() {
-  document.querySelectorAll('[data-settings-tab]').forEach(btn => {
+  document.querySelectorAll('[data-stab]').forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('[data-settings-tab]').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('[data-settings-panel]').forEach(p => p.classList.remove('active'));
-      btn.classList.add('active');
-      document.querySelector(`[data-settings-panel="${btn.dataset.settingsTab}"]`)?.classList.add('active');
+      document.querySelectorAll('[data-stab]').forEach(b => b.classList.remove('is-active'));
+      document.querySelectorAll('[data-spanel]').forEach(p => p.style.display = 'none');
+      btn.classList.add('is-active');
+      const panel = document.querySelector(`[data-spanel="${btn.dataset.stab}"]`);
+      if (panel) panel.style.display = 'block';
     });
+  });
+  // Show first tab
+  document.querySelectorAll('[data-spanel]').forEach((p, i) => {
+    p.style.display = i === 0 ? 'block' : 'none';
   });
 }
 
+/* ── Load Profile ──────────────────────────────────────────────── */
 async function loadProfile() {
   try {
-    const { data: profile } = await profileSB.getMe();
+    const { data: p } = await profileSB.getMe();
 
-    // Populate profile fields
-    setVal('settingUsername',    profile.username);
-    setVal('settingDisplayName', profile.display_name || profile.username);
-    setVal('settingEmail',       profile.email);
-    setText('settingEmailDisplay', profile.email);
-    setText('settingCreatedAt',  new Date(profile.created_at).toLocaleDateString('en-IN', { year:'numeric', month:'long', day:'numeric' }));
+    // Fill avatar initial
+    const initial = (p.username?.[0] || '?').toUpperCase();
+    const av = document.getElementById('settingAvatar');
+    if (av) av.textContent = initial;
 
-    // Referral
-    setText('myReferralCode', profile.referral_code || '—');
-    const refLink = `https://www.elitehosting.in/auth/register.html?ref=${profile.referral_code || ''}`;
-    setText('referralLink', refLink);
+    setValue('settingDisplayName', p.display_name || p.username);
+    setValue('settingEmail', p.email);
+    setText('settingUsername', p.username);
+    setText('settingEmailDisplay', p.email);
+    setText('settingCreatedAt', new Date(p.created_at).toLocaleDateString('en-IN',{year:'numeric',month:'long',day:'numeric'}));
+    setText('myReferralCode', p.referral_code || '—');
 
-    // Telegram linked?
-    if (profile.telegram_username) {
-      setText('telegramStatus', '@' + profile.telegram_username);
-      document.getElementById('telegramLinked')?.style.removeProperty('display');
-      document.getElementById('telegramUnlinked')?.style.setProperty('display', 'none');
-    }
-
-    initProfileForm(profile);
-    initPasswordForm();
-    initTelegramLink(profile);
-    initDangerZone(profile);
-    initReferral(profile);
-  } catch {
-    toast.error('Failed to load settings');
+    initProfileForm(p);
+    initTelegramSection(p);
+    initReferralSection(p);
+  } catch (e) {
+    window.dbToast?.('Failed to load settings', 'error');
+    console.error(e);
   }
 }
 
+/* ── Profile Form ──────────────────────────────────────────────── */
 function initProfileForm(profile) {
   const form = document.getElementById('profileForm');
-  form?.addEventListener('submit', async (e) => {
+  if (!form) return;
+  form.addEventListener('submit', async e => {
     e.preventDefault();
     const displayName = document.getElementById('settingDisplayName')?.value.trim();
-    const btn = form.querySelector('[type="submit"]');
-    btn.classList.add('btn-loading'); btn.disabled = true;
-
+    const btn = form.querySelector('button[type=submit]');
+    if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
     try {
       await profileSB.updateProfile({ display_name: displayName });
-      toast.success('✅ Profile updated!');
+      window.dbToast?.('✅ Profile updated!', 'success');
     } catch (err) {
-      toast.error(err?.data?.error || 'Update failed');
+      window.dbToast?.(err?.data?.error || 'Update failed', 'error');
     } finally {
-      btn.classList.remove('btn-loading'); btn.disabled = false;
+      if (btn) { btn.disabled = false; btn.textContent = 'Save Changes'; }
     }
   });
 }
 
+/* ── Password Form ─────────────────────────────────────────────── */
 function initPasswordForm() {
-  const form = document.getElementById('passwordForm');
-  const passEl = document.getElementById('newPassword');
-  const segs = document.querySelectorAll('[data-pass-seg]');
-
-  passEl?.addEventListener('input', () => {
-    const str = calcStrength(passEl.value);
-    segs.forEach((seg, i) => {
-      seg.className = `strength-seg${i < str ? ` active-${str}` : ''}`;
-    });
+  // Toggle
+  document.getElementById('passToggle')?.addEventListener('click', () => {
+    const p = document.getElementById('newPassword');
+    if (p) p.type = p.type === 'text' ? 'password' : 'text';
   });
 
-  form?.addEventListener('submit', async (e) => {
+  // Strength meter
+  document.getElementById('newPassword')?.addEventListener('input', e => {
+    const segs  = [1,2,3,4].map(i => document.querySelector(`[data-seg="${i}"]`));
+    const str   = calcStrength(e.target.value);
+    const lbls  = ['','😬 Weak','🙂 Fair','😊 Good','💪 Strong'];
+    const clss  = ['','lv1','lv2','lv3','lv4'];
+    segs.forEach((seg, i) => {
+      if (seg) seg.className = 'db-str-seg' + (i < str ? ' ' + clss[str] : '');
+    });
+    const lbl = document.getElementById('strLabel');
+    if (lbl) lbl.textContent = e.target.value.length ? lbls[str] : '';
+  });
+
+  const form = document.getElementById('passwordForm');
+  form?.addEventListener('submit', async e => {
     e.preventDefault();
-    const current = document.getElementById('currentPassword')?.value;
-    const newPass  = passEl?.value;
-    const confirm  = document.getElementById('confirmPassword')?.value;
+    const pw = document.getElementById('newPassword')?.value;
+    const cf = document.getElementById('confirmPassword')?.value;
+    const btn = form.querySelector('button[type=submit]');
 
-    if (newPass !== confirm) {
-      toast.error('Passwords do not match');
+    document.getElementById('passErr').textContent = '';
+
+    if (pw !== cf) {
+      document.getElementById('passErr').textContent = 'Passwords do not match';
       return;
     }
-    if (calcStrength(newPass) < 2) {
-      toast.error('Password too weak');
+    if (calcStrength(pw) < 2) {
+      document.getElementById('passErr').textContent = 'Password too weak';
       return;
     }
 
-    const btn = form.querySelector('[type="submit"]');
-    btn.classList.add('btn-loading'); btn.disabled = true;
-
+    if (btn) { btn.disabled = true; btn.textContent = 'Updating…'; }
     try {
-      await authSB.updatePassword(newPass);
-      toast.success('✅ Password changed!');
+      await authSB.updatePassword(pw);
+      window.dbToast?.('✅ Password updated!', 'success');
       form.reset();
     } catch (err) {
-      toast.error(err?.data?.error || 'Password change failed');
+      document.getElementById('passErr').textContent = err?.data?.error || 'Update failed';
+      window.dbToast?.(err?.data?.error || 'Password update failed', 'error');
     } finally {
-      btn.classList.remove('btn-loading'); btn.disabled = false;
+      if (btn) { btn.disabled = false; btn.textContent = 'Update Password'; }
     }
   });
 }
 
-function initTelegramLink(profile) {
-  const btn = document.getElementById('btnLinkTelegram');
-  if (!btn) return;
-
-  // Generate one-time link token
-  btn.addEventListener('click', async () => {
-    btn.classList.add('btn-loading'); btn.disabled = true;
+/* ── Telegram ──────────────────────────────────────────────────── */
+function initTelegramSection(profile) {
+  if (profile.telegram_chat_id) {
+    document.getElementById('telegramLinked')?.style.removeProperty('display');
+    document.getElementById('telegramUnlinked')?.style.setProperty('display','none');
+  }
+  document.getElementById('btnLinkTelegram')?.addEventListener('click', async () => {
+    const btn = document.getElementById('btnLinkTelegram');
+    btn.disabled = true; btn.textContent = 'Generating…';
     try {
       const { data } = await profileSB.linkTelegram();
       const url = `https://t.me/elitehosting_bot?start=${data.token}`;
-      await modal.alert(`
-        <p style="margin-bottom:var(--s4);color:var(--text-secondary)">
-          Click the button below to open Telegram and link your account.
-          Or copy this link:
-        </p>
-        <div style="display:flex;align-items:center;gap:var(--s3);background:var(--color-surface-2);padding:var(--s3);border-radius:var(--r-md);margin-bottom:var(--s4)">
-          <code style="flex:1;font-size:11px;word-break:break-all;color:var(--electric)">${url}</code>
-          <button class="btn btn-ghost btn-sm" onclick="navigator.clipboard.writeText('${url}');event.target.textContent='✅'">📋</button>
-        </div>
-        <a href="${url}" target="_blank" class="btn btn-electric btn-md w-full">Open Telegram Bot →</a>
-      `, 'Link Telegram');
-    } catch {
-      toast.error('Failed to generate Telegram link token');
-    } finally {
-      btn.classList.remove('btn-loading'); btn.disabled = false;
-    }
+      window.dbToast?.(`Token: ${data.token} — Send to @elitehosting_bot`, 'info');
+      if (confirm(`Telegram link generated!\n\nOpen @elitehosting_bot and send this token:\n${data.token}\n\nOpen Telegram now?`)) {
+        window.open(url, '_blank');
+      }
+    } catch { window.dbToast?.('Failed to generate token', 'error'); }
+    finally { btn.disabled = false; btn.textContent = '📱 Generate Link Token'; }
   });
 }
 
-function initReferral(profile) {
+/* ── Referral ──────────────────────────────────────────────────── */
+function initReferralSection(profile) {
   const code = profile.referral_code || '';
-  const link = `https://www.elitehosting.in/auth/register.html?ref=${code}`;
+  const link = `${location.origin}/auth/register.html?ref=${code}`;
 
   document.getElementById('btnCopyReferral')?.addEventListener('click', () => {
-    navigator.clipboard.writeText(link);
-    toast.success('Referral link copied! 🎉');
+    navigator.clipboard.writeText(link).then(() => window.dbToast?.('Referral link copied!', 'success'));
   });
 
   document.getElementById('btnShareReferral')?.addEventListener('click', () => {
     if (navigator.share) {
-      navigator.share({ title: 'EliteHosting.in', text: 'India ka best app hosting! 2 free credits on signup.', url: link });
+      navigator.share({ title:'EliteHosting.in', text:'India ka best app hosting! 2 free credits pe signup.', url: link });
     } else {
-      navigator.clipboard.writeText(link);
-      toast.success('Link copied!');
+      navigator.clipboard.writeText(link).then(() => window.dbToast?.('Link copied!', 'success'));
     }
   });
-
-  // Load referral stats
-  loadReferralStats();
 }
 
-async function loadReferralStats() {
-  // Referral stats placeholder — would come from a Supabase query
-  setText('refEarned', '—');
-  setText('refPending', '—');
-  setText('refTotal',   '—');
-}
-
-function initDangerZone(profile) {
+/* ── Danger Zone ───────────────────────────────────────────────── */
+function initDangerZone() {
   document.getElementById('btnSignOutAll')?.addEventListener('click', async () => {
-    const ok = await modal.confirm('Sign out from all devices?', { title: 'Sign Out Everywhere', okText: 'Sign Out All' });
-    if (!ok) return;
+    if (!confirm('Sign out from all devices?')) return;
     try {
       await authSB.signOut();
-      location.href = '/auth/login.html';
-    } catch { toast.error('Failed'); }
+    } catch { window.dbToast?.('Failed', 'error'); }
   });
 
-  document.getElementById('btnDeleteAccount')?.addEventListener('click', async () => {
-    const ok = await modal.confirm(
-      `<strong style="color:var(--error)">Permanently delete your account?</strong><br><br>
-       All deployments, credits, and data will be deleted. This cannot be undone.`,
-      { title: '⚠️ Delete Account', danger: true, okText: 'Delete My Account' }
-    );
-    if (!ok) return;
-    toast.warn('Account deletion is processed within 48 hours. Contact support@elitehosting.in');
+  document.getElementById('btnDeleteAccount')?.addEventListener('click', () => {
+    if (confirm('⚠️ Delete your account? ALL data will be lost. This cannot be undone.\n\nType "DELETE" to confirm.')) {
+      const input = prompt('Type DELETE to confirm account deletion:');
+      if (input === 'DELETE') {
+        window.dbToast?.('Account deletion request sent. We will process within 48 hours.', 'info');
+      } else {
+        window.dbToast?.('Account deletion cancelled.', 'info');
+      }
+    }
   });
 }
 
-/* ── Helpers ─────────────────────────────────────────────────────── */
+/* ── Helpers ───────────────────────────────────────────────────── */
 function calcStrength(pw) {
   let s = 0;
-  if (pw.length >= 8) s++;
-  if (/[A-Z]/.test(pw)) s++;
-  if (/[0-9]/.test(pw)) s++;
-  if (/[^A-Za-z0-9]/.test(pw)) s++;
+  if (pw.length >= 8)           s++;
+  if (/[A-Z]/.test(pw))         s++;
+  if (/[0-9]/.test(pw))         s++;
+  if (/[^A-Za-z0-9]/.test(pw))  s++;
   return Math.min(s, 4);
 }
-
-function setText(id, val) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = val;
-}
-
-function setVal(id, val) {
-  const el = document.getElementById(id);
-  if (el) el.value = val;
-}
+function setText(id, v)  { const el = document.getElementById(id); if (el) el.textContent = v; }
+function setValue(id, v) { const el = document.getElementById(id); if (el) el.value = v; }
