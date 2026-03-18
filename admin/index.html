@@ -2,125 +2,518 @@
 <html lang="en-IN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Panel — EliteHosting.in</title>
-  <meta name="robots" content="noindex, nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#03020A">
-  <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Admin Panel — EliteHosting.in</title>
+  <link rel="icon" href="/assets/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/variables.css">
   <link rel="stylesheet" href="/css/base.css">
   <link rel="stylesheet" href="/css/components.css">
-  <link rel="stylesheet" href="/css/animations.css">
   <link rel="stylesheet" href="/css/pages/dashboard.css">
-  <script src="/env.js"></script>
 </head>
 <body>
-<div class="dashboard-layout">
-  <aside id="sidebar" class="sidebar"></aside>
-  <div class="dashboard-main">
-    <header id="topbar" class="topbar"></header>
-    <main class="dashboard-content" aria-label="Admin panel">
+<div id="db-toast"></div>
 
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s6)">
+<!-- Admin Layout -->
+<div style="display:flex;min-height:100vh">
+
+  <!-- Admin Sidebar -->
+  <aside style="
+    width:240px;height:100vh;position:fixed;top:0;left:0;
+    background:var(--color-surface-1);border-right:1px solid var(--border);
+    display:flex;flex-direction:column;z-index:200;
+  ">
+    <div style="padding:18px 18px 14px;border-bottom:1px solid var(--border)">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#FF6B35,#FF9933);display:flex;align-items:center;justify-content:center;font-size:17px;color:#000">🛡️</div>
         <div>
-          <h2>🛡️ Admin Panel</h2>
-          <p style="color:var(--text-muted);margin-top:var(--s1)">Platform overview and management</p>
-        </div>
-        <button id="btnRefreshStats" class="btn btn-ghost btn-sm">🔄 Refresh Stats</button>
-      </div>
-
-      <!-- Stats Grid -->
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:var(--s4);margin-bottom:var(--s6)">
-        <div class="card card-sm">
-          <div style="font-size:var(--text-xs);color:var(--text-muted);margin-bottom:var(--s2)">👥 Total Users</div>
-          <div style="font-size:var(--text-2xl);font-weight:800;color:var(--electric)" id="statTotalUsers">—</div>
-          <div style="font-size:var(--text-xs);color:var(--mint)" id="statTodayUsers">+0 today</div>
-        </div>
-        <div class="card card-sm">
-          <div style="font-size:var(--text-xs);color:var(--text-muted);margin-bottom:var(--s2)">🟢 Running Deploys</div>
-          <div style="font-size:var(--text-2xl);font-weight:800;color:var(--mint)" id="statRunning">—</div>
-        </div>
-        <div class="card card-sm">
-          <div style="font-size:var(--text-xs);color:var(--text-muted);margin-bottom:var(--s2)">📦 Total Deploys</div>
-          <div style="font-size:var(--text-2xl);font-weight:800;color:var(--text-primary)" id="statTotalDeploys">—</div>
-        </div>
-        <div class="card card-sm">
-          <div style="font-size:var(--text-xs);color:var(--text-muted);margin-bottom:var(--s2)">🔁 Build Queue</div>
-          <div style="font-size:var(--text-2xl);font-weight:800;color:var(--fire)" id="statQueueLen">—</div>
-        </div>
-        <div class="card card-sm">
-          <div style="font-size:var(--text-xs);color:var(--text-muted);margin-bottom:var(--s2)">💰 Revenue (Month)</div>
-          <div style="font-size:var(--text-2xl);font-weight:800;color:var(--plasma)" id="statRevenue">—</div>
-        </div>
-        <div class="card card-sm">
-          <div style="font-size:var(--text-xs);color:var(--text-muted);margin-bottom:var(--s2)">🔥 Active Today</div>
-          <div style="font-size:var(--text-2xl);font-weight:800;color:var(--fire)" id="statActiveUsers">—</div>
+          <div style="font-family:var(--font-display);font-weight:800;font-size:15px">Admin Panel</div>
+          <div style="font-size:11px;color:var(--text-muted)">EliteHosting.in</div>
         </div>
       </div>
+    </div>
+    <div style="padding:14px 10px;border-bottom:1px solid var(--border)">
+      <div style="font-size:12px;color:var(--text-muted)">Logged in as</div>
+      <div id="adminEmailDisplay" style="font-size:13px;font-weight:600;color:var(--fire);font-family:var(--font-mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">…</div>
+    </div>
+    <nav style="padding:12px 10px;flex:1;display:flex;flex-direction:column;gap:2px">
+      <button class="db-nav-link is-active" data-admin-tab="payments">💳 Payments</button>
+      <button class="db-nav-link" data-admin-tab="users">👥 Users</button>
+      <button class="db-nav-link" data-admin-tab="stats">📊 Stats</button>
+      <button class="db-nav-link" data-admin-tab="broadcast">📢 Broadcast</button>
+    </nav>
+    <div style="padding:10px;border-top:1px solid var(--border)">
+      <a href="/dashboard/index.html" class="db-nav-link" style="margin-bottom:4px">
+        <span class="db-nav-icon">🏠</span><span class="db-nav-label">Dashboard</span>
+      </a>
+      <button class="db-nav-link" id="adminLogoutBtn">
+        <span class="db-nav-icon">🚪</span><span class="db-nav-label">Logout</span>
+      </button>
+    </div>
+  </aside>
 
-      <!-- Tabs -->
-      <div class="tabs" role="tablist" aria-label="Admin sections" style="margin-bottom:var(--s5)">
-        <button class="tab active" data-admin-tab="users"       role="tab">👥 Users</button>
-        <button class="tab"        data-admin-tab="deployments" role="tab">🚀 Deployments</button>
-        <button class="tab"        data-admin-tab="broadcast"   role="tab">📢 Broadcast</button>
+  <!-- Main -->
+  <div style="margin-left:240px;flex:1;min-width:0">
+    <!-- Topbar -->
+    <div style="
+      height:56px;background:rgba(10,9,15,.95);backdrop-filter:blur(24px);
+      border-bottom:1px solid var(--border);display:flex;align-items:center;
+      justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:100;
+    ">
+      <h1 id="adminPageTitle" style="font-family:var(--font-display);font-size:17px;font-weight:700">Payments</h1>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button onclick="loadStats()" style="padding:7px 14px;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:8px;color:var(--text-muted);font-size:12px;cursor:pointer;touch-action:manipulation">🔄 Refresh</button>
+        <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#FF6B35,#FF9933);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#000">A</div>
+      </div>
+    </div>
+
+    <div style="padding:20px">
+
+      <!-- ── STATS ── -->
+      <div id="statsBar" class="db-stats" style="margin-bottom:20px;display:none">
+        <div class="db-stat s-electric">
+          <div class="db-stat-icon">👥</div>
+          <div class="db-stat-val" id="st-users">—</div>
+          <div class="db-stat-label">Total Users</div>
+        </div>
+        <div class="db-stat s-mint">
+          <div class="db-stat-icon">🟢</div>
+          <div class="db-stat-val" id="st-running">—</div>
+          <div class="db-stat-label">Running</div>
+        </div>
+        <div class="db-stat s-fire">
+          <div class="db-stat-icon">💳</div>
+          <div class="db-stat-val" id="st-payments">—</div>
+          <div class="db-stat-label">Pending Pay</div>
+        </div>
+        <div class="db-stat s-plasma">
+          <div class="db-stat-icon">📦</div>
+          <div class="db-stat-val" id="st-deploys">—</div>
+          <div class="db-stat-label">Total Apps</div>
+        </div>
       </div>
 
-      <!-- Users Panel -->
-      <div data-admin-panel="users" class="active">
-        <div style="display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--s4)">
-          <div class="input-wrapper" style="flex:1;max-width:320px">
-            <span class="input-icon">🔍</span>
-            <input type="search" id="userSearch" class="input" placeholder="Search by username or email…" aria-label="Search users">
+      <!-- ── PAYMENTS TAB ── -->
+      <div data-admin-panel="payments">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+          <div>
+            <h2 style="font-size:18px;font-weight:800">💳 Payment Requests</h2>
+            <p style="font-size:13px;color:var(--text-muted);margin-top:2px">Review and approve UPI payments</p>
           </div>
+          <div style="display:flex;gap:8px">
+            <button class="db-filter-btn is-active" data-pay-filter="pending"  onclick="setPayFilter('pending',this)">⏳ Pending</button>
+            <button class="db-filter-btn"           data-pay-filter="approved" onclick="setPayFilter('approved',this)">✅ Approved</button>
+            <button class="db-filter-btn"           data-pay-filter="rejected" onclick="setPayFilter('rejected',this)">❌ Rejected</button>
+            <button class="db-filter-btn"           data-pay-filter="all"      onclick="setPayFilter('all',this)">All</button>
+          </div>
+        </div>
+        <div id="paymentsList"></div>
+      </div>
+
+      <!-- ── USERS TAB ── -->
+      <div data-admin-panel="users" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+          <div>
+            <h2 style="font-size:18px;font-weight:800">👥 Users</h2>
+            <p style="font-size:13px;color:var(--text-muted);margin-top:2px">Manage all registered developers</p>
+          </div>
+        </div>
+        <div class="db-search" style="margin-bottom:16px">
+          <span class="db-search-icon">🔍</span>
+          <input type="search" id="userSearch" placeholder="Search by email or username…" autocomplete="off">
         </div>
         <div id="usersList"></div>
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:16px" id="usersPageBtns"></div>
       </div>
 
-      <!-- Deployments Panel -->
-      <div data-admin-panel="deployments" style="display:none">
-        <div id="adminDeploysList"></div>
+      <!-- ── STATS TAB ── -->
+      <div data-admin-panel="stats" style="display:none">
+        <h2 style="font-size:18px;font-weight:800;margin-bottom:16px">📊 Platform Stats</h2>
+        <div class="db-stats" id="statsDetailed"></div>
       </div>
 
-      <!-- Broadcast Panel -->
+      <!-- ── BROADCAST TAB ── -->
       <div data-admin-panel="broadcast" style="display:none">
-        <div style="display:grid;grid-template-columns:1fr 380px;gap:var(--s5);align-items:start">
-          <div class="card" style="padding:var(--s6)">
-            <h3 style="margin-bottom:var(--s4)">📢 Send Broadcast</h3>
-            <form id="broadcastForm">
-              <div class="input-group" style="margin-bottom:var(--s4)">
-                <label class="input-label">Type</label>
-                <div style="display:flex;gap:var(--s2)">
-                  <button type="button" class="btn btn-ghost btn-sm active" data-broadcast-type="info">ℹ️ Info</button>
-                  <button type="button" class="btn btn-ghost btn-sm" data-broadcast-type="warning">⚠️ Warning</button>
-                  <button type="button" class="btn btn-ghost btn-sm" data-broadcast-type="maintenance">🔧 Maintenance</button>
-                  <button type="button" class="btn btn-ghost btn-sm" data-broadcast-type="feature">🎉 Feature</button>
-                </div>
-              </div>
-              <div class="input-group" style="margin-bottom:var(--s5)">
-                <label class="input-label" for="broadcastMsg">Message</label>
-                <textarea id="broadcastMsg" class="input" rows="5" placeholder="Write your broadcast message…" required style="resize:vertical"></textarea>
-                <span class="input-hint">Will be sent to all users via in-app notification + Telegram (if linked)</span>
-              </div>
-              <button type="submit" class="btn btn-electric btn-md">📢 Send to All Users</button>
-            </form>
+        <h2 style="font-size:18px;font-weight:800;margin-bottom:16px">📢 Broadcast Message</h2>
+        <div class="db-card">
+          <div class="db-field">
+            <label class="db-label">Type</label>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="db-filter-btn is-active" data-btype="info">ℹ️ Info</button>
+              <button class="db-filter-btn" data-btype="warning">⚠️ Warning</button>
+              <button class="db-filter-btn" data-btype="success">🎉 Feature</button>
+            </div>
           </div>
-          <div class="card" style="padding:var(--s5)">
-            <h4 style="margin-bottom:var(--s4)">Preview</h4>
-            <div id="broadcastPreview" class="terminal" style="min-height:120px;padding:var(--s4);border-radius:var(--r-md)"></div>
+          <div class="db-field">
+            <label class="db-label" for="broadcastMsg">Message</label>
+            <textarea id="broadcastMsg" class="db-input" rows="4" placeholder="Write your message to all users…" style="resize:vertical"></textarea>
           </div>
+          <button id="sendBroadcastBtn" type="button"
+            style="padding:13px 28px;background:var(--grad-fire);border:none;border-radius:100px;color:#000;font-size:14px;font-weight:700;cursor:pointer;touch-action:manipulation">
+            📢 Send to All Users
+          </button>
         </div>
       </div>
 
-    </main>
+    </div>
   </div>
 </div>
 
+<!-- Grant Credits Modal -->
+<div id="grantModal" style="display:none;position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.75);backdrop-filter:blur(10px);align-items:center;justify-content:center;padding:16px">
+  <div style="background:var(--color-surface-1);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:24px;width:100%;max-width:360px">
+    <h3 style="font-size:16px;font-weight:800;margin-bottom:16px">💎 Grant Credits</h3>
+    <div style="font-size:13px;color:var(--text-muted);margin-bottom:12px">User: <strong id="grantUsername" style="color:var(--electric)"></strong></div>
+    <div class="db-field">
+      <label class="db-label">Amount (credits)</label>
+      <input type="number" id="grantAmount" class="db-input" min="0.5" max="100" step="0.5" value="5">
+    </div>
+    <div class="db-field" style="margin-bottom:18px">
+      <label class="db-label">Reason</label>
+      <input type="text" id="grantReason" class="db-input" placeholder="Admin grant, refund, etc.">
+    </div>
+    <div style="display:flex;gap:10px">
+      <button onclick="closeGrantModal()" style="flex:1;padding:12px;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:12px;color:var(--text-muted);cursor:pointer;font-size:14px;font-weight:600;touch-action:manipulation">Cancel</button>
+      <button id="confirmGrantBtn" style="flex:1;padding:12px;background:var(--grad-electric);border:none;border-radius:12px;color:#000;cursor:pointer;font-size:14px;font-weight:700;touch-action:manipulation">Grant →</button>
+    </div>
+  </div>
+</div>
+
+<!-- View Screenshot Modal -->
+<div id="ssModal" style="display:none;position:fixed;inset:0;z-index:998;background:rgba(0,0,0,.9);align-items:center;justify-content:center;padding:16px" onclick="document.getElementById('ssModal').style.display='none'">
+  <img id="ssModalImg" style="max-width:90%;max-height:90%;border-radius:12px;object-fit:contain" alt="Payment screenshot">
+</div>
+
 <script type="module">
-import { injectLayout } from '/js/core/layout.js';
-import '/js/pages/admin.js';
-await injectLayout({ title: 'Admin Panel' });
+import { adminSB, authSB } from '/js/core/supabase.js';
+
+// ── Auth check ────────────────────────────────────────────────────
+const session = sessionStorage.getItem('eh-admin-session');
+if (!session) { location.replace('/admin/login.html'); }
+else {
+  try {
+    const s = JSON.parse(session);
+    if (!s.isAdmin || s.exp < Date.now()) {
+      sessionStorage.removeItem('eh-admin-session');
+      location.replace('/admin/login.html');
+    }
+    document.getElementById('adminEmailDisplay').textContent = s.email || '…';
+  } catch { location.replace('/admin/login.html'); }
+}
+
+// ── Toast ─────────────────────────────────────────────────────────
+const toastEl = document.getElementById('db-toast');
+let tt;
+window.toast = function(msg, type='info') {
+  clearTimeout(tt);
+  toastEl.className = type;
+  toastEl.textContent = msg;
+  toastEl.classList.add('show');
+  tt = setTimeout(() => toastEl.classList.remove('show'), 3500);
+};
+window.dbToast = window.toast;
+
+// ── Tab Navigation ────────────────────────────────────────────────
+const TAB_TITLES = { payments:'Payments', users:'Users', stats:'Stats', broadcast:'Broadcast' };
+document.querySelectorAll('[data-admin-tab]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-admin-tab]').forEach(b => b.classList.remove('is-active'));
+    document.querySelectorAll('[data-admin-panel]').forEach(p => p.style.display = 'none');
+    btn.classList.add('is-active');
+    const tab = btn.dataset.adminTab;
+    document.querySelector(`[data-admin-panel="${tab}"]`).style.display = 'block';
+    document.getElementById('adminPageTitle').textContent = TAB_TITLES[tab] || tab;
+    if (tab === 'payments') loadPayments(currentPayFilter);
+    if (tab === 'users')    loadUsers(0);
+    if (tab === 'stats')    loadStatsDetailed();
+  });
+});
+
+// ── Logout ────────────────────────────────────────────────────────
+document.getElementById('adminLogoutBtn').addEventListener('click', async () => {
+  sessionStorage.removeItem('eh-admin-session');
+  await authSB.signOut();
+});
+
+// ── Stats ─────────────────────────────────────────────────────────
+window.loadStats = async function() {
+  try {
+    const { data } = await adminSB.getStats();
+    setText('st-users',    data.total_users);
+    setText('st-running',  data.running_deploys);
+    setText('st-payments', data.pending_payments);
+    setText('st-deploys',  data.total_deploys);
+    document.getElementById('statsBar').style.display = 'grid';
+  } catch {}
+};
+
+async function loadStatsDetailed() {
+  const el = document.getElementById('statsDetailed');
+  el.innerHTML = '<div class="db-skel" style="height:80px;border-radius:14px;grid-column:span 4"></div>';
+  try {
+    const { data } = await adminSB.getStats();
+    el.innerHTML = `
+      <div class="db-stat s-electric"><div class="db-stat-icon">👥</div><div class="db-stat-val">${data.total_users}</div><div class="db-stat-label">Total Users</div></div>
+      <div class="db-stat s-mint"><div class="db-stat-icon">📅</div><div class="db-stat-val">${data.new_today}</div><div class="db-stat-label">New Today</div></div>
+      <div class="db-stat s-plasma"><div class="db-stat-icon">🚀</div><div class="db-stat-val">${data.total_deploys}</div><div class="db-stat-label">Total Apps</div></div>
+      <div class="db-stat s-fire"><div class="db-stat-icon">🟢</div><div class="db-stat-val">${data.running_deploys}</div><div class="db-stat-label">Running</div></div>
+    `;
+  } catch {}
+}
+
+// ── Payments ──────────────────────────────────────────────────────
+let currentPayFilter = 'pending';
+window.setPayFilter = function(f, btn) {
+  currentPayFilter = f;
+  document.querySelectorAll('[data-pay-filter]').forEach(b => b.classList.remove('is-active'));
+  btn.classList.add('is-active');
+  loadPayments(f);
+};
+
+async function loadPayments(status = 'pending') {
+  const el = document.getElementById('paymentsList');
+  el.innerHTML = '<div class="db-skel" style="height:80px;border-radius:14px;margin-bottom:10px"></div><div class="db-skel" style="height:80px;border-radius:14px"></div>';
+  try {
+    const { data } = await adminSB.getPaymentRequests({ status });
+    const reqs = data.requests;
+    if (!reqs.length) {
+      el.innerHTML = `<div class="db-empty"><div class="db-empty-icon">📭</div><h3 class="db-empty-title">No ${status} requests</h3></div>`;
+      return;
+    }
+    el.innerHTML = reqs.map(r => renderPaymentCard(r)).join('');
+    el.querySelectorAll('[data-pay-approve]').forEach(btn => btn.addEventListener('click', () => handlePayApprove(btn.dataset.payApprove)));
+    el.querySelectorAll('[data-pay-reject]').forEach(btn  => btn.addEventListener('click', () => handlePayReject(btn.dataset.payReject)));
+    el.querySelectorAll('[data-pay-screenshot]').forEach(btn => btn.addEventListener('click', () => viewScreenshot(btn.dataset.payScreenshot)));
+  } catch (e) {
+    el.innerHTML = `<div style="color:var(--error);font-size:13px;padding:12px">❌ ${e?.data?.error || 'Failed to load'}</div>`;
+  }
+}
+
+function renderPaymentCard(r) {
+  const user   = r.users;
+  const date   = new Date(r.created_at).toLocaleString('en-IN',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  const scolor = r.status==='approved' ? 'var(--mint)' : r.status==='rejected' ? 'var(--error)' : 'var(--warning)';
+  const sicon  = r.status==='approved' ? '✅' : r.status==='rejected' ? '❌' : '⏳';
+
+  return `
+    <div class="db-card" style="margin-bottom:12px">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
+            <span style="font-size:15px;font-weight:800;font-family:var(--font-display);color:var(--electric)">₹${r.amount_inr}</span>
+            <span style="font-size:13px;color:var(--mint)">→ ${r.credits_requested} credits</span>
+            <span style="padding:3px 10px;border-radius:100px;font-size:11px;font-weight:700;color:${scolor};background:rgba(0,0,0,.3)">
+              ${sicon} ${r.status}
+            </span>
+          </div>
+          <div style="font-size:13px;color:var(--text-primary);margin-bottom:3px">
+            👤 <strong>${esc(user?.username || '—')}</strong>
+            <span style="color:var(--text-muted)"> (${esc(user?.email || '—')})</span>
+          </div>
+          <div style="font-size:11px;color:var(--text-muted)">
+            Balance: ${parseFloat(user?.credit_balance||0).toFixed(2)} cr · Pack: ${r.pack_id} · ${date}
+          </div>
+          ${r.upi_ref ? `<div style="font-size:12px;color:var(--text-muted);margin-top:3px;font-family:var(--font-mono)">UPI Ref: ${esc(r.upi_ref)}</div>` : ''}
+          ${r.admin_note ? `<div style="font-size:12px;color:var(--text-disabled);margin-top:4px">Admin note: ${esc(r.admin_note)}</div>` : ''}
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0">
+          ${r.screenshot_url ? `
+            <button class="db-action-btn" style="font-size:12px;padding:8px 14px" data-pay-screenshot="${esc(r.screenshot_url)}">
+              📸 Screenshot
+            </button>` : ''}
+          ${r.status === 'pending' ? `
+            <button class="db-action-btn primary" style="font-size:12px;padding:8px 14px" data-pay-approve="${r.id}">
+              ✅ Approve
+            </button>
+            <button class="db-action-btn danger" style="font-size:12px;padding:8px 14px" data-pay-reject="${r.id}">
+              ❌ Reject
+            </button>` : ''}
+        </div>
+      </div>
+    </div>`;
+}
+
+async function handlePayApprove(id) {
+  const note = prompt('Approval note (optional):') || '';
+  if (note === null) return; // cancelled
+  try {
+    await adminSB.approvePayment(id, note);
+    toast('✅ Payment approved! Credits added.', 'success');
+    loadPayments(currentPayFilter);
+    loadStats();
+  } catch (e) {
+    toast(e?.data?.error || 'Approval failed', 'error');
+  }
+}
+
+async function handlePayReject(id) {
+  const note = prompt('Rejection reason (required for user):');
+  if (!note) return;
+  try {
+    await adminSB.rejectPayment(id, note);
+    toast('Payment rejected.', 'info');
+    loadPayments(currentPayFilter);
+  } catch (e) {
+    toast(e?.data?.error || 'Rejection failed', 'error');
+  }
+}
+
+function viewScreenshot(url) {
+  const modal = document.getElementById('ssModal');
+  document.getElementById('ssModalImg').src = url;
+  modal.style.display = 'flex';
+}
+
+// ── Users ─────────────────────────────────────────────────────────
+let usersPage = 0;
+async function loadUsers(page = 0) {
+  usersPage = page;
+  const el     = document.getElementById('usersList');
+  const search = document.getElementById('userSearch')?.value.trim() || '';
+  el.innerHTML = '<div class="db-skel" style="height:60px;border-radius:12px;margin-bottom:8px"></div>'.repeat(4);
+  try {
+    const { data } = await adminSB.getUsers({ page, search, limit: 15 });
+    const users = data.users;
+    const total = data.total;
+
+    if (!users.length) {
+      el.innerHTML = `<div class="db-empty"><div class="db-empty-icon">🔍</div><h3 class="db-empty-title">No users found</h3></div>`;
+      return;
+    }
+    el.innerHTML = users.map(u => renderUserRow(u)).join('');
+    el.querySelectorAll('[data-usr-ban]').forEach(btn   => btn.addEventListener('click', () => handleBan(btn.dataset.usrBan, true)));
+    el.querySelectorAll('[data-usr-unban]').forEach(btn => btn.addEventListener('click', () => handleBan(btn.dataset.usrUnban, false)));
+    el.querySelectorAll('[data-usr-grant]').forEach(btn => btn.addEventListener('click', () => openGrantModal(btn.dataset.usrGrant, btn.dataset.usrName)));
+
+    const pbtns = document.getElementById('usersPageBtns');
+    pbtns.innerHTML = `
+      <button onclick="loadUsers(${page-1})" ${page===0?'disabled':''} class="db-action-btn" style="padding:8px 16px">← Prev</button>
+      <span style="align-self:center;font-size:13px;color:var(--text-muted)">Page ${page+1} · ${total} total</span>
+      <button onclick="loadUsers(${page+1})" ${users.length<15?'disabled':''} class="db-action-btn" style="padding:8px 16px">Next →</button>
+    `;
+  } catch (e) {
+    el.innerHTML = `<div style="color:var(--error);padding:12px;font-size:13px">❌ ${e?.data?.error || 'Failed'}</div>`;
+  }
+}
+
+function renderUserRow(u) {
+  const date = new Date(u.created_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+  return `
+    <div style="
+      background:var(--color-surface-1);border:1px solid var(--border);border-radius:14px;
+      padding:14px 16px;margin-bottom:8px;
+      ${u.is_banned ? 'border-left:3px solid var(--error)' : ''}
+    ">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
+            <span style="font-weight:700;font-size:14px">@${esc(u.username)}</span>
+            ${u.is_banned ? `<span style="padding:2px 8px;border-radius:100px;font-size:10px;font-weight:700;background:var(--error-bg);color:var(--error)">🚫 BANNED</span>` : ''}
+            ${u.roles?.includes('admin') ? `<span style="padding:2px 8px;border-radius:100px;font-size:10px;font-weight:700;background:rgba(255,107,53,.12);color:var(--fire)">🛡️ ADMIN</span>` : ''}
+          </div>
+          <div style="font-size:12px;color:var(--text-muted)">${esc(u.email)}</div>
+          <div style="font-size:11px;color:var(--text-disabled);margin-top:3px">
+            Joined ${date} · 💎 ${parseFloat(u.credit_balance||0).toFixed(2)} credits
+          </div>
+          ${u.ban_reason ? `<div style="font-size:11px;color:var(--error);margin-top:2px">Ban reason: ${esc(u.ban_reason)}</div>` : ''}
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap">
+          <button class="db-action-btn" style="padding:7px 12px;font-size:12px"
+                  data-usr-grant="${u.id}" data-usr-name="${esc(u.username)}">💎 Credits</button>
+          ${u.is_banned
+            ? `<button class="db-action-btn primary" style="padding:7px 12px;font-size:12px" data-usr-unban="${u.id}">✅ Unban</button>`
+            : `<button class="db-action-btn danger"  style="padding:7px 12px;font-size:12px" data-usr-ban="${u.id}">🚫 Ban</button>`
+          }
+        </div>
+      </div>
+    </div>`;
+}
+
+async function handleBan(userId, ban) {
+  const action = ban ? 'ban' : 'unban';
+  if (!confirm(`Are you sure you want to ${action} this user?`)) return;
+  try {
+    await adminSB.banUser(userId, ban);
+    toast(`User ${ban ? 'banned' : 'unbanned'} successfully`, ban ? 'error' : 'success');
+    loadUsers(usersPage);
+  } catch (e) {
+    toast(e?.data?.error || 'Action failed', 'error');
+  }
+}
+
+// ── Grant Credits Modal ───────────────────────────────────────────
+let grantUserId = null;
+function openGrantModal(userId, username) {
+  grantUserId = userId;
+  document.getElementById('grantUsername').textContent = '@' + username;
+  document.getElementById('grantAmount').value = '5';
+  document.getElementById('grantReason').value = '';
+  document.getElementById('grantModal').style.display = 'flex';
+}
+window.closeGrantModal = function() {
+  document.getElementById('grantModal').style.display = 'none';
+  grantUserId = null;
+};
+document.getElementById('confirmGrantBtn').addEventListener('click', async () => {
+  const amount = parseFloat(document.getElementById('grantAmount').value);
+  const reason = document.getElementById('grantReason').value.trim() || `Admin grant: ${amount} credits`;
+  if (!amount || amount <= 0) { toast('Enter valid amount', 'error'); return; }
+  const btn = document.getElementById('confirmGrantBtn');
+  btn.disabled = true; btn.textContent = 'Granting…';
+  try {
+    await adminSB.grantCredits(grantUserId, amount, reason);
+    closeGrantModal();
+    toast(`✅ ${amount} credits granted!`, 'success');
+    loadUsers(usersPage);
+  } catch (e) {
+    toast(e?.data?.error || 'Grant failed', 'error');
+  } finally { btn.disabled = false; btn.textContent = 'Grant →'; }
+});
+
+// ── Broadcast ─────────────────────────────────────────────────────
+let broadcastType = 'info';
+document.querySelectorAll('[data-btype]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-btype]').forEach(b => b.classList.remove('is-active'));
+    btn.classList.add('is-active');
+    broadcastType = btn.dataset.btype;
+  });
+});
+document.getElementById('sendBroadcastBtn').addEventListener('click', async () => {
+  const msg = document.getElementById('broadcastMsg').value.trim();
+  if (!msg) { toast('Enter a message', 'error'); return; }
+  if (!confirm(`Send this broadcast to all users?`)) return;
+  const btn = document.getElementById('sendBroadcastBtn');
+  btn.disabled = true; btn.textContent = '⏳ Sending…';
+  try {
+    await adminSB.broadcast({ message: msg, type: broadcastType });
+    toast('📢 Broadcast sent to all users!', 'success');
+    document.getElementById('broadcastMsg').value = '';
+  } catch (e) {
+    toast(e?.data?.error || 'Broadcast failed', 'error');
+  } finally { btn.disabled = false; btn.textContent = '📢 Send to All Users'; }
+});
+
+// ── User search ───────────────────────────────────────────────────
+let searchTimer;
+document.getElementById('userSearch')?.addEventListener('input', () => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => loadUsers(0), 400);
+});
+
+// ── Init ──────────────────────────────────────────────────────────
+loadStats();
+loadPayments('pending');
+
+// Helpers
+function setText(id, v) { const el = document.getElementById(id); if (el) el.textContent = v; }
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// expose for onclick
+window.loadStats = loadStats;
 </script>
 </body>
 </html>
