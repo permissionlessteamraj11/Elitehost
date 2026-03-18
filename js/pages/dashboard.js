@@ -1,197 +1,124 @@
 /**
- * EliteHosting — Dashboard Overview JS
+ * EliteHosting — Dashboard Overview JS (Fixed)
  */
-import { auth } from '../core/auth.js';
-import { profileSB, deploymentsSB, creditsSB, notificationsSB } from '../core/supabase.js';
-import { toast } from '../components/toast.js';
+import { auth }                               from '../core/auth.js';
+import { profileSB, deploymentsSB, creditsSB } from '../core/supabase.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
-  await auth.requireAuth();
-
-  initSidebar();
+  try { await auth.requireAuth(); } catch { return; }
   await Promise.all([loadProfile(), loadStats(), loadRecentDeploys(), loadCredits()]);
-  subscribeNotifications();
 });
 
-/* ── Sidebar ──────────────────────────────────────────────────── */
-function initSidebar() {
-  const toggle = document.getElementById('sidebarToggle');
-  const sidebar = document.getElementById('sidebar');
-  toggle?.addEventListener('click', () => {
-    sidebar?.classList.toggle('mobile-open');
-    toggle.setAttribute('aria-expanded', sidebar?.classList.contains('mobile-open') ? 'true' : 'false');
-  });
-
-  // Close sidebar on mobile link click
-  document.querySelectorAll('.nav-item').forEach(item => {
-    item.addEventListener('click', () => {
-      if (window.innerWidth < 768) sidebar?.classList.remove('mobile-open');
-    });
-  });
-
-  // Set active nav item
-  const path = location.pathname;
-  document.querySelectorAll('.nav-item[href]').forEach(a => {
-    a.classList.toggle('active', a.getAttribute('href') === path);
-  });
-}
-
-/* ── Load Profile ─────────────────────────────────────────────── */
+/* ── Profile ───────────────────────────────────────────────────── */
 async function loadProfile() {
   try {
-    const { data: profile } = await profileSB.getMe();
-    setText('userName',    profile.username);
-    setText('userEmail',   profile.email);
-    setText('userInitial', (profile.username?.[0] || '?').toUpperCase());
-    setText('sidebarUsername', '@' + profile.username);
-
-    // Set credit balance everywhere
-    const bal = parseFloat(profile.credit_balance || 0).toFixed(2);
-    document.querySelectorAll('.credit-balance').forEach(el => el.textContent = bal);
-
-    // Welcome message
+    const { data: p } = await profileSB.getMe();
     const hour = new Date().getHours();
     const greet = hour < 12 ? '🌅 Good morning' : hour < 17 ? '☀️ Good afternoon' : '🌙 Good evening';
-    setText('greetMsg', `${greet}, ${profile.username || 'developer'}!`);
-  } catch (err) {
-    console.error('Profile load failed', err);
+    setText('greetTime', greet);
+    setText('greetName', p.username || 'developer');
+
+    // Credit balance everywhere
+    const bal = parseFloat(p.credit_balance ?? 0);
+    document.querySelectorAll('.credit-balance').forEach(el => el.textContent = bal.toFixed(2));
+
+    // Low credit warning
+    if (bal < 1.5) {
+      const w = document.getElementById('creditWarning');
+      if (w) {
+        w.style.display = 'flex';
+        setText('creditWarnBal', bal.toFixed(2));
+      }
+    }
+  } catch (e) {
+    console.error('Profile load:', e);
+    window.dbToast?.('Could not load profile', 'error');
   }
 }
 
-/* ── Load Stats ───────────────────────────────────────────────── */
+/* ── Stats ─────────────────────────────────────────────────────── */
 async function loadStats() {
   try {
     const { data } = await deploymentsSB.list({ limit: 100 });
-    const deps = data?.deployments || [];
-
-    const running  = deps.filter(d => d.status === 'running').length;
-    const failed   = deps.filter(d => d.status === 'failed').length;
-    const total    = deps.length;
-
-    setText('statRunning',  running);
-    setText('statTotal',    total);
-    setText('statFailed',   failed);
-    setText('statUptime',   running ? '99.8%' : '—');
-
-    // Animate stat cards
-    document.querySelectorAll('.stat-card').forEach((el, i) => {
-      el.style.animationDelay = `${i * 80}ms`;
-      el.classList.add('anim-fade-in');
-    });
+    const deps   = data.deployments;
+    const running = deps.filter(d => d.status === 'running').length;
+    setText('statRunning', running);
+    setText('statTotal',   deps.length);
+    setText('statFailed',  deps.filter(d => d.status === 'failed').length);
   } catch {
     setText('statRunning', '—');
     setText('statTotal',   '—');
+    setText('statFailed',  '—');
   }
 }
 
-/* ── Recent Deploys ───────────────────────────────────────────── */
+/* ── Credits ───────────────────────────────────────────────────── */
+async function loadCredits() {
+  try {
+    const { data } = await creditsSB.getBalance();
+    const bal = parseFloat(data.balance ?? 0).toFixed(2);
+    document.querySelectorAll('.credit-balance').forEach(el => el.textContent = bal);
+  } catch {}
+}
+
+/* ── Recent Deploys ────────────────────────────────────────────── */
 async function loadRecentDeploys() {
   const container = document.getElementById('recentDeploys');
   if (!container) return;
-
   try {
     const { data } = await deploymentsSB.list({ limit: 5 });
-    const deps = data?.deployments || [];
-
+    const deps = data.deployments;
     if (!deps.length) {
       container.innerHTML = `
-        <div class="empty-state" style="text-align:center;padding:var(--s10)">
-          <div style="font-size:40px;margin-bottom:var(--s4)">🚀</div>
-          <h3 style="margin-bottom:var(--s2)">No deployments yet</h3>
-          <p style="color:var(--text-muted);margin-bottom:var(--s5)">
-            Deploy your first app in under 30 seconds
-          </p>
-          <a href="/dashboard/deploy-new.html" class="btn btn-electric btn-md">
-            ⚡ New Deployment
+        <div class="db-empty">
+          <div class="db-empty-icon">🚀</div>
+          <h3 class="db-empty-title">No apps yet</h3>
+          <p class="db-empty-sub">Deploy your first app in 30 seconds</p>
+          <a href="/dashboard/deploy-new.html"
+             style="display:inline-flex;align-items:center;gap:6px;padding:12px 24px;background:var(--grad-electric);border-radius:100px;color:#000;font-weight:700;font-size:14px;text-decoration:none;touch-action:manipulation">
+            ⚡ Deploy Now
           </a>
-        </div>
-      `;
+        </div>`;
       return;
     }
-
     container.innerHTML = deps.map(dep => renderDeployCard(dep)).join('');
-  } catch {
-    container.innerHTML = `<div class="card" style="color:var(--error);padding:var(--s5)">
-      Failed to load deployments.
-    </div>`;
+  } catch (e) {
+    container.innerHTML = `
+      <div class="db-card" style="color:var(--error);font-size:13px">
+        ❌ Failed to load apps. <button onclick="location.reload()"
+          style="color:var(--electric);background:none;border:none;cursor:pointer;text-decoration:underline">Retry</button>
+      </div>`;
   }
 }
 
 function renderDeployCard(dep) {
-  const STATUS_MAP = {
-    running:   { emoji: '🟢', cls: 'running',   label: 'Running'   },
-    building:  { emoji: '🔵', cls: 'building',  label: 'Building'  },
-    deploying: { emoji: '🟡', cls: 'deploying', label: 'Deploying' },
-    stopped:   { emoji: '⚪', cls: 'stopped',   label: 'Stopped'   },
-    failed:    { emoji: '🔴', cls: 'failed',    label: 'Failed'    },
-    pending:   { emoji: '🟣', cls: 'pending',   label: 'Pending'   },
+  const STATUS = {
+    running:   'st-running',
+    building:  'st-building',
+    deploying: 'st-building',
+    stopped:   'st-stopped',
+    failed:    'st-failed',
+    pending:   'st-building',
   };
-  const s = STATUS_MAP[dep.status] || STATUS_MAP.stopped;
-  const updatedAt = new Date(dep.updated_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+  const BADGE = {
+    running:'Running', building:'Building', deploying:'Deploying',
+    stopped:'Stopped', failed:'Failed', pending:'Starting…',
+  };
+  const cls   = STATUS[dep.status] || 'st-stopped';
+  const badge = BADGE[dep.status]  || 'Unknown';
+  const meta  = dep.repo_url ? dep.repo_url.replace('https://github.com/','') : dep.framework || 'App';
+  const date  = new Date(dep.updated_at).toLocaleDateString('en-IN',{day:'numeric',month:'short'});
 
   return `
-    <a href="/dashboard/deploy-detail.html?id=${dep.id}" class="deploy-card ${s.cls}" aria-label="View ${dep.name}">
-      <div>
-        <div class="deploy-card-name">${escHtml(dep.name)}</div>
-        ${dep.public_url ? `<div class="deploy-card-url">${dep.public_url.replace('https://','')}</div>` : ''}
-        <div class="deploy-card-meta">
-          <span>${dep.source_type === 'git' ? '⑇ Git' : '📦 ZIP'}</span>
-          <span>${dep.framework || 'Auto'}</span>
-          <span>Updated ${updatedAt}</span>
-        </div>
+    <a href="/dashboard/deploy-detail.html?id=${dep.id}" class="db-deploy-card ${cls}">
+      <div class="db-deploy-dot"></div>
+      <div class="db-deploy-info">
+        <div class="db-deploy-name">${esc(dep.name)}</div>
+        <div class="db-deploy-meta">${esc(meta)} · ${date}</div>
       </div>
-      <div class="deploy-card-actions">
-        <span class="badge badge-${s.cls}">${s.emoji} ${s.label}</span>
-      </div>
-    </a>
-  `;
+      <span class="db-deploy-badge">${badge}</span>
+    </a>`;
 }
 
-/* ── Credits ────────────────────────────────────────────────────── */
-async function loadCredits() {
-  try {
-    const { data } = await creditsSB.getBalance();
-    const bal = parseFloat(data?.balance || 0);
-    document.querySelectorAll('.credit-balance').forEach(el => el.textContent = bal.toFixed(2));
-
-    // Credit warning
-    if (bal < 1.5) {
-      const warning = document.getElementById('creditWarning');
-      if (warning) {
-        warning.style.display = 'flex';
-        setText('creditWarnBalance', bal.toFixed(2));
-      }
-    }
-  } catch { /* non-fatal */ }
-}
-
-/* ── Notifications ──────────────────────────────────────────────── */
-function subscribeNotifications() {
-  notificationsSB.subscribe((notification) => {
-    const msg = notification.message || notification.title;
-    if (!msg) return;
-    const type = notification.type || 'info';
-    toast[type === 'success' ? 'success' : type === 'error' ? 'error' : 'info'](msg);
-    updateNotifBadge();
-  });
-}
-
-function updateNotifBadge() {
-  const badge = document.getElementById('notifBadge');
-  if (!badge) return;
-  const current = parseInt(badge.textContent) || 0;
-  badge.textContent = current + 1;
-  badge.style.display = 'flex';
-}
-
-/* ── Helpers ────────────────────────────────────────────────────── */
-function setText(id, txt) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = txt;
-}
-
-function escHtml(str) {
-  return String(str)
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
+function setText(id, txt) { const el = document.getElementById(id); if (el) el.textContent = txt; }
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
