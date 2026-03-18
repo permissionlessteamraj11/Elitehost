@@ -5,8 +5,8 @@
  */
 
 // ── CONFIG ───────────────────────────────────────────────────────
-const SUPABASE_URL = window.__ENV?.SUPABASE_URL || 'https://YOUR_PROJECT.supabase.co';
-const SUPABASE_ANON_KEY = window.__ENV?.SUPABASE_ANON_KEY || 'YOUR_ANON_KEY';
+const SUPABASE_URL = window.__ENV?.SUPABASE_URL || 'https://jrjzkpxlpiovhwithxbo.supabase.co';
+const SUPABASE_ANON_KEY = window.__ENV?.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpyanprcHhscGlvdmh3aXRoeGJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkyNDUzNDQsImV4cCI6MjA4NDgyMTM0NH0.aRbGjlOVUrRK5Ji-P1W-LJ6HUVYuJeU2pixABEWCYYY';
 
 // ── Load Supabase SDK ─────────────────────────────────────────────
 let _client = null;
