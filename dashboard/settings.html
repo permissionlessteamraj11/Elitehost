@@ -2,200 +2,191 @@
 <html lang="en-IN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Settings — EliteHosting.in</title>
-  <meta name="robots" content="noindex, nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#03020A">
-  <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Settings — EliteHosting.in</title>
+  <link rel="icon" href="/assets/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/variables.css">
   <link rel="stylesheet" href="/css/base.css">
   <link rel="stylesheet" href="/css/components.css">
-  <link rel="stylesheet" href="/css/animations.css">
   <link rel="stylesheet" href="/css/pages/dashboard.css">
 </head>
 <body>
-<div class="dashboard-layout">
-  <aside id="sidebar" class="sidebar"></aside>
-  <div class="dashboard-main">
-    <header id="topbar" class="topbar"></header>
-    <main class="dashboard-content" aria-label="Settings">
+<div id="db-toast"></div>
+<div class="db-layout">
+  <aside id="db-sidebar" class="db-sidebar"></aside>
+  <div class="db-main">
+    <header id="db-topbar" class="db-topbar"></header>
+    <main class="db-page" aria-label="Settings">
 
-      <div style="margin-bottom:var(--s6)">
-        <h2>⚙️ Settings</h2>
-        <p style="color:var(--text-muted);margin-top:var(--s1)">Manage your account, security, and integrations</p>
+      <div class="db-page-header">
+        <h2 class="db-page-title">⚙️ Settings</h2>
+        <p class="db-page-sub">Account, security, integrations</p>
       </div>
 
-      <div style="display:grid;grid-template-columns:200px 1fr;gap:var(--s6);align-items:start" class="settings-layout">
+      <!-- Settings tab pills -->
+      <div class="db-settings-tabs" role="tablist">
+        <button class="db-settings-tab is-active" data-stab="profile"  role="tab">👤 Profile</button>
+        <button class="db-settings-tab"           data-stab="security" role="tab">🔒 Security</button>
+        <button class="db-settings-tab"           data-stab="telegram" role="tab">📱 Telegram</button>
+        <button class="db-settings-tab"           data-stab="referral" role="tab">🤝 Referral</button>
+        <button class="db-settings-tab"           data-stab="danger"   role="tab" style="color:var(--error)">⚠️ Danger</button>
+      </div>
 
-        <!-- Settings Nav -->
-        <nav class="card" style="padding:var(--s3)" aria-label="Settings sections">
-          <button class="nav-item w-full active" data-settings-tab="profile"   style="text-align:left">👤 Profile</button>
-          <button class="nav-item w-full" data-settings-tab="security"  style="text-align:left">🔒 Security</button>
-          <button class="nav-item w-full" data-settings-tab="telegram"  style="text-align:left">📱 Telegram</button>
-          <button class="nav-item w-full" data-settings-tab="referral"  style="text-align:left">🤝 Referral</button>
-          <button class="nav-item w-full" data-settings-tab="danger"    style="text-align:left;color:var(--error)">⚠️ Danger Zone</button>
-        </nav>
-
-        <!-- Settings Panels -->
-        <div>
-          <!-- Profile Panel -->
-          <div data-settings-panel="profile" class="active">
-            <div class="card" style="padding:var(--s6)">
-              <h3 style="margin-bottom:var(--s5)">Profile Settings</h3>
-              <div style="display:flex;align-items:center;gap:var(--s4);margin-bottom:var(--s6)">
-                <div style="width:64px;height:64px;border-radius:50%;background:var(--grad-electric);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:var(--color-void);flex-shrink:0" id="settingAvatar">?</div>
-                <div>
-                  <div style="font-weight:600" id="settingUsername">…</div>
-                  <div style="font-size:var(--text-sm);color:var(--text-muted)" id="settingEmailDisplay">…</div>
-                  <div style="font-size:var(--text-xs);color:var(--text-disabled);margin-top:var(--s1)">Joined <span id="settingCreatedAt">…</span></div>
-                </div>
-              </div>
-              <form id="profileForm">
-                <div class="input-group" style="margin-bottom:var(--s4)">
-                  <label class="input-label" for="settingDisplayName">Display Name</label>
-                  <div class="input-wrapper">
-                    <span class="input-icon">✏️</span>
-                    <input type="text" id="settingDisplayName" class="input" placeholder="Your display name" maxlength="50">
-                  </div>
-                </div>
-                <div class="input-group" style="margin-bottom:var(--s5)">
-                  <label class="input-label">Email Address</label>
-                  <div class="input-wrapper">
-                    <span class="input-icon">📧</span>
-                    <input type="email" id="settingEmail" class="input" disabled style="opacity:.6;cursor:not-allowed">
-                  </div>
-                  <span class="input-hint">Email changes — contact support@elitehosting.in</span>
-                </div>
-                <button type="submit" class="btn btn-electric btn-md">Save Changes</button>
-              </form>
+      <!-- Profile -->
+      <div data-spanel="profile" class="db-settings-panel">
+        <div class="db-card" style="margin-bottom:14px">
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px">
+            <div id="settingAvatar" style="width:56px;height:56px;border-radius:50%;background:var(--grad-electric);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#000;flex-shrink:0">?</div>
+            <div>
+              <div id="settingUsername" style="font-weight:700;font-size:15px">…</div>
+              <div id="settingEmailDisplay" style="font-size:13px;color:var(--text-muted)">…</div>
+              <div style="font-size:11px;color:var(--text-disabled);margin-top:2px">Joined <span id="settingCreatedAt">…</span></div>
             </div>
           </div>
-
-          <!-- Security Panel -->
-          <div data-settings-panel="security" style="display:none">
-            <div class="card" style="padding:var(--s6)">
-              <h3 style="margin-bottom:var(--s5)">Change Password</h3>
-              <form id="passwordForm">
-                <div class="input-group" style="margin-bottom:var(--s4)">
-                  <label class="input-label" for="newPassword">New Password</label>
-                  <div class="input-wrapper">
-                    <span class="input-icon">🔒</span>
-                    <input type="password" id="newPassword" class="input" placeholder="Min 8 characters" required minlength="8" autocomplete="new-password">
-                  </div>
-                  <div class="strength-meter">
-                    <div class="strength-bar">
-                      <div class="strength-seg" data-pass-seg="1"></div>
-                      <div class="strength-seg" data-pass-seg="2"></div>
-                      <div class="strength-seg" data-pass-seg="3"></div>
-                      <div class="strength-seg" data-pass-seg="4"></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="input-group" style="margin-bottom:var(--s5)">
-                  <label class="input-label" for="confirmPassword">Confirm New Password</label>
-                  <div class="input-wrapper">
-                    <span class="input-icon">🔒</span>
-                    <input type="password" id="confirmPassword" class="input" placeholder="Repeat new password" required autocomplete="new-password">
-                  </div>
-                </div>
-                <button type="submit" class="btn btn-electric btn-md">Update Password</button>
-              </form>
-            </div>
-          </div>
-
-          <!-- Telegram Panel -->
-          <div data-settings-panel="telegram" style="display:none">
-            <div class="card" style="padding:var(--s6)">
-              <h3 style="margin-bottom:var(--s5)">📱 Telegram Integration</h3>
-              <div id="telegramUnlinked">
-                <p style="color:var(--text-muted);margin-bottom:var(--s5)">
-                  Link your Telegram account to get instant notifications, control deployments, and run commands via @elitehosting_bot.
-                </p>
-                <div style="display:flex;flex-direction:column;gap:var(--s3);margin-bottom:var(--s5)">
-                  <div class="alert alert-info">📲 Start: <code>@elitehosting_bot /start</code></div>
-                  <div class="alert alert-info">🔔 Notifications when deploys go live or fail</div>
-                  <div class="alert alert-info">🎮 <code>/status</code>, <code>/redeploy</code>, <code>/stop</code> commands</div>
-                </div>
-                <button id="btnLinkTelegram" class="btn btn-electric btn-md">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.833.941z"/></svg>
-                  Generate Telegram Link
-                </button>
-              </div>
-              <div id="telegramLinked" style="display:none">
-                <div class="alert alert-success">
-                  ✅ Telegram linked: <strong id="telegramStatus"></strong>
-                </div>
+          <form id="profileForm">
+            <div class="db-field">
+              <label class="db-label" for="settingDisplayName">Display Name</label>
+              <div class="db-input-wrap">
+                <input type="text" id="settingDisplayName" class="db-input" placeholder="Your display name" maxlength="50">
+                <span class="db-input-icon">✏️</span>
               </div>
             </div>
-          </div>
-
-          <!-- Referral Panel -->
-          <div data-settings-panel="referral" style="display:none">
-            <div class="card" style="padding:var(--s6)">
-              <h3 style="margin-bottom:var(--s5)">🤝 Referral Program</h3>
-              <p style="color:var(--text-muted);margin-bottom:var(--s5)">
-                Refer developers to EliteHosting and earn <strong style="color:var(--mint)">0.5 credits</strong> for each signup!
-              </p>
-
-              <div class="input-group" style="margin-bottom:var(--s4)">
-                <label class="input-label">Your Referral Code</label>
-                <div style="display:flex;align-items:center;gap:var(--s3)">
-                  <code class="input" style="flex:1;background:var(--color-surface-2)" id="myReferralCode">—</code>
-                </div>
+            <div class="db-field">
+              <label class="db-label">Email</label>
+              <div class="db-input-wrap">
+                <input type="email" id="settingEmail" class="db-input" disabled style="opacity:.55;cursor:not-allowed">
+                <span class="db-input-icon">📧</span>
               </div>
+              <div class="db-hint">To change email, contact support@elitehosting.in</div>
+            </div>
+            <button type="submit"
+              style="padding:12px 24px;background:var(--grad-electric);border:none;border-radius:100px;color:#000;font-size:13px;font-weight:700;cursor:pointer;touch-action:manipulation;min-height:44px">
+              Save Changes
+            </button>
+          </form>
+        </div>
+      </div>
 
-              <div class="input-group" style="margin-bottom:var(--s5)">
-                <label class="input-label">Referral Link</label>
-                <div style="display:flex;align-items:center;gap:var(--s3)">
-                  <code class="input" style="flex:1;background:var(--color-surface-2);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" id="referralLink">—</code>
-                  <button id="btnCopyReferral" class="btn btn-electric btn-sm" aria-label="Copy referral link">📋 Copy</button>
-                </div>
+      <!-- Security -->
+      <div data-spanel="security" class="db-settings-panel" style="display:none">
+        <div class="db-card">
+          <h3 style="font-size:15px;font-weight:700;margin-bottom:16px">Change Password</h3>
+          <form id="passwordForm">
+            <div class="db-field">
+              <label class="db-label" for="newPassword">New Password</label>
+              <div class="db-input-wrap">
+                <input type="password" id="newPassword" class="db-input" placeholder="Min 8 characters" autocomplete="new-password" minlength="8" style="padding-right:44px">
+                <span class="db-input-icon">🔑</span>
+                <button type="button" id="passToggle" class="db-pass-toggle">👁</button>
               </div>
-
-              <button id="btnShareReferral" class="btn btn-ghost btn-md">🔗 Share Link</button>
-
-              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s4);margin-top:var(--s6)">
-                <div class="card card-sm text-center">
-                  <div style="font-size:var(--text-2xl);font-weight:800;color:var(--electric)" id="refTotal">—</div>
-                  <div style="font-size:var(--text-xs);color:var(--text-muted)">Total Referrals</div>
+              <div class="db-strength">
+                <div class="db-str-bar">
+                  <div class="db-str-seg" data-seg="1"></div>
+                  <div class="db-str-seg" data-seg="2"></div>
+                  <div class="db-str-seg" data-seg="3"></div>
+                  <div class="db-str-seg" data-seg="4"></div>
                 </div>
-                <div class="card card-sm text-center">
-                  <div style="font-size:var(--text-2xl);font-weight:800;color:var(--mint)" id="refEarned">—</div>
-                  <div style="font-size:var(--text-xs);color:var(--text-muted)">Credits Earned</div>
-                </div>
-                <div class="card card-sm text-center">
-                  <div style="font-size:var(--text-2xl);font-weight:800;color:var(--fire)" id="refPending">—</div>
-                  <div style="font-size:var(--text-xs);color:var(--text-muted)">Pending</div>
-                </div>
+                <span class="db-str-label" id="strLabel"></span>
               </div>
             </div>
+            <div class="db-field">
+              <label class="db-label" for="confirmPassword">Confirm Password</label>
+              <div class="db-input-wrap">
+                <input type="password" id="confirmPassword" class="db-input" placeholder="Repeat new password" autocomplete="new-password">
+                <span class="db-input-icon">🔑</span>
+              </div>
+              <div class="db-error-msg" id="passErr"></div>
+            </div>
+            <button type="submit"
+              style="padding:12px 24px;background:var(--grad-electric);border:none;border-radius:100px;color:#000;font-size:13px;font-weight:700;cursor:pointer;touch-action:manipulation;min-height:44px">
+              Update Password
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Telegram -->
+      <div data-spanel="telegram" class="db-settings-panel" style="display:none">
+        <div class="db-card">
+          <h3 style="font-size:15px;font-weight:700;margin-bottom:12px">📱 Telegram Integration</h3>
+          <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;line-height:1.65">
+            Link Telegram to get instant deploy notifications and control apps via <code>@elitehosting_bot</code>.
+          </p>
+          <div id="telegramUnlinked">
+            <div style="background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.12);border-radius:12px;padding:12px 14px;font-size:13px;color:var(--electric);margin-bottom:14px">
+              📲 Start <strong>@elitehosting_bot</strong> on Telegram to link your account
+            </div>
+            <button id="btnLinkTelegram" type="button"
+              style="padding:12px 24px;background:linear-gradient(135deg,#2563EB,#1D4ED8);border:none;border-radius:100px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;touch-action:manipulation;min-height:44px">
+              📱 Generate Link Token
+            </button>
           </div>
-
-          <!-- Danger Zone -->
-          <div data-settings-panel="danger" style="display:none">
-            <div class="card" style="padding:var(--s6);border-color:rgba(220,38,38,0.3)">
-              <h3 style="margin-bottom:var(--s5);color:var(--error)">⚠️ Danger Zone</h3>
-
-              <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--s4);padding:var(--s4) 0;border-bottom:1px solid var(--border)">
-                <div>
-                  <div style="font-weight:600;margin-bottom:var(--s1)">Sign out everywhere</div>
-                  <div style="font-size:var(--text-sm);color:var(--text-muted)">Sign out from all browsers and devices</div>
-                </div>
-                <button id="btnSignOutAll" class="btn btn-ghost btn-md">Sign Out All Devices</button>
-              </div>
-
-              <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--s4);padding:var(--s4) 0">
-                <div>
-                  <div style="font-weight:600;margin-bottom:var(--s1);color:var(--error)">Delete Account</div>
-                  <div style="font-size:var(--text-sm);color:var(--text-muted)">Permanently delete your account and all data</div>
-                </div>
-                <button id="btnDeleteAccount" class="btn btn-danger btn-md">Delete My Account</button>
-              </div>
+          <div id="telegramLinked" style="display:none">
+            <div style="background:rgba(0,255,163,.08);border:1px solid rgba(0,255,163,.2);border-radius:12px;padding:12px 14px;font-size:13px;color:var(--mint)">
+              ✅ Linked: <strong id="telegramStatus"></strong>
             </div>
           </div>
+        </div>
+      </div>
 
+      <!-- Referral -->
+      <div data-spanel="referral" class="db-settings-panel" style="display:none">
+        <div class="db-card" style="margin-bottom:14px">
+          <h3 style="font-size:15px;font-weight:700;margin-bottom:12px">🤝 Referral Program</h3>
+          <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px">
+            Earn <strong style="color:var(--mint)">0.5 credits</strong> for every developer you refer!
+          </p>
+          <div class="db-field">
+            <label class="db-label">Your Referral Code</label>
+            <div style="display:flex;gap:8px">
+              <input type="text" id="myReferralCode" class="db-input mono" readonly value="—" style="flex:1">
+              <button id="btnCopyReferral" type="button"
+                style="padding:0 16px;background:var(--electric-soft);border:1px solid rgba(0,212,255,.25);border-radius:12px;color:var(--electric);font-size:13px;font-weight:600;cursor:pointer;touch-action:manipulation;min-height:50px;white-space:nowrap">
+                📋 Copy
+              </button>
+            </div>
+          </div>
+          <button id="btnShareReferral" type="button"
+            style="width:100%;padding:12px;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);border-radius:12px;color:var(--electric);font-size:13px;font-weight:600;cursor:pointer;touch-action:manipulation;min-height:44px;margin-top:4px">
+            🔗 Share Referral Link
+          </button>
+        </div>
+        <div class="db-stats">
+          <div class="db-stat s-electric">
+            <div class="db-stat-icon">👥</div>
+            <div class="db-stat-val" id="refTotal">—</div>
+            <div class="db-stat-label">Referrals</div>
+          </div>
+          <div class="db-stat s-mint">
+            <div class="db-stat-icon">💎</div>
+            <div class="db-stat-val" id="refEarned">—</div>
+            <div class="db-stat-label">Credits Earned</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Danger Zone -->
+      <div data-spanel="danger" class="db-settings-panel" style="display:none">
+        <div style="border:1px solid rgba(255,77,79,.25);border-radius:16px;padding:16px">
+          <h3 style="font-size:15px;font-weight:700;color:var(--error);margin-bottom:16px">⚠️ Danger Zone</h3>
+          <div class="db-danger-row">
+            <div class="info">
+              <h4>Sign out everywhere</h4>
+              <p>Sign out from all browsers and devices</p>
+            </div>
+            <button id="btnSignOutAll" type="button" class="db-action-btn">Sign Out All</button>
+          </div>
+          <div class="db-danger-row" style="margin-bottom:0">
+            <div class="info">
+              <h4 style="color:var(--error)">Delete Account</h4>
+              <p>Permanently delete all data — cannot be undone</p>
+            </div>
+            <button id="btnDeleteAccount" type="button" class="db-action-btn danger">Delete</button>
+          </div>
         </div>
       </div>
 
