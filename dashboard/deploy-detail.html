@@ -2,110 +2,115 @@
 <html lang="en-IN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Deployment — EliteHosting.in</title>
-  <meta name="robots" content="noindex, nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#03020A">
-  <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Deployment — EliteHosting.in</title>
+  <link rel="icon" href="/assets/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/variables.css">
   <link rel="stylesheet" href="/css/base.css">
   <link rel="stylesheet" href="/css/components.css">
-  <link rel="stylesheet" href="/css/animations.css">
   <link rel="stylesheet" href="/css/pages/dashboard.css">
 </head>
 <body>
-<div class="dashboard-layout">
-  <aside id="sidebar" class="sidebar"></aside>
-  <div class="dashboard-main">
-    <header id="topbar" class="topbar"></header>
-    <main class="dashboard-content" aria-label="Deployment detail">
+<div id="db-toast"></div>
+<div class="db-layout">
+  <aside id="db-sidebar" class="db-sidebar"></aside>
+  <div class="db-main">
+    <header id="db-topbar" class="db-topbar"></header>
+    <main class="db-page" aria-label="Deployment detail">
 
-      <!-- Deployment Header -->
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:var(--s4);margin-bottom:var(--s6)">
-        <div>
-          <div style="display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--s2)">
-            <a href="/dashboard/deploys.html" style="color:var(--text-muted);font-size:var(--text-sm)" aria-label="Back to deployments">← Back</a>
-          </div>
-          <div style="display:flex;align-items:center;gap:var(--s3)">
-            <h2 id="deployName" style="margin:0">Loading…</h2>
-            <span id="deployStatusBadge" class="badge">…</span>
-          </div>
-          <div id="deployUrlGroup" style="margin-top:var(--s2);display:none">
-            <a id="deployUrl" href="#" target="_blank" rel="noopener"
-               style="font-family:var(--font-mono);font-size:var(--text-sm);color:var(--electric)"></a>
-            <button id="btnCopyUrl" class="btn btn-ghost btn-xs" style="margin-left:var(--s2)" aria-label="Copy URL">📋</button>
-          </div>
+      <!-- Back + Deploy Name -->
+      <div style="margin-bottom:16px">
+        <a href="/dashboard/deploys.html"
+           style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--text-muted);text-decoration:none;margin-bottom:10px;touch-action:manipulation">
+          ← Back to Apps
+        </a>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <h2 class="db-page-title" id="deployName" style="margin:0">Loading…</h2>
+          <span id="deployStatusBadge" style="padding:4px 12px;border-radius:100px;font-size:12px;font-weight:700">…</span>
         </div>
-        <!-- Action Buttons -->
-        <div style="display:flex;gap:var(--s3);flex-wrap:wrap">
-          <button id="btnRedeploy" class="btn btn-electric btn-md">🔄 Redeploy</button>
-          <button id="btnStop"     class="btn btn-ghost btn-md">⏹ Stop</button>
-          <button id="btnDelete"   class="btn btn-danger btn-md">🗑 Delete</button>
+        <div id="deployUrlGroup" style="display:none;margin-top:8px">
+          <a id="deployUrl" href="#" target="_blank" rel="noopener"
+             style="font-family:var(--font-mono);font-size:12px;color:var(--electric)"></a>
+          <button id="btnCopyUrl"
+            style="margin-left:8px;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.2);border-radius:6px;padding:3px 8px;font-size:11px;color:var(--electric);cursor:pointer;touch-action:manipulation">
+            📋 Copy
+          </button>
         </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="db-action-row" style="margin-bottom:20px">
+        <button id="btnRedeploy" class="db-action-btn primary">🔄 Redeploy</button>
+        <button id="btnStop"     class="db-action-btn">⏹ Stop</button>
+        <button id="btnDelete"   class="db-action-btn danger">🗑 Delete</button>
       </div>
 
       <!-- Tabs -->
-      <div class="tabs" role="tablist" aria-label="Deployment sections" style="margin-bottom:var(--s5)">
-        <button class="tab active" data-tab-trigger="logs"    role="tab" aria-controls="panel-logs">📋 Build Logs</button>
-        <button class="tab" data-tab-trigger="metrics" role="tab" aria-controls="panel-metrics">📊 Metrics</button>
-        <button class="tab" data-tab-trigger="info"    role="tab" aria-controls="panel-info">ℹ️ Info</button>
+      <div class="db-tabs" role="tablist">
+        <button class="db-tab-btn is-active" data-tab="logs"    role="tab">📋 Logs</button>
+        <button class="db-tab-btn"            data-tab="metrics" role="tab">📊 Metrics</button>
+        <button class="db-tab-btn"            data-tab="info"    role="tab">ℹ️ Info</button>
       </div>
 
       <!-- Logs Panel -->
-      <div data-tab-panel="logs" id="panel-logs" class="active" role="tabpanel">
-        <div class="card" style="padding:0;overflow:hidden">
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:var(--s3) var(--s4);border-bottom:1px solid var(--border);background:var(--color-surface-2)">
-            <div style="display:flex;align-items:center;gap:var(--s2)">
-              <div class="terminal-dots">
-                <div class="t-dot t-dot-red"></div>
-                <div class="t-dot t-dot-yellow"></div>
-                <div class="t-dot t-dot-green"></div>
-              </div>
-              <span style="font-family:var(--font-mono);font-size:11px;color:var(--text-muted)">build-logs</span>
+      <div class="db-tab-panel is-active" data-panel="logs">
+        <div class="db-terminal">
+          <div class="db-terminal-bar">
+            <div class="db-terminal-dots">
+              <div class="db-tdot db-tdot-r"></div>
+              <div class="db-tdot db-tdot-y"></div>
+              <div class="db-tdot db-tdot-g"></div>
             </div>
-            <div style="display:flex;gap:var(--s2)">
-              <button id="btnPauseLogs"   class="btn btn-ghost btn-xs">⏸ Pause</button>
-              <button id="btnClearLog"    class="btn btn-ghost btn-xs">🗑 Clear</button>
-              <button id="btnDownloadLog" class="btn btn-ghost btn-xs">⬇ Download</button>
+            <span class="db-terminal-title">build-logs</span>
+            <div class="db-log-actions">
+              <button id="btnPauseLogs"   class="db-log-btn" type="button">⏸ Pause</button>
+              <button id="btnClearLog"    class="db-log-btn" type="button">🗑</button>
+              <button id="btnDownloadLog" class="db-log-btn" type="button">⬇</button>
             </div>
           </div>
-          <div id="logBody" class="terminal" style="height:420px;overflow-y:auto;padding:var(--s4)" role="log" aria-live="polite" aria-label="Build logs"></div>
+          <div id="logBody" class="db-log-body" role="log" aria-live="polite" aria-label="Build logs">
+            <span style="color:var(--text-disabled)">Waiting for logs…</span>
+          </div>
         </div>
       </div>
 
       <!-- Metrics Panel -->
-      <div data-tab-panel="metrics" id="panel-metrics" role="tabpanel" style="display:none">
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--s4);margin-bottom:var(--s5)">
-          <div class="card card-sm">
-            <div style="color:var(--text-muted);font-size:var(--text-xs);margin-bottom:var(--s2)">🖥 CPU Usage</div>
-            <div style="font-size:var(--text-2xl);font-weight:700;color:var(--electric)" id="metricCpu">—</div>
-            <canvas id="cpuChart" width="100%" height="60" style="margin-top:var(--s3)"></canvas>
+      <div class="db-tab-panel" data-panel="metrics">
+        <div class="db-metrics-grid" style="margin-bottom:16px">
+          <div class="db-metric">
+            <div class="db-metric-label">🖥 CPU</div>
+            <div class="db-metric-val" id="metricCpu" style="color:var(--electric)">—</div>
+            <canvas id="cpuChart" height="56" style="width:100%;margin-top:8px"></canvas>
           </div>
-          <div class="card card-sm">
-            <div style="color:var(--text-muted);font-size:var(--text-xs);margin-bottom:var(--s2)">🧠 RAM Usage</div>
-            <div style="font-size:var(--text-2xl);font-weight:700;color:var(--plasma)" id="metricRam">—</div>
-            <canvas id="ramChart" width="100%" height="60" style="margin-top:var(--s3)"></canvas>
+          <div class="db-metric">
+            <div class="db-metric-label">🧠 RAM</div>
+            <div class="db-metric-val" id="metricRam" style="color:var(--plasma)">—</div>
+            <canvas id="ramChart" height="56" style="width:100%;margin-top:8px"></canvas>
           </div>
-          <div class="card card-sm">
-            <div style="color:var(--text-muted);font-size:var(--text-xs);margin-bottom:var(--s2)">📥 Network In</div>
-            <div style="font-size:var(--text-2xl);font-weight:700;color:var(--mint)" id="metricNetRx">—</div>
+          <div class="db-metric">
+            <div class="db-metric-label">📥 Net In</div>
+            <div class="db-metric-val" id="metricNetRx" style="color:var(--mint)">—</div>
           </div>
-          <div class="card card-sm">
-            <div style="color:var(--text-muted);font-size:var(--text-xs);margin-bottom:var(--s2)">📤 Network Out</div>
-            <div style="font-size:var(--text-2xl);font-weight:700;color:var(--fire)" id="metricNetTx">—</div>
+          <div class="db-metric">
+            <div class="db-metric-label">📤 Net Out</div>
+            <div class="db-metric-val" id="metricNetTx" style="color:var(--fire)">—</div>
           </div>
         </div>
-        <div class="alert alert-info">
-          📊 Metrics update in real time when your app is running.
+        <div style="background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.12);border-radius:12px;padding:12px 14px;font-size:12px;color:var(--text-muted)">
+          📊 Metrics update in real-time while your app is running.
         </div>
       </div>
 
       <!-- Info Panel -->
-      <div data-tab-panel="info" id="panel-info" role="tabpanel" style="display:none">
-        <div class="card" style="padding:0;overflow:hidden">
-          <table style="width:100%;border-collapse:collapse" id="infoTableBody"></table>
+      <div class="db-tab-panel" data-panel="info">
+        <div class="db-card" style="padding:0;overflow:hidden">
+          <table id="infoTable" style="width:100%;border-collapse:collapse;font-size:13px">
+            <tbody id="infoTableBody"></tbody>
+          </table>
         </div>
       </div>
 
