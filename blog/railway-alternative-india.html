@@ -15,6 +15,7 @@
   <meta name="theme-color" content="#03020A">
   <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/variables.css">
   <link rel="stylesheet" href="/css/base.css">
@@ -35,27 +36,35 @@
     "mainEntityOfPage": { "@type": "WebPage", "@id": "https://www.elitehosting.in/blog/railway-alternative-india.html" }
   }
   </script>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://*.supabase.co; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co; frame-src 'none'; object-src 'none';">
   <script src="/env.js"></script>
 </head>
 <body>
-<!-- Nav -->
-<nav class="nav" aria-label="Main navigation">
-  <div class="nav-inner container">
-    <a href="/" class="nav-logo">⚡ Elite<span class="grad-electric">Hosting</span>.in</a>
-    <div class="nav-links">
-      <a href="/" class="nav-link">Home</a>
-      <a href="/features.html" class="nav-link">Features</a>
-      <a href="/pricing.html" class="nav-link">Pricing</a>
-      <a href="/blog/" class="nav-link">Blog</a>
+  <!-- ── NAVIGATION ─────────────────────────────────────────── -->
+  <nav class="nav" id="mainNav" aria-label="Main navigation">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo" aria-label="EliteHosting.in Home">
+        <div class="nav-logo-icon" aria-hidden="true">E</div>
+        Elite<span class="nav-domain">Hosting.in</span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="/features.html">Features</a>
+        <a href="/pricing.html">Pricing</a>
+        <a href="/blog/">Blog</a>
+        <a href="https://docs.elitehosting.in" target="_blank" rel="noopener noreferrer">Docs</a>
+        <a href="https://t.me/elitehosting_support" target="_blank" rel="noopener noreferrer">Support</a>
+      </div>
+      <div class="nav-actions">
+        <a href="/auth/login.html" class="btn btn-ghost btn-sm">Login</a>
+        <a href="/auth/register.html" class="btn btn-electric btn-sm cta-register">Get Started Free</a>
+      </div>
+      <button class="nav-hamburger" id="hamburger" aria-label="Toggle navigation" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
     </div>
-    <div class="nav-cta">
-      <a href="/auth/login.html"    class="btn btn-ghost btn-sm">Login</a>
-      <a href="/auth/register.html" class="btn btn-electric btn-sm">Free Account</a>
-    </div>
-  </div>
-</nav>
+  </nav>
 
-<div class="blog-layout" style="padding-top:calc(var(--nav-height) + var(--s8))">
+<div class="blog-layout" style="padding-top:calc(var(--nav-h) + var(--s8))">
   <!-- Article -->
   <article class="blog-article">
     <header class="blog-article-header">
@@ -296,6 +305,8 @@
     </div>
   </div>
 </footer>
+
+<script type="module" src="/js/pages/landing.js"></script>
 
 <script>
 // Active TOC item on scroll

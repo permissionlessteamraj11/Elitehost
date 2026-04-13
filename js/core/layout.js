@@ -97,7 +97,7 @@ function buildSidebar(profile, path) {
     </nav>
 
     <div class="db-sidebar-footer">
-      <a href="https://t.me/elitehosting_support" target="_blank" rel="noopener"
+      <a href="https://t.me/elitehosting_support" target="_blank" rel="noopener noreferrer"
          class="db-nav-link">
         <span class="db-nav-icon">💬</span>
         <span class="db-nav-label">Support</span>

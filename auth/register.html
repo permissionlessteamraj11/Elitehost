@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="/css/components.css">
   <link rel="stylesheet" href="/css/animations.css">
   <link rel="stylesheet" href="/css/pages/auth.css">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://*.supabase.co; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co; frame-src 'none'; object-src 'none';">
   <script src="/env.js"></script>
 </head>
 <body class="auth-page">
@@ -232,9 +233,9 @@
             <input type="checkbox" id="agreeTerms" required>
             <span>
               I agree to the
-              <a href="/legal/terms.html" target="_blank" rel="noopener">Terms of Service</a>
+              <a href="/legal/terms.html" target="_blank" rel="noopener noreferrer">Terms of Service</a>
               and
-              <a href="/legal/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>
+              <a href="/legal/privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
             </span>
           </label>
 
