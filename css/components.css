@@ -44,12 +44,12 @@
   background: var(--electric);
   color: #000;
   border-color: transparent;
-  box-shadow: 0 2px 12px rgba(0,212,255,0.25);
+  box-shadow: 0 4px 12px rgba(0,212,255,0.2);
 }
 .btn-electric:hover {
-  filter: brightness(1.08);
-  box-shadow: var(--shadow-btn);
-  transform: translateY(-1px);
+  filter: brightness(1.05);
+  box-shadow: 0 6px 20px rgba(0,212,255,0.3);
+  transform: translateY(-2px) scale(1.02);
   color: #000;
 }
 .btn-electric:active { transform: translateY(0); }
@@ -203,9 +203,9 @@ select.input option { background: var(--color-surface-2); color: var(--text-prim
   border-radius: var(--r-xl);
   padding: var(--s6);
   position: relative;
-  transition: border-color var(--t-base), box-shadow var(--t-base);
+  transition: all var(--t-base);
 }
-.card:hover { border-color: var(--border-2); }
+.card:hover { border-color: var(--border-2); box-shadow: var(--shadow-card); }
 .card-sm { padding: var(--s4); border-radius: var(--r-lg); }
 .card-lg { padding: var(--s8); border-radius: var(--r-2xl); }
 .card-interactive { cursor: pointer; }

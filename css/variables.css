@@ -63,18 +63,18 @@
   --border-error: var(--error);
 
   /* ── Glass Effect ──────────────────────────────────────────── */
-  --glass-bg:     rgba(255,255,255,0.04);
-  --glass-border: rgba(255,255,255,0.08);
-  --glass-blur:   blur(24px) saturate(180%);
+  --glass-bg:     rgba(255,255,255,0.03);
+  --glass-border: rgba(255,255,255,0.07);
+  --glass-blur:   blur(20px) saturate(180%);
 
   /* ── Shadows ───────────────────────────────────────────────── */
-  --shadow-xs:      0 1px 3px rgba(0,0,0,0.4);
-  --shadow-sm:      0 2px 8px rgba(0,0,0,0.5);
-  --shadow-md:      0 4px 20px rgba(0,0,0,0.6);
-  --shadow-lg:      0 8px 40px rgba(0,0,0,0.7);
-  --shadow-xl:      0 16px 60px rgba(0,0,0,0.8);
-  --shadow-card:    0 4px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04);
-  --shadow-modal:   0 24px 80px rgba(0,0,0,0.85);
+  --shadow-xs:      0 1px 2px rgba(0,0,0,0.4);
+  --shadow-sm:      0 2px 4px rgba(0,0,0,0.4), 0 4px 8px rgba(0,0,0,0.3);
+  --shadow-md:      0 4px 8px rgba(0,0,0,0.4), 0 12px 24px rgba(0,0,0,0.4);
+  --shadow-lg:      0 8px 16px rgba(0,0,0,0.5), 0 20px 40px rgba(0,0,0,0.5);
+  --shadow-xl:      0 12px 24px rgba(0,0,0,0.6), 0 32px 64px rgba(0,0,0,0.6);
+  --shadow-card:    0 4px 20px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.05);
+  --shadow-modal:   0 24px 80px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.05);
   --shadow-electric: 0 0 0 1px var(--electric), 0 0 24px var(--electric-glow);
   --shadow-mint:     0 0 0 1px var(--mint), 0 0 24px var(--mint-glow);
   --shadow-plasma:   0 0 0 1px var(--plasma), 0 0 24px var(--plasma-glow);
