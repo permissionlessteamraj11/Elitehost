@@ -517,11 +517,12 @@
 }
 .reg-headline h2 {
   font-family: var(--font-display);
-  font-size: clamp(36px, 3vw, 52px);
+  font-size: clamp(38px, 4vw, 56px);
   font-weight: 900;
-  letter-spacing: -1.5px;
-  line-height: 1.05;
-  margin-bottom: var(--s4);
+  letter-spacing: -2px;
+  line-height: 1;
+  margin-bottom: var(--s5);
+  text-transform: uppercase;
 }
 .reg-headline .hl-e {
   background: var(--grad-electric);
@@ -553,7 +554,8 @@
   display: flex;
   align-items: center;
   gap: var(--s4);
-  animation: feat-slide-in 0.5s both;
+  padding: var(--s2) 0;
+  animation: feat-slide-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 .reg-feat:nth-child(1) { animation-delay: 0.08s; }
 .reg-feat:nth-child(2) { animation-delay: 0.14s; }
@@ -643,11 +645,20 @@
   position: relative;
   z-index: 2;
   width: 100%;
-  max-width: 420px;
-  animation: form-rise 0.55s cubic-bezier(0.34,1.56,0.64,1) both 0.1s;
+  max-width: 440px;
+  background: rgba(10, 9, 15, 0.75);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--r-2xl);
+  padding: var(--s8);
+  box-shadow:
+    0 24px 80px rgba(0, 0, 0, 0.5),
+    inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  animation: form-rise 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 @keyframes form-rise {
-  from { opacity:0; transform:translateY(22px) scale(0.97); }
+  from { opacity:0; transform:translateY(30px) scale(0.98); }
   to   { opacity:1; transform:none; }
 }
 
@@ -773,9 +784,20 @@
 @media (max-width: 1024px) {
   .register-page { grid-template-columns: 1fr; }
   .reg-left      { display: none; }
-  .reg-right     { padding: var(--s8) var(--s6); align-items: flex-start; }
-  .reg-mob-brand { display: flex; }
-  .reg-form-wrap { padding-top: var(--s4); }
+  .reg-right     {
+    padding: var(--s10) var(--s5);
+    align-items: center;
+    min-height: 100vh;
+  }
+  .reg-mob-brand { display: flex; margin-bottom: var(--s8); }
+  .reg-form-wrap {
+    max-width: 480px;
+    background: transparent;
+    backdrop-filter: none;
+    border: none;
+    padding: 0;
+    box-shadow: none;
+  }
 }
 @media (max-width: 600px) {
   .login-card    { padding: var(--s8) var(--s6); border-radius: var(--r-xl); }
