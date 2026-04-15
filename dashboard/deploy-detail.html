@@ -37,7 +37,8 @@
           <a id="deployUrl" href="#" target="_blank" rel="noopener noreferrer"
              style="font-family:var(--font-mono);font-size:12px;color:var(--electric)"></a>
           <button id="btnCopyUrl"
-            style="margin-left:8px;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.2);border-radius:6px;padding:3px 8px;font-size:11px;color:var(--electric);cursor:pointer;touch-action:manipulation">
+            style="margin-left:8px;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.2);border-radius:6px;padding:3px 8px;font-size:11px;color:var(--electric);cursor:pointer;touch-action:manipulation"
+            aria-label="Copy public URL">
             📋 Copy
           </button>
         </div>
@@ -69,8 +70,8 @@
             <span class="db-terminal-title">build-logs</span>
             <div class="db-log-actions">
               <button id="btnPauseLogs"   class="db-log-btn" type="button">⏸ Pause</button>
-              <button id="btnClearLog"    class="db-log-btn" type="button">🗑</button>
-              <button id="btnDownloadLog" class="db-log-btn" type="button">⬇</button>
+              <button id="btnClearLog"    class="db-log-btn" type="button" aria-label="Clear logs">🗑</button>
+              <button id="btnDownloadLog" class="db-log-btn" type="button" aria-label="Download logs">⬇</button>
             </div>
           </div>
           <div id="logBody" class="db-log-body" role="log" aria-live="polite" aria-label="Build logs">
