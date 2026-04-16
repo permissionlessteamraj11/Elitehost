@@ -27,10 +27,10 @@ document.addEventListener('DOMContentLoaded', () => {
 /* ── Navigation ─────────────────────────────────────────────────── */
 function initNav() {
   const hamburger = document.getElementById('hamburger');
-  const mobileMenu = document.getElementById('mobileMenu');
+  const mobileMenu = document.getElementById('navLinks');
 
   hamburger?.addEventListener('click', () => {
-    const open = mobileMenu?.classList.toggle('open');
+    const open = mobileMenu?.classList.toggle('mobile-open');
     hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
     // Animate hamburger bars
     hamburger.classList.toggle('open', open);
@@ -39,17 +39,19 @@ function initNav() {
   // Close mobile menu on link click
   mobileMenu?.querySelectorAll('a').forEach(a => {
     a.addEventListener('click', () => {
-      mobileMenu.classList.remove('open');
+      mobileMenu.classList.remove('mobile-open');
       hamburger?.classList.remove('open');
+      hamburger?.setAttribute('aria-expanded', 'false');
     });
   });
 
   // Close on outside click
   document.addEventListener('click', e => {
-    if (mobileMenu?.classList.contains('open') &&
+    if (mobileMenu?.classList.contains('mobile-open') &&
         !mobileMenu.contains(e.target) && !hamburger?.contains(e.target)) {
-      mobileMenu.classList.remove('open');
+      mobileMenu.classList.remove('mobile-open');
       hamburger?.classList.remove('open');
+      hamburger?.setAttribute('aria-expanded', 'false');
     }
   });
 }
