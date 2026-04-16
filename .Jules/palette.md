@@ -1,0 +1,3 @@
+## 2025-04-16 - [Mobile Navigation Logic & Accessibility Sync]
+**Learning:** In a vanilla JS/CSS project, consistency between JS selectors/classes and CSS definitions is critical. A mismatch between the ID used in JS (`#mobileMenu`) and HTML (`#navLinks`), and the class used for visibility (`mobile-open` in CSS vs `open` in JS), can completely break mobile functionality. Additionally, ARIA labels alone are insufficient for complex widgets; `aria-controls` and `aria-expanded` must correctly reflect the DOM state.
+**Action:** Always cross-reference JS interaction logic with CSS layout classes and HTML structure. Ensure `aria-controls` links interactive elements to their targets and `aria-expanded` is updated on every state transition (toggle, click-outside, link-click).
