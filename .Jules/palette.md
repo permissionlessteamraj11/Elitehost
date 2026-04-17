@@ -1,0 +1,3 @@
+## 2025-05-15 - [Synchronizing Navigation Selectors and Accessibility]
+**Learning:** In a vanilla JS/HTML environment without shared templates, it's critical to ensure that central navigation logic (e.g., in `landing.js`) uses selectors and classes that are consistently present across all pages. Accessibility attributes like `aria-expanded` must be programmatically synchronized across all menu-closing paths (toggles, link clicks, outside clicks) to maintain a correct state for screen readers.
+**Action:** Always verify that mobile navigation elements (hamburger, container) have consistent IDs and classes across the entire site, and ensure every logic path that closes the menu also resets the ARIA state.
