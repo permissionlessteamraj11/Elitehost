@@ -27,29 +27,30 @@ document.addEventListener('DOMContentLoaded', () => {
 /* ── Navigation ─────────────────────────────────────────────────── */
 function initNav() {
   const hamburger = document.getElementById('hamburger');
-  const mobileMenu = document.getElementById('mobileMenu');
+  const navLinks  = document.getElementById('navLinks');
 
-  hamburger?.addEventListener('click', () => {
-    const open = mobileMenu?.classList.toggle('open');
-    hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
-    // Animate hamburger bars
-    hamburger.classList.toggle('open', open);
+  const toggleMenu = (force) => {
+    const isOpen = (typeof force === 'boolean') ? force : !navLinks?.classList.contains('mobile-open');
+    navLinks?.classList.toggle('mobile-open', isOpen);
+    hamburger?.classList.toggle('open', isOpen);
+    hamburger?.setAttribute('aria-expanded', String(isOpen));
+  };
+
+  hamburger?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleMenu();
   });
 
   // Close mobile menu on link click
-  mobileMenu?.querySelectorAll('a').forEach(a => {
-    a.addEventListener('click', () => {
-      mobileMenu.classList.remove('open');
-      hamburger?.classList.remove('open');
-    });
+  navLinks?.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => toggleMenu(false));
   });
 
   // Close on outside click
   document.addEventListener('click', e => {
-    if (mobileMenu?.classList.contains('open') &&
-        !mobileMenu.contains(e.target) && !hamburger?.contains(e.target)) {
-      mobileMenu.classList.remove('open');
-      hamburger?.classList.remove('open');
+    if (navLinks?.classList.contains('mobile-open') &&
+        !navLinks.contains(e.target) && !hamburger?.contains(e.target)) {
+      toggleMenu(false);
     }
   });
 }
