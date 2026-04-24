@@ -1,0 +1,3 @@
+## 2025-05-15 - Mismatched Selectors and ARIA Synchronization in Landing Page
+**Learning:** Landing page interactive components (mobile menu, counters) were broken due to mismatched IDs and data attributes between HTML and JS. Additionally, accessibility attributes like `aria-expanded` and `aria-controls` were either missing or not consistently updated across all interaction paths (e.g., closing via outside click).
+**Action:** Always verify that JS selectors (IDs, data attributes) match the latest HTML structure. Ensure ARIA boolean attributes are programmatically synchronized across all possible state transition paths, including edge cases like clicking outside a menu.
