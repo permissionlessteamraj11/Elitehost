@@ -27,29 +27,30 @@ document.addEventListener('DOMContentLoaded', () => {
 /* ── Navigation ─────────────────────────────────────────────────── */
 function initNav() {
   const hamburger = document.getElementById('hamburger');
-  const mobileMenu = document.getElementById('mobileMenu');
+  const navLinks = document.getElementById('navLinks');
+
+  const closeMenu = () => {
+    navLinks?.classList.remove('mobile-open');
+    hamburger?.classList.remove('open');
+    hamburger?.setAttribute('aria-expanded', 'false');
+  };
 
   hamburger?.addEventListener('click', () => {
-    const open = mobileMenu?.classList.toggle('open');
-    hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
-    // Animate hamburger bars
-    hamburger.classList.toggle('open', open);
+    const open = navLinks?.classList.toggle('mobile-open');
+    hamburger.setAttribute('aria-expanded', String(!!open));
+    hamburger.classList.toggle('open', !!open);
   });
 
   // Close mobile menu on link click
-  mobileMenu?.querySelectorAll('a').forEach(a => {
-    a.addEventListener('click', () => {
-      mobileMenu.classList.remove('open');
-      hamburger?.classList.remove('open');
-    });
+  navLinks?.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', closeMenu);
   });
 
   // Close on outside click
   document.addEventListener('click', e => {
-    if (mobileMenu?.classList.contains('open') &&
-        !mobileMenu.contains(e.target) && !hamburger?.contains(e.target)) {
-      mobileMenu.classList.remove('open');
-      hamburger?.classList.remove('open');
+    if (navLinks?.classList.contains('mobile-open') &&
+        !navLinks.contains(e.target) && !hamburger?.contains(e.target)) {
+      closeMenu();
     }
   });
 }
@@ -228,11 +229,11 @@ function initCounters() {
     });
   }, { threshold: 0.6 });
 
-  document.querySelectorAll('[data-counter]').forEach(el => obs.observe(el));
+  document.querySelectorAll('[data-target]').forEach(el => obs.observe(el));
 }
 
 function animateCounter(el) {
-  const target = parseFloat(el.dataset.counter);
+  const target = parseFloat(el.dataset.target);
   const suffix = el.dataset.suffix || '';
   const prefix = el.dataset.prefix || '';
   const duration = 1800;
