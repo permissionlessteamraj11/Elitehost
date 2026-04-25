@@ -290,3 +290,8 @@
 }
 @media (max-width: 1024px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 640px)  { .footer-grid { grid-template-columns: 1fr; } }
+
+/* Pricing Card Hovers */
+.pricing-card-starter:hover { border-color: var(--electric); }
+.pricing-card-pro:hover { border-color: var(--mint); }
+.pricing-card-power:hover { border-color: var(--plasma); }
