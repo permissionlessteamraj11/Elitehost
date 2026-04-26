@@ -27,29 +27,31 @@ document.addEventListener('DOMContentLoaded', () => {
 /* ── Navigation ─────────────────────────────────────────────────── */
 function initNav() {
   const hamburger = document.getElementById('hamburger');
-  const mobileMenu = document.getElementById('mobileMenu');
+  const navLinks = document.getElementById('navLinks');
 
   hamburger?.addEventListener('click', () => {
-    const open = mobileMenu?.classList.toggle('open');
-    hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    const open = navLinks?.classList.toggle('mobile-open');
+    hamburger.setAttribute('aria-expanded', String(open));
     // Animate hamburger bars
     hamburger.classList.toggle('open', open);
   });
 
   // Close mobile menu on link click
-  mobileMenu?.querySelectorAll('a').forEach(a => {
+  navLinks?.querySelectorAll('a').forEach(a => {
     a.addEventListener('click', () => {
-      mobileMenu.classList.remove('open');
+      navLinks.classList.remove('mobile-open');
       hamburger?.classList.remove('open');
+      hamburger?.setAttribute('aria-expanded', 'false');
     });
   });
 
   // Close on outside click
   document.addEventListener('click', e => {
-    if (mobileMenu?.classList.contains('open') &&
-        !mobileMenu.contains(e.target) && !hamburger?.contains(e.target)) {
-      mobileMenu.classList.remove('open');
+    const isClickInside = navLinks?.contains(e.target) || hamburger?.contains(e.target);
+    if (navLinks?.classList.contains('mobile-open') && !isClickInside) {
+      navLinks.classList.remove('mobile-open');
       hamburger?.classList.remove('open');
+      hamburger?.setAttribute('aria-expanded', 'false');
     }
   });
 }
