@@ -126,7 +126,7 @@ function buildTopbar(opts, profile, path) {
 
   el.innerHTML = `
     <div class="db-topbar-left">
-      <button class="db-menu-btn" id="db-menu-btn" aria-label="Open menu" aria-expanded="false">
+      <button class="db-menu-btn" id="db-menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="db-sidebar">
         ${ICONS.menu}
       </button>
       <h1 class="db-topbar-title">${opts.title || 'Dashboard'}</h1>
