@@ -156,7 +156,7 @@
   <section style="display:grid;grid-template-columns:1fr 1fr;gap:var(--s10);align-items:center;padding:var(--s10) 0;border-bottom:1px solid var(--border)">
     <div class="card card-electric" style="padding:var(--s5)">
       <h4 style="margin-bottom:var(--s4);display:flex;align-items:center;gap:var(--s2)">🤖 AI Generated Dockerfile</h4>
-      <pre style="font-size:11px;line-height:1.7;margin:0;color:var(--text-secondary)"><code>FROM node:20-alpine
+      <pre style="font-size:11px;line-height:1.7;margin:0;color:var(--text-secondary)"><code id="dockerfile-code">FROM node:20-alpine
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci --production
@@ -164,7 +164,7 @@ COPY . .
 EXPOSE 3000
 CMD ["node", "index.js"]</code></pre>
       <div style="margin-top:var(--s4);display:flex;gap:var(--s3)">
-        <button class="btn btn-electric btn-sm">📋 Copy</button>
+        <button class="btn btn-electric btn-sm" id="btn-copy-dockerfile" aria-label="Copy Dockerfile to clipboard">📋 Copy</button>
         <span style="font-size:var(--text-xs);color:var(--text-muted);align-self:center">0.25 credits used</span>
       </div>
     </div>
