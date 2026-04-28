@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#03020A">
   <meta name="robots" content="noindex,nofollow">
-  <title>Dashboard — EliteHosting.in</title>
+  <title>EliteHost v14.0 — Ultra Advanced Dashboard</title>
   <link rel="icon" href="/assets/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,9 +26,15 @@
     <main class="db-page" aria-label="Dashboard overview">
 
       <!-- Greeting -->
-      <div style="margin-bottom:18px">
-        <div style="font-size:13px;color:var(--text-muted);margin-bottom:4px" id="greetTime">👋 Good morning</div>
-        <h2 style="font-family:var(--font-display);font-size:22px;font-weight:800" id="greetName">Loading…</h2>
+      <div style="margin-bottom:24px;display:flex;align-items:center;justify-content:between">
+        <div>
+          <div style="font-size:13px;color:var(--text-muted);margin-bottom:4px" id="greetTime">⚡ SYSTEM ONLINE</div>
+          <h2 style="font-family:var(--font-display);font-size:26px;font-weight:800;letter-spacing:-0.02em" id="greetName">Loading…</h2>
+        </div>
+        <div style="margin-left:auto;text-align:right" class="hide-mobile">
+          <div style="font-size:11px;color:var(--mint);font-family:var(--font-mono)">🟢 Mumbai Node Active</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:2px">v14.0 Enterprise</div>
+        </div>
       </div>
 
       <!-- Credit warning -->
@@ -39,12 +45,12 @@
 
       <!-- Stats -->
       <div class="db-stats" style="margin-bottom:20px">
-        <div class="db-stat s-electric">
+        <div class="db-stat s-electric cyber-scan">
           <div class="db-stat-icon">🚀</div>
           <div class="db-stat-val" id="statRunning">
             <div class="db-skel db-skel-lg" style="width:48px"></div>
           </div>
-          <div class="db-stat-label">Running</div>
+          <div class="db-stat-label">Active Engine</div>
         </div>
         <div class="db-stat s-mint">
           <div class="db-stat-icon">📦</div>
@@ -90,13 +96,25 @@
       </div>
 
       <!-- Credit Card -->
-      <div class="db-credit-card" style="margin-bottom:20px">
-        <div class="db-credit-label">💎 Credit Balance</div>
-        <div class="db-credit-val"><span class="credit-balance">…</span></div>
-        <div class="db-credit-sub">1 credit = 1 week of 1 running app</div>
-        <a href="/dashboard/billing.html" style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:var(--grad-electric);border-radius:100px;color:#000;font-size:13px;font-weight:700;text-decoration:none;touch-action:manipulation">
-          Top Up →
-        </a>
+      <div class="db-credit-card cyber-scan" style="margin-bottom:24px">
+        <div style="display:flex;justify-content:space-between;align-items:start">
+          <div>
+            <div class="db-credit-label">💎 Cloud Credits</div>
+            <div class="db-credit-val"><span class="credit-balance">…</span></div>
+            <div class="db-credit-sub">1 credit = 1 week of enterprise hosting</div>
+          </div>
+          <a href="/dashboard/billing.html" class="btn btn-electric btn-sm" style="border-radius:100px">
+            Top Up →
+          </a>
+        </div>
+        <div style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.06);display:flex;gap:20px">
+          <div style="font-size:11px;color:var(--text-muted)">
+            <span style="color:var(--mint)">●</span> Auto-refill active
+          </div>
+          <div style="font-size:11px;color:var(--text-muted)">
+            <span style="color:var(--electric)">●</span> Pro Plan
+          </div>
+        </div>
       </div>
 
       <!-- Recent Deployments -->

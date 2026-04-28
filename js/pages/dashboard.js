@@ -101,22 +101,31 @@ function renderDeployCard(dep) {
     pending:   'st-building',
   };
   const BADGE = {
-    running:'Running', building:'Building', deploying:'Deploying',
-    stopped:'Stopped', failed:'Failed', pending:'Starting…',
+    running:'ACTIVE', building:'BUILDING', deploying:'DEPLOYING',
+    stopped:'STOPPED', failed:'FAILED', pending:'STARTING',
   };
   const cls   = STATUS[dep.status] || 'st-stopped';
-  const badge = BADGE[dep.status]  || 'Unknown';
-  const meta  = dep.repo_url ? dep.repo_url.replace('https://github.com/','') : dep.framework || 'App';
+  const badge = BADGE[dep.status]  || 'UNKNOWN';
+  const meta  = dep.repo_url ? dep.repo_url.replace('https://github.com/','') : dep.framework || 'Generic App';
   const date  = new Date(dep.updated_at).toLocaleDateString('en-IN',{day:'numeric',month:'short'});
+  const isRunning = dep.status === 'running';
 
   return `
-    <a href="/dashboard/deploy-detail.html?id=${dep.id}" class="db-deploy-card ${cls}">
-      <div class="db-deploy-dot"></div>
+    <a href="/dashboard/deploy-detail.html?id=${dep.id}" class="db-deploy-card ${cls}" style="background:var(--color-surface-1);border-radius:14px;padding:16px;border:1px solid var(--border)">
+      <div class="db-deploy-dot" style="${isRunning ? 'box-shadow:0 0 10px var(--mint)' : ''}"></div>
       <div class="db-deploy-info">
-        <div class="db-deploy-name">${esc(dep.name)}</div>
-        <div class="db-deploy-meta">${esc(meta)} · ${date}</div>
+        <div class="db-deploy-name" style="font-weight:700;font-size:15px;display:flex;align-items:center;gap:8px">
+          ${esc(dep.name)}
+          ${isRunning ? '<span style="font-size:9px;color:var(--mint);font-family:var(--font-mono);background:var(--success-bg);padding:1px 4px;border-radius:4px">LIVE</span>' : ''}
+        </div>
+        <div class="db-deploy-meta" style="font-size:11px;opacity:0.6;margin-top:2px">
+          <span style="color:var(--electric)">${esc(meta)}</span> • Updated ${date}
+        </div>
       </div>
-      <span class="db-deploy-badge">${badge}</span>
+      <div style="text-align:right">
+        <span class="db-deploy-badge" style="font-size:10px;font-weight:800;letter-spacing:0.02em">${badge}</span>
+        ${isRunning ? '<div style="font-size:9px;color:var(--text-muted);margin-top:4px">ap-south-1</div>' : ''}
+      </div>
     </a>`;
 }
 

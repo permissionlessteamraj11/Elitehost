@@ -30,8 +30,11 @@
       </div>
 
       <div class="db-page-header">
-        <h2 class="db-page-title">⚡ New Deployment</h2>
-        <p class="db-page-sub">Deploy your app in 4 steps</p>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px">
+          <h2 class="db-page-title">⚡ New Deployment</h2>
+          <span style="font-size:10px;background:var(--mint-soft);color:var(--mint);padding:2px 8px;border-radius:100px;font-weight:700">v14.0 ENGINE</span>
+        </div>
+        <p class="db-page-sub">Enterprise-grade deployment pipeline initialization</p>
       </div>
 
       <!-- Wizard Steps -->
@@ -58,8 +61,8 @@
       </div>
 
       <!-- Step 1: Source -->
-      <div class="db-wiz-panel is-active" id="panel1">
-        <h3 class="db-wiz-panel-title">1 — Choose Source</h3>
+      <div class="db-wiz-panel is-active cyber-scan" id="panel1">
+        <h3 class="db-wiz-panel-title">1 — Source Selection</h3>
 
         <div class="db-field">
           <label class="db-label" for="appName">App Name</label>
@@ -107,10 +110,11 @@
         </div>
 
         <div id="zipBlock" style="display:none">
-          <div class="db-dropzone" id="dropzone" role="button" tabindex="0" aria-label="Upload ZIP">
-            <div class="db-dropzone-icon">📦</div>
-            <div class="db-dropzone-title">Tap to select ZIP file</div>
-            <div class="db-dropzone-sub">Max 100 MB · .zip only</div>
+          <div class="db-dropzone" id="dropzone" role="button" tabindex="0" aria-label="Upload ZIP" style="background:rgba(59,130,246,0.03);border:2px dashed rgba(59,130,246,0.2)">
+            <div class="db-dropzone-icon" style="color:var(--electric)">🚀</div>
+            <div class="db-dropzone-title">AI-Powered ZIP Analysis</div>
+            <div class="db-dropzone-sub">Drag and drop your project here</div>
+            <div style="margin-top:16px;font-size:10px;color:var(--text-disabled);text-transform:uppercase;letter-spacing:0.1em">MAX 100MB • AUTO-DEPENDENCY DETECTION</div>
           </div>
           <input type="file" id="zipInput" accept=".zip" style="display:none" aria-label="Select ZIP">
         </div>

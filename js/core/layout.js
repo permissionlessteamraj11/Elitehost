@@ -64,7 +64,7 @@ function buildSidebar(profile, path) {
     <div class="db-sidebar-logo">
       <a href="/" class="db-logo-link">
         <div class="db-logo-icon">⚡</div>
-        Elite<span style="color:var(--electric)">Hosting</span>
+        Elite<span style="color:var(--electric)">Host</span><span style="font-size:10px;margin-left:4px;opacity:0.6">v14.0</span>
       </a>
     </div>
 
@@ -130,6 +130,7 @@ function buildTopbar(opts, profile, path) {
         ${ICONS.menu}
       </button>
       <h1 class="db-topbar-title">${opts.title || 'Dashboard'}</h1>
+      <span style="font-size:9px;background:var(--grad-electric);color:#000;padding:1px 5px;border-radius:4px;font-weight:800;margin-left:4px">v14.0</span>
     </div>
     <div class="db-topbar-right">
       ${showDeploy ? `

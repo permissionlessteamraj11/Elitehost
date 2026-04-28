@@ -414,9 +414,9 @@ button, a {
   border-radius: 50%;
   flex-shrink: 0;
 }
-.st-running .db-deploy-dot  { background: var(--mint);    box-shadow: 0 0 6px rgba(0,255,163,0.6); animation: dot-pulse 2s ease-in-out infinite; }
+.st-running .db-deploy-dot  { background: var(--mint);    box-shadow: 0 0 10px var(--mint-glow); animation: dot-pulse 2s ease-in-out infinite; }
 .st-failed .db-deploy-dot   { background: var(--error); }
-.st-building .db-deploy-dot { background: var(--electric); animation: dot-pulse 1.5s ease-in-out infinite; }
+.st-building .db-deploy-dot { background: var(--electric); box-shadow: 0 0 10px var(--electric-glow); animation: dot-pulse 1.5s ease-in-out infinite; }
 .st-stopped .db-deploy-dot  { background: rgba(255,255,255,0.25); }
 @keyframes dot-pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
 
@@ -1216,10 +1216,10 @@ button, a {
   transform: translateX(-50%) translateY(0);
   opacity: 1;
 }
-#db-toast.success { background: rgba(0,255,163,0.15); border: 1px solid rgba(0,255,163,0.3); color: var(--mint); }
-#db-toast.error   { background: rgba(255,77,79,0.15); border: 1px solid rgba(255,77,79,0.3); color: #FF8888; }
-#db-toast.info    { background: rgba(0,212,255,0.15); border: 1px solid rgba(0,212,255,0.3); color: var(--electric); }
-#db-toast.warn    { background: rgba(255,214,10,0.12); border: 1px solid rgba(255,214,10,0.3); color: var(--warning); }
+#db-toast.success { background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.3); color: var(--mint); }
+#db-toast.error   { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #FF8888; }
+#db-toast.info    { background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); color: var(--electric); }
+#db-toast.warn    { background: rgba(234, 179, 8, 0.12); border: 1px solid rgba(234, 179, 8, 0.3); color: var(--warning); }
 
 /* ── Spinner ─────────────────────────────────────────────────── */
 .db-spin {

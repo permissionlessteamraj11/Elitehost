@@ -120,16 +120,17 @@ function subscribeRealtime(id) {
 /* ── Header ──────────────────────────────────────────────────────── */
 function renderHeader(dep) {
   const S = {
-    running:   { emoji:'🟢', label:'Running',   css:'running'   },
-    building:  { emoji:'🔵', label:'Building',  css:'building'  },
-    deploying: { emoji:'🟡', label:'Deploying', css:'deploying' },
-    stopped:   { emoji:'⚪', label:'Stopped',   css:'stopped'   },
-    failed:    { emoji:'🔴', label:'Failed',    css:'failed'    },
-    pending:   { emoji:'🟣', label:'Pending',   css:'pending'   },
+    running:   { emoji:'🟢', label:'ACTIVE',    css:'running'   },
+    building:  { emoji:'🔵', label:'BUILDING',  css:'building'  },
+    deploying: { emoji:'🟡', label:'DEPLOYING', css:'deploying' },
+    stopped:   { emoji:'⚪', label:'STOPPED',   css:'stopped'   },
+    failed:    { emoji:'🔴', label:'FAILED',    css:'failed'    },
+    pending:   { emoji:'🟣', label:'STARTING',   css:'pending'   },
   };
   const s = S[dep.status] || S.stopped;
 
   setText('deployName',   dep.name);
+  setText('deployIdLabel', dep.id);
   setText('deployStatusBadge', `${s.emoji} ${s.label}`);
   document.getElementById('deployStatusBadge')?.setAttribute('data-status', dep.status);
   document.getElementById('deployStatusBadge')?.className.replace(/badge-\w+/,'');

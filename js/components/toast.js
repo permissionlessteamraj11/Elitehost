@@ -22,19 +22,23 @@ class ToastManager {
   }
 
   #createToast(message, type, opts = {}) {
-    const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+    const icons = { success: '✓', error: '✕', warning: '⚠', info: 'i' };
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
     toast.setAttribute('role', type === 'error' ? 'alert' : 'status');
     toast.style.position = 'relative'; toast.style.overflow = 'hidden';
+    toast.style.borderRadius = '12px';
+    toast.style.fontFamily = 'var(--font-body)';
 
     toast.innerHTML = `
-      <span class="toast-icon" aria-hidden="true">${icons[type]}</span>
-      <div class="toast-content" style="flex:1">
-        ${opts.title ? `<div class="toast-title">${opts.title}</div>` : ''}
-        <div class="toast-msg">${message}</div>
+      <div class="toast-icon-wrap" style="width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.1);font-weight:800;font-size:12px">
+        ${icons[type]}
       </div>
-      <button class="toast-dismiss" aria-label="Dismiss">✕</button>
+      <div class="toast-content" style="flex:1;margin-left:8px">
+        ${opts.title ? `<div class="toast-title" style="font-weight:700;font-size:13px">${opts.title}</div>` : ''}
+        <div class="toast-msg" style="font-size:12px;opacity:0.9">${message}</div>
+      </div>
+      <button class="toast-dismiss" aria-label="Dismiss" style="background:none;border:none;color:currentColor;cursor:pointer;opacity:0.5;font-size:14px">✕</button>
     `;
 
     toast.querySelector('.toast-dismiss').onclick = () => this.#dismiss(toast);
