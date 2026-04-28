@@ -107,12 +107,18 @@ function initParticles() {
 
     for (let i = 0; i < particles.length; i++) {
       const p = particles[i];
-      // Mouse repulsion
+      // Mouse interaction
       const dx = mouseX - p.x, dy = mouseY - p.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < 100 && dist > 0) {
-        p.vx -= (dx / dist) * 0.04;
-        p.vy -= (dy / dist) * 0.04;
+
+      if (dist < 150 && dist > 0) {
+        const force = (150 - dist) / 150;
+        p.vx -= (dx / dist) * force * 0.08;
+        p.vy -= (dy / dist) * force * 0.08;
+        // Increase size on hover
+        p.size = Math.min(p.size + force * 0.2, 3);
+      } else {
+        p.size = Math.max(p.size - 0.05, 0.4);
       }
       p.vx *= 0.99; p.vy *= 0.99;
       p.x += p.vx; p.y += p.vy;

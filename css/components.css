@@ -211,9 +211,22 @@ select.input option { background: var(--color-surface-2); color: var(--text-prim
 .card-interactive { cursor: pointer; }
 .card-interactive:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
 .card-glass {
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
-  border-color: var(--glass-border);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.btn-glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+}
+.btn-glass:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
 }
 .card-electric {
   border-color: rgba(0,212,255,0.2);
