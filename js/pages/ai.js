@@ -173,8 +173,8 @@ function renderResult(content, task) {
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s4)">
       <h3 style="font-size:var(--text-base)">${task.icon} ${task.label} Result</h3>
       <div style="display:flex;gap:var(--s2)">
-        <button class="btn btn-ghost btn-sm" onclick="copyResult()">📋 Copy</button>
-        <button class="btn btn-ghost btn-sm" onclick="clearResult()">✕</button>
+        <button class="btn btn-ghost btn-sm" onclick="copyResult()" aria-label="Copy result to clipboard">📋 Copy</button>
+        <button class="btn btn-ghost btn-sm" onclick="clearResult()" aria-label="Clear result">✕</button>
       </div>
     </div>
     <div id="resultContent" class="terminal" style="padding:var(--s4);border-radius:var(--r-lg);max-height:500px;overflow-y:auto">
