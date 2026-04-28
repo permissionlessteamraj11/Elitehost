@@ -19,7 +19,9 @@ async function sb() {
     await new Promise((res, rej) => {
       const s = document.createElement('script');
       s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
-      s.onload = res; s.onerror = () => rej(new Error('Supabase SDK load failed'));
+      s.integrity = 'sha384-sfbOag7cEcqn2DK53T/iBNAH/2cMCf7bSzJDwBhV117A0z/NIj9Usei1jKIBY1Ae';
+      s.crossOrigin = 'anonymous';
+      s.onload = res; s.onerror = () => rej(new Error('Supabase SDK load failed (SRI check might have failed)'));
       document.head.appendChild(s);
     });
   }
