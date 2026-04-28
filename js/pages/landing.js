@@ -162,19 +162,21 @@ function initTypedTerminal() {
   if (!el) return;
 
   const lines = [
-    { text: '$ git push origin main',                         color: '#93C5FD' },
-    { text: '⚡ EliteHosting detected: Node.js 20',          color: '#FFD60A' },
-    { text: '📦 Installing 247 packages...',                  color: 'rgba(255,255,255,0.55)' },
-    { text: '✓ npm install complete (8.2s)',                  color: '#00FFA3' },
-    { text: '🐳 Building Docker image...',                    color: 'rgba(255,255,255,0.55)' },
-    { text: '  ● Dockerfile generated automatically',         color: 'rgba(255,255,255,0.38)' },
-    { text: '  ● Layer caching: 6/8 layers cached',          color: 'rgba(255,255,255,0.38)' },
-    { text: '✓ Build completed in 22s',                       color: '#00FFA3' },
-    { text: '🚀 Deploying to Mumbai (ap-south-1)...',         color: 'rgba(255,255,255,0.55)' },
-    { text: '✓ Container running on port 3000',               color: '#00FFA3' },
-    { text: '✓ SSL certificate issued',                       color: '#00FFA3' },
-    { text: '✅ Live: https://myapi.raj.elitehosting.in',     color: '#00D4FF' },
-    { text: '📱 Telegram: @elitehosting_bot notified',        color: '#A78BFA' },
+    { text: '🚀 INITIALIZING ELITE ENGINE v14.0...',          color: '#3b82f6' },
+    { text: '$ git push elite-cloud main',                    color: '#94a3b8' },
+    { text: '📡 CONNECTION: ap-south-1 (Mumbai) [SECURE]',    color: '#06b6d4' },
+    { text: '🤖 AI ANALYZING PROJECT STRUCTURE...',           color: '#8b5cf6' },
+    { text: '✅ DETECTED: Node.js Enterprise Environment',    color: '#10b981' },
+    { text: '📦 INSTALLING 482 DEPENDENCIES...',              color: '#64748b' },
+    { text: '⚡ SMART CACHE: 92% hit rate [WARM]',            color: '#f59e0b' },
+    { text: '🐳 OPTIMIZING DOCKER LAYERS...',                 color: '#64748b' },
+    { text: '  ● Compressing binaries...',                    color: '#475569' },
+    { text: '  ● Hardening kernel security...',               color: '#475569' },
+    { text: '✓ BUILD SUCCESSFUL [2.4s]',                      color: '#10b981' },
+    { text: '🚀 PROVISIONING SERVERLESS INSTANCE...',         color: '#3b82f6' },
+    { text: '🔒 SSL/TLS: RSA-4096 ISSUED',                    color: '#10b981' },
+    { text: '✅ DEPLOYMENT LIVE: https://api.elite.host',     color: '#06b6d4' },
+    { text: '📱 TELEGRAM: v14.0 Cluster Online',              color: '#8b5cf6' },
   ];
 
   let lineIdx = 0;

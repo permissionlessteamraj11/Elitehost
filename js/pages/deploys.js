@@ -72,36 +72,44 @@ function renderDeploys() {
 
 function renderCard(dep) {
   const STATUS = {
-    running:   { cls:'st-running',  badge:'Running'  },
-    building:  { cls:'st-building', badge:'Building' },
-    deploying: { cls:'st-building', badge:'Deploying'},
-    stopped:   { cls:'st-stopped',  badge:'Stopped'  },
-    failed:    { cls:'st-failed',   badge:'Failed'   },
-    pending:   { cls:'st-building', badge:'Starting' },
+    running:   { cls:'st-running',  badge:'ACTIVE'  },
+    building:  { cls:'st-building', badge:'BUILDING' },
+    deploying: { cls:'st-building', badge:'DEPLOYING'},
+    stopped:   { cls:'st-stopped',  badge:'STOPPED'  },
+    failed:    { cls:'st-failed',   badge:'FAILED'   },
+    pending:   { cls:'st-building', badge:'STARTING' },
   };
   const s    = STATUS[dep.status] || STATUS.stopped;
-  const meta = dep.repo_url ? dep.repo_url.replace('https://github.com/','') : dep.framework || 'App';
-  const date = new Date(dep.updated_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+  const meta = dep.repo_url ? dep.repo_url.replace('https://github.com/','') : dep.framework || 'Generic App';
+  const date = new Date(dep.updated_at).toLocaleDateString('en-IN',{day:'numeric',month:'short'});
+  const isRunning = dep.status === 'running';
 
   const canStop    = dep.status === 'running';
   const canStart   = dep.status === 'stopped';
   const canRedeploy= ['stopped','failed','running','building'].includes(dep.status);
 
   return `
-    <div style="position:relative">
-      <a href="/dashboard/deploy-detail.html?id=${dep.id}" class="db-deploy-card ${s.cls}">
-        <div class="db-deploy-dot"></div>
+    <div style="position:relative;margin-bottom:12px">
+      <a href="/dashboard/deploy-detail.html?id=${dep.id}" class="db-deploy-card ${s.cls}" style="background:var(--color-surface-1);border-radius:14px;padding:16px;border:1px solid var(--border)">
+        <div class="db-deploy-dot" style="${isRunning ? 'box-shadow:0 0 10px var(--mint)' : ''}"></div>
         <div class="db-deploy-info">
-          <div class="db-deploy-name">${esc(dep.name)}</div>
-          <div class="db-deploy-meta">${esc(meta)} · ${date}</div>
+          <div class="db-deploy-name" style="font-weight:700;font-size:15px;display:flex;align-items:center;gap:8px">
+            ${esc(dep.name)}
+            ${isRunning ? '<span style="font-size:9px;color:var(--mint);font-family:var(--font-mono);background:var(--success-bg);padding:1px 4px;border-radius:4px">LIVE</span>' : ''}
+          </div>
+          <div class="db-deploy-meta" style="font-size:11px;opacity:0.6;margin-top:2px">
+            <span style="color:var(--electric)">${esc(meta)}</span> • Updated ${date}
+          </div>
         </div>
-        <span class="db-deploy-badge">${s.badge}</span>
+        <div style="text-align:right">
+          <span class="db-deploy-badge" style="font-size:10px;font-weight:800;letter-spacing:0.02em">${s.badge}</span>
+        </div>
       </a>
-      <div style="display:flex;gap:6px;padding:6px 0 0 28px;flex-wrap:wrap">
-        ${canRedeploy ? `<button class="db-action-btn" style="padding:7px 14px;font-size:12px" data-dep-action="redeploy" data-dep-id="${dep.id}">🔄 Deploy</button>` : ''}
-        ${canStop     ? `<button class="db-action-btn" style="padding:7px 14px;font-size:12px" data-dep-action="stop"     data-dep-id="${dep.id}">⏹ Stop</button>` : ''}
-        ${canStart    ? `<button class="db-action-btn" style="padding:7px 14px;font-size:12px" data-dep-action="start"    data-dep-id="${dep.id}">▶ Start</button>` : ''}
-        <button class="db-action-btn danger" style="padding:7px 14px;font-size:12px;margin-left:auto" data-dep-action="delete" data-dep-id="${dep.id}">🗑 Delete</button>
+      <div style="display:flex;gap:6px;padding:8px 0 0 12px;flex-wrap:wrap">
+        ${canRedeploy ? `<button class="db-action-btn" style="padding:6px 12px;font-size:11px;min-height:32px" data-dep-action="redeploy" data-dep-id="${dep.id}">🔄 RE-DEPLOY</button>` : ''}
+        ${canStop     ? `<button class="db-action-btn" style="padding:6px 12px;font-size:11px;min-height:32px" data-dep-action="stop"     data-dep-id="${dep.id}">⏹ STOP</button>` : ''}
+        ${canStart    ? `<button class="db-action-btn" style="padding:6px 12px;font-size:11px;min-height:32px" data-dep-action="start"    data-dep-id="${dep.id}">▶ START</button>` : ''}
+        <button class="db-action-btn danger" style="padding:6px 12px;font-size:11px;min-height:32px;margin-left:auto" data-dep-action="delete" data-dep-id="${dep.id}">🗑 DELETE</button>
       </div>
     </div>`;
 }

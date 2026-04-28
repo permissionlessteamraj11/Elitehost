@@ -31,7 +31,8 @@
         </a>
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
           <h2 class="db-page-title" id="deployName" style="margin:0">Loading…</h2>
-          <span id="deployStatusBadge" style="padding:4px 12px;border-radius:100px;font-size:12px;font-weight:700">…</span>
+          <span id="deployStatusBadge" style="padding:4px 12px;border-radius:100px;font-size:10px;font-weight:800;letter-spacing:0.05em">…</span>
+          <span style="font-size:10px;color:var(--text-muted);font-family:var(--font-mono);background:var(--color-surface-2);padding:2px 8px;border-radius:100px">ID: <span id="deployIdLabel">…</span></span>
         </div>
         <div id="deployUrlGroup" style="display:none;margin-top:8px">
           <a id="deployUrl" href="#" target="_blank" rel="noopener noreferrer"
@@ -108,10 +109,24 @@
 
       <!-- Info Panel -->
       <div class="db-tab-panel" data-panel="info">
-        <div class="db-card" style="padding:0;overflow:hidden">
+        <div class="db-card" style="padding:0;overflow:hidden;margin-bottom:20px">
           <table id="infoTable" style="width:100%;border-collapse:collapse;font-size:13px">
             <tbody id="infoTableBody"></tbody>
           </table>
+        </div>
+
+        <div class="db-card cyber-scan" style="background:rgba(59,130,246,0.02)">
+          <h4 style="font-size:12px;font-weight:700;margin-bottom:12px;color:var(--electric)">PRO FEATURES (v14.0)</h4>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div style="padding:10px;background:var(--color-surface-2);border-radius:10px;opacity:0.6">
+              <div style="font-size:11px;font-weight:600">Auto-Restart</div>
+              <div style="font-size:10px;color:var(--mint)">Enabled</div>
+            </div>
+            <div style="padding:10px;background:var(--color-surface-2);border-radius:10px;opacity:0.6">
+              <div style="font-size:11px;font-weight:600">Smart Cache</div>
+              <div style="font-size:10px;color:var(--electric)">Optimized</div>
+            </div>
+          </div>
         </div>
       </div>
 

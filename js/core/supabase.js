@@ -10,8 +10,13 @@ const SUPABASE_ANON_KEY = window.__ENV?.SUPABASE_ANON_KEY || 'YOUR_ANON_KEY';
 
 // ── Supabase SDK loader ───────────────────────────────────────────
 let _sb = null;
-let _profile = null;   // cached profile
-let _profileAuth = null; // which auth_id was cached
+
+// ── SMART CACHE LAYER (v14.0) ────────────────────────────────────
+const _cache = {
+  profile: { data: null, authId: null, ts: 0 },
+  deployments: { data: null, ts: 0 },
+  TTL: 5000, // 5 seconds
+};
 
 async function sb() {
   if (_sb) return _sb;
@@ -48,17 +53,28 @@ async function authUser() {
 async function getProfile(forceRefresh = false) {
   const c  = await sb();
   const au = await authUser();
-  if (!forceRefresh && _profile && _profileAuth === au.id) return _profile;
+
+  const now = Date.now();
+  if (!forceRefresh && _cache.profile.data && _cache.profile.authId === au.id && (now - _cache.profile.ts < _cache.TTL)) {
+    return _cache.profile.data;
+  }
+
   const { data, error } = await c.from('users').select('*').eq('auth_id', au.id).maybeSingle();
   if (error) throw { data: { error: `Profile error: ${error.message}` } };
   if (!data)  throw { data: { error: 'Profile not found. Please contact support.' } };
-  _profile     = data;
-  _profileAuth = au.id;
+
+  _cache.profile.data = data;
+  _cache.profile.authId = au.id;
+  _cache.profile.ts = now;
   return data;
 }
 
 // Clear profile cache (call on logout / profile update)
-function clearCache() { _profile = null; _profileAuth = null; }
+function clearCache() {
+  _cache.profile.data = null;
+  _cache.profile.authId = null;
+  _cache.deployments.data = null;
+}
 
 // ══════════════════════════════════════════════════════════════════
 // AUTH
@@ -198,9 +214,15 @@ export const profileSB = {
 // DEPLOYMENTS  — returns { data: { deployments: [...] } }
 // ══════════════════════════════════════════════════════════════════
 export const deploymentsSB = {
-  async list({ status, limit = 50, offset = 0 } = {}) {
+  async list({ status, limit = 50, offset = 0, forceRefresh = false } = {}) {
     const c       = await sb();
     const profile = await getProfile();
+
+    const now = Date.now();
+    const cacheKey = `${status}-${limit}-${offset}`;
+    if (!forceRefresh && _cache.deployments.data && _cache.deployments.key === cacheKey && (now - _cache.deployments.ts < _cache.TTL)) {
+      return _cache.deployments.data;
+    }
 
     let q = c.from('deployments')
       .select('*, containers(*)', { count: 'exact' })
@@ -213,7 +235,13 @@ export const deploymentsSB = {
 
     const { data, error, count } = await q;
     if (error) throw { data: { error: error.message } };
-    return { data: { deployments: data || [], total: count || 0 } };
+
+    const result = { data: { deployments: data || [], total: count || 0 } };
+    _cache.deployments.data = result;
+    _cache.deployments.key = cacheKey;
+    _cache.deployments.ts = now;
+
+    return result;
   },
 
   async get(id) {
