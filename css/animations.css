@@ -173,6 +173,25 @@
   animation: scanline 6s linear infinite;
 }
 
+@keyframes cyberScan {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+.cyber-scan {
+  position: relative;
+  overflow: hidden;
+}
+.cyber-scan::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--electric), transparent);
+  animation: cyberScan 3s linear infinite;
+  z-index: 5;
+}
+
 /* ── Hero Mesh Background ─────────────────────────────────── */
 .hero-mesh {
   background-image: var(--grad-hero-mesh);

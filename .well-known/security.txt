@@ -1,0 +1,11 @@
+# EliteHosting Security Policy
+# We take security seriously. If you find a vulnerability, please report it.
+
+Contact: mailto:security@elitehosting.in
+Encryption: https://www.elitehosting.in/security-key.asc
+Languages: en, hi
+Acknowledgments: https://www.elitehosting.in/hall-of-fame
+Canonical: https://www.elitehosting.in/.well-known/security.txt
+Expires: 2026-01-01T00:00:00.000Z
+Policy: https://www.elitehosting.in/security-policy
+Hiring: https://www.elitehosting.in/careers

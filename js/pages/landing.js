@@ -3,6 +3,7 @@
  * Particles · Typed terminal · Scroll reveals · Counters · Tilt
  */
 import { auth } from '../core/auth.js';
+import { initCommandPalette } from '../components/commandPalette.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   initNav();
@@ -14,6 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initHoverTilt();
   initFAQ();
   initStatsBar();
+  initTerminalInteractivity();
+  initCommandPalette();
 
   // Redirect logged-in users' CTA
   if (auth.isLoggedIn()) {
@@ -277,6 +280,43 @@ function initHoverTilt() {
     card.addEventListener('mouseleave', () => {
       card.style.transform = '';
     });
+  });
+}
+
+/* ── Terminal Interactivity ───────────────────────────────────── */
+function initTerminalInteractivity() {
+  const terminal = document.querySelector('.terminal');
+  const liveBadge = document.getElementById('liveBadge');
+  if (!terminal || !liveBadge) return;
+
+  const originalBadge = liveBadge.innerHTML;
+  const stats = [
+    '🟢 SYSTEM: OPTIMAL',
+    '📊 CPU: 12.4% LOAD',
+    '🧠 RAM: 184MB/512MB',
+    '🌐 NET: 850MB/s',
+    '🔒 CSP: ENFORCED',
+    '🛡️ WAF: ACTIVE',
+    '📡 UPTIME: 99.99%',
+    '⚡ NODES: MUM-01'
+  ];
+
+  let statIdx = 0;
+  let interval;
+
+  terminal.addEventListener('mouseenter', () => {
+    terminal.classList.add('terminal-active');
+    interval = setInterval(() => {
+      liveBadge.textContent = stats[statIdx];
+      statIdx = (statIdx + 1) % stats.length;
+    }, 1200);
+  });
+
+  terminal.addEventListener('mouseleave', () => {
+    terminal.classList.remove('terminal-active');
+    clearInterval(interval);
+    liveBadge.innerHTML = originalBadge;
+    statIdx = 0;
   });
 }
 

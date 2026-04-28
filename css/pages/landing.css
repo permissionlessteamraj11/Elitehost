@@ -77,6 +77,17 @@
 .hero-terminal-wrap {
   margin-top: var(--s12);
   max-width: 680px; margin-left: auto; margin-right: auto;
+  transition: transform var(--t-slow) var(--ease-spring);
+}
+.hero-terminal-wrap:has(.terminal-active) {
+  transform: scale(1.02);
+}
+.terminal {
+  transition: all var(--t-base);
+}
+.terminal-active {
+  border-color: var(--electric);
+  box-shadow: 0 0 30px rgba(0, 212, 255, 0.15);
 }
 
 /* ── Stats Bar ─────────────────────────────────────────────── */

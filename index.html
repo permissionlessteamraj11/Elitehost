@@ -13,6 +13,11 @@
   <meta name="geo.region" content="IN">
   <meta name="geo.placename" content="India">
   <meta name="language" content="English, Hindi">
+  <meta name="revisit-after" content="3 days">
+  <meta name="copyright" content="EliteHosting India">
+  <meta name="coverage" content="Worldwide">
+  <meta name="distribution" content="Global">
+  <meta name="rating" content="General">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="EliteHosting.in">
   <meta property="og:title" content="EliteHosting.in — Deploy Apps in India. ₹99/mo.">
@@ -406,7 +411,7 @@
           </ul>
           <a href="/auth/register.html" class="btn btn-ghost btn-md w-full">Get Started</a>
         </div>
-        <div class="pricing-card featured reveal delay-200">
+        <div class="pricing-card featured reveal delay-200 cyber-scan">
           <div class="pricing-popular">🔥 MOST POPULAR</div>
           <h4 style="margin-bottom:var(--s2)">Pro</h4>
           <div class="pricing-amount"><sup>₹</sup>399</div>
@@ -635,6 +640,26 @@
       </div>
     </div>
   </footer>
+
+  <!-- Command Palette Modal -->
+  <div id="commandPalette" class="modal-backdrop" style="display:none;align-items:flex-start;padding-top:15vh">
+    <div class="modal-box card-glass" style="max-width:600px;padding:0;overflow:hidden">
+      <div style="padding:var(--s4);border-bottom:1px solid var(--border-2);display:flex;align-items:center;gap:var(--s3)">
+        <span style="font-size:20px">⌨️</span>
+        <input type="text" id="cmdInput" placeholder="Type a command or search..."
+               style="background:none;border:none;color:var(--text-primary);flex:1;font-size:var(--text-md);outline:none">
+        <kbd style="font-family:var(--font-mono);font-size:10px;background:var(--color-surface-3);padding:2px 6px;border-radius:4px;color:var(--text-muted)">ESC</kbd>
+      </div>
+      <div id="cmdResults" style="max-height:400px;overflow-y:auto;padding:var(--s2)">
+        <!-- Results will be injected here -->
+      </div>
+      <div style="padding:var(--s3);background:var(--color-surface-2);font-size:11px;color:var(--text-disabled);display:flex;gap:var(--s4);border-top:1px solid var(--border)">
+        <span>↑↓ to navigate</span>
+        <span>Enter to select</span>
+        <span style="margin-left:auto">Elite Command v1.0</span>
+      </div>
+    </div>
+  </div>
 
   <script type="module" src="/js/pages/landing.js"></script>
 </body>
