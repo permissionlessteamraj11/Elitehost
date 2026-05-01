@@ -1,0 +1,3 @@
+## 2026-05-01 - [Accessibility & Logic Sync]
+**Learning:** UX improvements should always prioritize accessibility (ARIA synchronization, keyboard focus) while ensuring JavaScript logic is correctly synchronized with the HTML and CSS of the repository. Mismatched IDs or classes (e.g., `#mobileMenu` vs `#navLinks`) can break functional UX even if the visual touches are correct.
+**Action:** Always verify that JS selectors match the actual HTML before refactoring, and use tools like Playwright to confirm that ARIA attributes (aria-expanded, aria-hidden, aria-controls) are properly synchronized across all interaction paths.

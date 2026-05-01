@@ -30,31 +30,56 @@ document.addEventListener('DOMContentLoaded', () => {
 /* ── Navigation ─────────────────────────────────────────────────── */
 function initNav() {
   const hamburger = document.getElementById('hamburger');
-  const mobileMenu = document.getElementById('mobileMenu');
+  const navLinks = document.getElementById('navLinks');
+  if (!hamburger || !navLinks) return;
 
-  hamburger?.addEventListener('click', () => {
-    const open = mobileMenu?.classList.toggle('open');
-    hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
-    // Animate hamburger bars
+  hamburger.setAttribute('aria-controls', 'navLinks');
+
+  const updateAria = (isOpen) => {
+    hamburger.setAttribute('aria-expanded', String(isOpen));
+    navLinks.setAttribute('aria-hidden', String(!isOpen));
+  };
+
+  // Initial state for mobile
+  if (window.innerWidth <= 768) {
+    navLinks.setAttribute('aria-hidden', 'true');
+  }
+
+  hamburger.addEventListener('click', () => {
+    const open = navLinks.classList.toggle('mobile-open');
     hamburger.classList.toggle('open', open);
+    updateAria(open);
   });
 
   // Close mobile menu on link click
-  mobileMenu?.querySelectorAll('a').forEach(a => {
+  navLinks.querySelectorAll('a').forEach(a => {
     a.addEventListener('click', () => {
-      mobileMenu.classList.remove('open');
-      hamburger?.classList.remove('open');
+      if (navLinks.classList.contains('mobile-open')) {
+        navLinks.classList.remove('mobile-open');
+        hamburger.classList.remove('open');
+        updateAria(false);
+      }
     });
   });
 
   // Close on outside click
   document.addEventListener('click', e => {
-    if (mobileMenu?.classList.contains('open') &&
-        !mobileMenu.contains(e.target) && !hamburger?.contains(e.target)) {
-      mobileMenu.classList.remove('open');
-      hamburger?.classList.remove('open');
+    if (navLinks.classList.contains('mobile-open') &&
+        !navLinks.contains(e.target) && !hamburger.contains(e.target)) {
+      navLinks.classList.remove('mobile-open');
+      hamburger.classList.remove('open');
+      updateAria(false);
     }
   });
+
+  // Handle resize
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 768) {
+      navLinks.removeAttribute('aria-hidden');
+    } else if (!navLinks.classList.contains('mobile-open')) {
+      navLinks.setAttribute('aria-hidden', 'true');
+    }
+  }, { passive: true });
 }
 
 function initNavScroll() {
@@ -239,11 +264,11 @@ function initCounters() {
     });
   }, { threshold: 0.6 });
 
-  document.querySelectorAll('[data-counter]').forEach(el => obs.observe(el));
+  document.querySelectorAll('[data-target]').forEach(el => obs.observe(el));
 }
 
 function animateCounter(el) {
-  const target = parseFloat(el.dataset.counter);
+  const target = parseFloat(el.dataset.target);
   const suffix = el.dataset.suffix || '';
   const prefix = el.dataset.prefix || '';
   const duration = 1800;
@@ -306,20 +331,27 @@ function initTerminalInteractivity() {
   let statIdx = 0;
   let interval;
 
-  terminal.addEventListener('mouseenter', () => {
+  const startStats = () => {
+    if (interval) return;
     terminal.classList.add('terminal-active');
     interval = setInterval(() => {
       liveBadge.textContent = stats[statIdx];
       statIdx = (statIdx + 1) % stats.length;
     }, 1200);
-  });
+  };
 
-  terminal.addEventListener('mouseleave', () => {
+  const stopStats = () => {
     terminal.classList.remove('terminal-active');
     clearInterval(interval);
+    interval = null;
     liveBadge.innerHTML = originalBadge;
     statIdx = 0;
-  });
+  };
+
+  terminal.addEventListener('mouseenter', startStats);
+  terminal.addEventListener('mouseleave', stopStats);
+  terminal.addEventListener('focusin', startStats);
+  terminal.addEventListener('focusout', stopStats);
 }
 
 /* ── FAQ Accordion ──────────────────────────────────────────────── */
