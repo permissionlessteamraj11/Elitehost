@@ -64,7 +64,7 @@ function buildSidebar(profile, path) {
     <div class="db-sidebar-logo">
       <a href="/" class="db-logo-link">
         <div class="db-logo-icon">⚡</div>
-        Elite<span style="color:var(--electric)">Hosting</span>
+        Elite<span style="color:var(--electric)">Host</span><span style="font-size:12px;margin-left:4px;opacity:0.7">v14</span>
       </a>
     </div>
 

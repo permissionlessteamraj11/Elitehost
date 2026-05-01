@@ -7,6 +7,12 @@ import { profileSB, deploymentsSB, creditsSB } from '../core/supabase.js';
 document.addEventListener('DOMContentLoaded', async () => {
   try { await auth.requireAuth(); } catch { return; }
   await Promise.all([loadProfile(), loadStats(), loadRecentDeploys(), loadCredits()]);
+
+  // Real-time status updates (mimics SSE in v14)
+  deploymentsSB.subscribeStatus(null, () => {
+    loadStats();
+    loadRecentDeploys();
+  });
 });
 
 /* ── Profile ───────────────────────────────────────────────────── */

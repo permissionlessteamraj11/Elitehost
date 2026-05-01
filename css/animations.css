@@ -38,12 +38,14 @@
 }
 
 @keyframes terminalFlicker {
-  0% { opacity: 0.97; }
+  0% { opacity: 0.97; text-shadow: 0 0 1px rgba(0,229,255,0.2); }
   5% { opacity: 0.92; }
-  10% { opacity: 0.98; }
+  10% { opacity: 0.98; text-shadow: 0 0 2px rgba(0,229,255,0.3); }
   15% { opacity: 0.94; }
   20% { opacity: 0.99; }
-  100% { opacity: 1; }
+  23% { opacity: 0.85; }
+  25% { opacity: 0.99; }
+  100% { opacity: 1; text-shadow: 0 0 1px rgba(0,229,255,0.2); }
 }
 
 @keyframes gridMove {

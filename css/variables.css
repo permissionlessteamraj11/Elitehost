@@ -5,18 +5,18 @@
 
 :root {
   /* ── Color Palette ─────────────────────────────────────────── */
-  --color-void:      #03020A;
-  --color-deep:      #060610;
-  --color-surface-1: #0A090F;
+  --color-void:      #020108; /* v14 Midnight Deep */
+  --color-deep:      #050814;
+  --color-surface-1: #080C1D;
   --color-surface-2: #11101A;
   --color-surface-3: #18161F;
   --color-surface-4: #201E2A;
 
   /* ── Brand Accents ─────────────────────────────────────────── */
-  --electric: #00D4FF;
-  --electric-dim: #00A8CC;
-  --electric-soft: rgba(0,212,255,0.12);
-  --electric-glow: rgba(0,212,255,0.25);
+  --electric: #00E5FF; /* v14 Neon */
+  --electric-dim: #0099FF;
+  --electric-soft: rgba(0,229,255,0.12);
+  --electric-glow: rgba(0,229,255,0.3);
 
   --mint: #00FFA3;
   --mint-dim: #00CC82;
@@ -135,8 +135,8 @@
   --nav-h:      60px;
 
   /* ── Gradients ─────────────────────────────────────────────── */
-  --grad-electric: linear-gradient(135deg, #00D4FF 0%, #0066FF 100%);
-  --grad-mint:     linear-gradient(135deg, #00FFA3 0%, #00D4FF 100%);
+  --grad-electric: linear-gradient(135deg, #00E5FF 0%, #0066FF 100%);
+  --grad-mint:     linear-gradient(135deg, #00FFA3 0%, #00E5FF 100%);
   --grad-fire:     linear-gradient(135deg, #FF6B35 0%, #FFD700 100%);
   --grad-plasma:   linear-gradient(135deg, #7C3AED 0%, #C026D3 100%);
   --grad-india:    linear-gradient(135deg, #FF9933 0%, #00FFA3 100%);

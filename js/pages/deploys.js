@@ -85,6 +85,7 @@ function renderCard(dep) {
 
   const canStop    = dep.status === 'running';
   const canStart   = dep.status === 'stopped';
+  const canRestart = ['running', 'failed', 'stopped'].includes(dep.status);
   const canRedeploy= ['stopped','failed','running','building'].includes(dep.status);
 
   return `
@@ -92,13 +93,14 @@ function renderCard(dep) {
       <a href="/dashboard/deploy-detail.html?id=${dep.id}" class="db-deploy-card ${s.cls}">
         <div class="db-deploy-dot"></div>
         <div class="db-deploy-info">
-          <div class="db-deploy-name">${esc(dep.name)}</div>
+          <div class="db-deploy-name">${esc(dep.name)} ${dep.restart_count ? `<span style="font-size:10px;opacity:0.6">(#${dep.restart_count})</span>` : ''}</div>
           <div class="db-deploy-meta">${esc(meta)} · ${date}</div>
         </div>
         <span class="db-deploy-badge">${s.badge}</span>
       </a>
       <div style="display:flex;gap:6px;padding:6px 0 0 28px;flex-wrap:wrap">
-        ${canRedeploy ? `<button class="db-action-btn" style="padding:7px 14px;font-size:12px" data-dep-action="redeploy" data-dep-id="${dep.id}">🔄 Deploy</button>` : ''}
+        ${canRestart  ? `<button class="db-action-btn" style="padding:7px 14px;font-size:12px" data-dep-action="restart" data-dep-id="${dep.id}">🔄 Restart</button>` : ''}
+        ${canRedeploy ? `<button class="db-action-btn" style="padding:7px 14px;font-size:12px" data-dep-action="redeploy" data-dep-id="${dep.id}">📦 Redeploy</button>` : ''}
         ${canStop     ? `<button class="db-action-btn" style="padding:7px 14px;font-size:12px" data-dep-action="stop"     data-dep-id="${dep.id}">⏹ Stop</button>` : ''}
         ${canStart    ? `<button class="db-action-btn" style="padding:7px 14px;font-size:12px" data-dep-action="start"    data-dep-id="${dep.id}">▶ Start</button>` : ''}
         <button class="db-action-btn danger" style="padding:7px 14px;font-size:12px;margin-left:auto" data-dep-action="delete" data-dep-id="${dep.id}">🗑 Delete</button>
@@ -139,15 +141,18 @@ async function handleAction(action, id, btn) {
   btn.disabled   = true;
 
   try {
-    if (action === 'redeploy' || action === 'start') {
+    if (action === 'restart') {
+      await deploymentsSB.restart(id);
+      dep.status = 'pending';
+      dep.restart_count = (dep.restart_count || 0) + 1;
+      window.dbToast?.(`🔄 ${dep.name} restarting…`, 'info');
+    } else if (action === 'redeploy' || action === 'start') {
       await deploymentsSB.redeploy(id);
-      const d = allDeps.find(x => x.id === id);
-      if (d) d.status = 'pending';
+      dep.status = 'pending';
       window.dbToast?.(`🔄 ${dep.name} deploying…`, 'info');
     } else if (action === 'stop') {
       await deploymentsSB.stop(id);
-      const d = allDeps.find(x => x.id === id);
-      if (d) d.status = 'stopped';
+      dep.status = 'stopped';
       window.dbToast?.(`⏹ ${dep.name} stopped`, 'info');
     } else if (action === 'delete') {
       await deploymentsSB.remove(id);

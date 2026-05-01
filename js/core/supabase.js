@@ -259,6 +259,23 @@ export const deploymentsSB = {
     return { data };
   },
 
+  async restart(id) {
+    const c = await sb();
+    // In v14, restart increments a counter and sets status to pending
+    const { data: current } = await c.from('deployments').select('restart_count').eq('id', id).single();
+    const newCount = (current?.restart_count || 0) + 1;
+
+    const { data, error } = await c.from('deployments')
+      .update({
+        status: 'pending',
+        restart_count: newCount,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', id).select().single();
+    if (error) throw { data: { error: error.message } };
+    return { data };
+  },
+
   async redeploy(id) {
     const c = await sb();
     const { data, error } = await c.from('deployments')
@@ -295,29 +312,27 @@ export const deploymentsSB = {
     return { data: { logs: data || [] } };
   },
 
-  subscribeLogs(deploymentId, callback) {
-    sb().then(c => {
-      const channel = c.channel(`logs:${deploymentId}`)
-        .on('postgres_changes', {
-          event: 'INSERT', schema: 'public',
-          table: 'build_logs', filter: `deployment_id=eq.${deploymentId}`,
-        }, payload => callback(payload.new))
-        .subscribe();
-      return () => c.removeChannel(channel);
-    });
+  async subscribeLogs(deploymentId, callback) {
+    const c = await sb();
+    const channel = c.channel(`logs:${deploymentId}`)
+      .on('postgres_changes', {
+        event: 'INSERT', schema: 'public',
+        table: 'build_logs', filter: `deployment_id=eq.${deploymentId}`,
+      }, payload => callback(payload.new))
+      .subscribe();
+    return () => c.removeChannel(channel);
   },
 
-  subscribeStatus(deploymentId, callback) {
-    sb().then(c => {
-      const filter = deploymentId ? `id=eq.${deploymentId}` : undefined;
-      const ch = c.channel(`deploy-status${deploymentId ? ':' + deploymentId : ':all'}`)
-        .on('postgres_changes', {
-          event: 'UPDATE', schema: 'public',
-          table: 'deployments', ...(filter ? { filter } : {}),
-        }, payload => callback(payload.new))
-        .subscribe();
-      return () => c.removeChannel(ch);
-    });
+  async subscribeStatus(deploymentId, callback) {
+    const c = await sb();
+    const filter = deploymentId ? `id=eq.${deploymentId}` : undefined;
+    const ch = c.channel(`deploy-status${deploymentId ? ':' + deploymentId : ':all'}`)
+      .on('postgres_changes', {
+        event: 'UPDATE', schema: 'public',
+        table: 'deployments', ...(filter ? { filter } : {}),
+      }, payload => callback(payload.new))
+      .subscribe();
+    return () => c.removeChannel(ch);
   },
 };
 

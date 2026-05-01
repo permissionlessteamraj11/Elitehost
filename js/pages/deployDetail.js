@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadDeployment(id);
 
   // Action buttons
+  document.getElementById('btnRestart')?.addEventListener('click',  () => doAction('restart', id));
   document.getElementById('btnRedeploy')?.addEventListener('click', () => doAction('redeploy', id));
   document.getElementById('btnStop')?.addEventListener('click',     () => doAction('stop', id));
   document.getElementById('btnDelete')?.addEventListener('click',   () => doAction('delete', id));
@@ -217,7 +218,13 @@ async function doAction(action, id) {
   btn?.classList.add('btn-loading'); if (btn) btn.disabled = true;
 
   try {
-    if (action === 'redeploy') {
+    if (action === 'restart') {
+      await deploymentsSB.restart(id);
+      terminal.clear();
+      terminal.addLine('system', '─── System Restart Triggered ───', new Date());
+      terminal.setLive(true);
+      toast.success('🔄 System restart initiated!');
+    } else if (action === 'redeploy') {
       await deploymentsSB.redeploy(id);
       terminal.clear();
       terminal.addLine('system', '─── Redeployment triggered ───', new Date());
@@ -247,6 +254,7 @@ function updateActionButtons(dep) {
     if (el) el.classList.toggle('hidden', !val);
   };
   show('btnStop',     dep.status === 'running');
+  show('btnRestart',  ['running', 'failed', 'stopped'].includes(dep.status));
   show('btnRedeploy', ['stopped','failed','running','building'].includes(dep.status));
 }
 
