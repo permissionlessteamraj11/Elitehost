@@ -306,20 +306,27 @@ function initTerminalInteractivity() {
   let statIdx = 0;
   let interval;
 
-  terminal.addEventListener('mouseenter', () => {
+  const startInteractivity = () => {
+    if (interval) return;
     terminal.classList.add('terminal-active');
     interval = setInterval(() => {
       liveBadge.textContent = stats[statIdx];
       statIdx = (statIdx + 1) % stats.length;
     }, 1200);
-  });
+  };
 
-  terminal.addEventListener('mouseleave', () => {
+  const stopInteractivity = () => {
     terminal.classList.remove('terminal-active');
     clearInterval(interval);
+    interval = null;
     liveBadge.innerHTML = originalBadge;
     statIdx = 0;
-  });
+  };
+
+  terminal.addEventListener('mouseenter', startInteractivity);
+  terminal.addEventListener('mouseleave', stopInteractivity);
+  terminal.addEventListener('focusin', startInteractivity);
+  terminal.addEventListener('focusout', stopInteractivity);
 }
 
 /* ── FAQ Accordion ──────────────────────────────────────────────── */
