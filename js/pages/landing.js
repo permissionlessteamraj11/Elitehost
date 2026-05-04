@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initFAQ();
   initStatsBar();
   initTerminalInteractivity();
+  initCopyUtility();
   initCommandPalette();
 
   // Redirect logged-in users' CTA
@@ -30,31 +31,45 @@ document.addEventListener('DOMContentLoaded', () => {
 /* ── Navigation ─────────────────────────────────────────────────── */
 function initNav() {
   const hamburger = document.getElementById('hamburger');
-  const mobileMenu = document.getElementById('mobileMenu');
+  const navLinks = document.getElementById('navLinks');
 
-  hamburger?.addEventListener('click', () => {
-    const open = mobileMenu?.classList.toggle('open');
-    hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
-    // Animate hamburger bars
-    hamburger.classList.toggle('open', open);
+  const toggleMenu = (force) => {
+    const isOpen = typeof force === 'boolean' ? force : !navLinks?.classList.contains('mobile-open');
+    navLinks?.classList.toggle('mobile-open', isOpen);
+    hamburger?.classList.toggle('open', isOpen);
+    hamburger?.setAttribute('aria-expanded', String(isOpen));
+    if (navLinks) {
+      if (isOpen) navLinks.removeAttribute('aria-hidden');
+      else if (window.innerWidth <= 768) navLinks.setAttribute('aria-hidden', 'true');
+    }
+  };
+
+  hamburger?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleMenu();
   });
 
   // Close mobile menu on link click
-  mobileMenu?.querySelectorAll('a').forEach(a => {
-    a.addEventListener('click', () => {
-      mobileMenu.classList.remove('open');
-      hamburger?.classList.remove('open');
-    });
+  navLinks?.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => toggleMenu(false));
   });
 
   // Close on outside click
   document.addEventListener('click', e => {
-    if (mobileMenu?.classList.contains('open') &&
-        !mobileMenu.contains(e.target) && !hamburger?.contains(e.target)) {
-      mobileMenu.classList.remove('open');
-      hamburger?.classList.remove('open');
+    if (navLinks?.classList.contains('mobile-open') &&
+        !navLinks.contains(e.target) && !hamburger?.contains(e.target)) {
+      toggleMenu(false);
     }
   });
+
+  // Handle resize for aria-hidden
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 768) {
+      navLinks?.removeAttribute('aria-hidden');
+    } else if (!navLinks?.classList.contains('mobile-open')) {
+      navLinks?.setAttribute('aria-hidden', 'true');
+    }
+  }, { passive: true });
 }
 
 function initNavScroll() {
@@ -306,19 +321,47 @@ function initTerminalInteractivity() {
   let statIdx = 0;
   let interval;
 
-  terminal.addEventListener('mouseenter', () => {
+  const startInteractivity = () => {
+    if (interval) return;
     terminal.classList.add('terminal-active');
     interval = setInterval(() => {
       liveBadge.textContent = stats[statIdx];
       statIdx = (statIdx + 1) % stats.length;
     }, 1200);
-  });
+  };
 
-  terminal.addEventListener('mouseleave', () => {
+  const stopInteractivity = () => {
     terminal.classList.remove('terminal-active');
     clearInterval(interval);
+    interval = null;
     liveBadge.innerHTML = originalBadge;
     statIdx = 0;
+  };
+
+  terminal.addEventListener('mouseenter', startInteractivity);
+  terminal.addEventListener('mouseleave', stopInteractivity);
+  terminal.addEventListener('focusin', startInteractivity);
+  terminal.addEventListener('focusout', stopInteractivity);
+}
+
+/* ── Copy to Clipboard ─────────────────────────────────────────── */
+function initCopyUtility() {
+  document.addEventListener('click', async e => {
+    const btn = e.target.closest('[data-copy]');
+    if (!btn) return;
+
+    const text = btn.dataset.copy;
+    if (!text) return;
+
+    try {
+      await navigator.clipboard.writeText(text);
+
+      // Import toast manager dynamically to provide feedback
+      const { toast } = await import('../components/toast.js');
+      toast.success('Copied to clipboard!');
+    } catch (err) {
+      console.error('Copy failed', err);
+    }
   });
 }
 
