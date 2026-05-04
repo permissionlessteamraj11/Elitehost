@@ -164,7 +164,13 @@ COPY . .
 EXPOSE 3000
 CMD ["node", "index.js"]</code></pre>
       <div style="margin-top:var(--s4);display:flex;gap:var(--s3)">
-        <button class="btn btn-electric btn-sm">📋 Copy</button>
+        <button class="btn btn-electric btn-sm" data-copy='FROM node:20-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --production
+COPY . .
+EXPOSE 3000
+CMD ["node", "index.js"]'>📋 Copy</button>
         <span style="font-size:var(--text-xs);color:var(--text-muted);align-self:center">0.25 credits used</span>
       </div>
     </div>
