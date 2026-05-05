@@ -1,0 +1,3 @@
+## 2025-05-05 - [Unified Interactivity & Accessibility Fixes]
+**Learning:** Interactive elements like the hero terminal that only respond to hover are inaccessible to keyboard users. Using 'focusin' and 'focusout' along with 'tabindex="0"' ensures parity between mouse and keyboard experiences. Additionally, mobile navigation often suffers from a mismatch between JS selectors and CSS state classes (e.g., 'open' vs 'mobile-open'), and requires explicit ARIA synchronization ('aria-hidden', 'aria-expanded') to be truly accessible.
+**Action:** Always implement 'focusin/out' alongside 'mouseenter/leave' for interactive previews, and ensure ARIA attributes are updated in sync with DOM class changes.
