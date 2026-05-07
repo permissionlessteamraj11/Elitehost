@@ -85,7 +85,7 @@
   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:var(--s5)">
 
     <!-- Starter -->
-    <div class="card" style="padding:var(--s6);text-align:center;transition:all var(--t-base)" onmouseover="this.style.borderColor='var(--electric)'" onmouseout="this.style.borderColor=''">
+    <div class="card tilt-card" style="padding:var(--s6);text-align:center">
       <div style="font-size:var(--text-xs);color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:var(--s3)">Starter</div>
       <div style="font-family:var(--font-display);font-size:48px;font-weight:800;margin-bottom:var(--s2)">5</div>
       <div style="color:var(--text-muted);margin-bottom:var(--s5)">credits</div>
@@ -98,7 +98,7 @@
     </div>
 
     <!-- Dev -->
-    <div class="card" style="padding:var(--s6);text-align:center;border-color:var(--electric);position:relative;transition:all var(--t-base)">
+    <div class="card tilt-card" style="padding:var(--s6);text-align:center;border-color:var(--electric);position:relative">
       <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--grad-electric);color:var(--color-void);padding:3px 14px;border-radius:var(--r-full);font-size:11px;font-weight:700;white-space:nowrap">⭐ Most Popular</div>
       <div style="font-size:var(--text-xs);color:var(--electric);text-transform:uppercase;letter-spacing:.08em;margin-bottom:var(--s3)">Dev</div>
       <div style="font-family:var(--font-display);font-size:48px;font-weight:800;margin-bottom:var(--s2)">10</div>
@@ -112,7 +112,7 @@
     </div>
 
     <!-- Pro -->
-    <div class="card cyber-scan" style="padding:var(--s6);text-align:center;border-color:var(--mint);position:relative;transition:all var(--t-base)" onmouseover="this.style.borderColor='var(--mint)'" onmouseout="this.style.borderColor='var(--mint)'">
+    <div class="card cyber-scan tilt-card" style="padding:var(--s6);text-align:center;border-color:var(--mint);position:relative">
       <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--grad-mint);color:var(--color-void);padding:3px 14px;border-radius:var(--r-full);font-size:11px;font-weight:700;white-space:nowrap">💎 Best Value</div>
       <div style="font-size:var(--text-xs);color:var(--mint);text-transform:uppercase;letter-spacing:.08em;margin-bottom:var(--s3)">Pro</div>
       <div style="font-family:var(--font-display);font-size:48px;font-weight:800;margin-bottom:var(--s2)">25</div>
@@ -126,7 +126,7 @@
     </div>
 
     <!-- Power -->
-    <div class="card" style="padding:var(--s6);text-align:center;transition:all var(--t-base)" onmouseover="this.style.borderColor='var(--plasma)'" onmouseout="this.style.borderColor=''">
+    <div class="card tilt-card" style="padding:var(--s6);text-align:center">
       <div style="font-size:var(--text-xs);color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:var(--s3)">Power</div>
       <div style="font-family:var(--font-display);font-size:48px;font-weight:800;margin-bottom:var(--s2)">50</div>
       <div style="color:var(--text-muted);margin-bottom:var(--s5)">credits</div>
@@ -218,45 +218,45 @@
 <section style="background:var(--color-surface-1);padding:var(--s10) var(--s5)">
   <div class="container" style="max-width:720px">
     <h2 style="font-family:var(--font-display);font-size:var(--text-3xl);font-weight:800;margin-bottom:var(--s8);text-align:center">Pricing FAQ</h2>
-    <div style="display:flex;flex-direction:column;gap:var(--s3)">
-      <div class="faq-item card card-sm">
-        <button class="faq-question" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;padding:var(--s4);font-size:var(--text-base);font-weight:600;color:var(--text-primary);display:flex;justify-content:space-between;align-items:center" aria-expanded="false">
-          What if my app uses a lot of RAM or CPU? <span>+</span>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false" aria-controls="faq-p-1">
+          What if my app uses a lot of RAM or CPU? <span class="faq-chevron">▾</span>
         </button>
-        <div class="faq-answer" style="max-height:0;overflow:hidden;transition:max-height .3s ease">
-          <p style="padding:0 var(--s4) var(--s4);color:var(--text-muted)">Our credit system is time-based, not resource-based. 1 credit = 1 week regardless of RAM/CPU usage. We provide generous resource limits (512MB RAM, 0.5 vCPU) included in every deployment.</p>
+        <div class="faq-answer" id="faq-p-1">
+          <p>Our credit system is time-based, not resource-based. 1 credit = 1 week regardless of RAM/CPU usage. We provide generous resource limits (512MB RAM, 0.5 vCPU) included in every deployment.</p>
         </div>
       </div>
-      <div class="faq-item card card-sm">
-        <button class="faq-question" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;padding:var(--s4);font-size:var(--text-base);font-weight:600;color:var(--text-primary);display:flex;justify-content:space-between;align-items:center" aria-expanded="false">
-          Can I stop an app and save credits? <span>+</span>
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false" aria-controls="faq-p-2">
+          Can I stop an app and save credits? <span class="faq-chevron">▾</span>
         </button>
-        <div class="faq-answer" style="max-height:0;overflow:hidden;transition:max-height .3s ease">
-          <p style="padding:0 var(--s4) var(--s4);color:var(--text-muted)">Yes! Stopping an app immediately pauses credit deduction. Your code, configs, and env vars are preserved. Start it again any time — it redeploys in under 30 seconds.</p>
+        <div class="faq-answer" id="faq-p-2">
+          <p>Yes! Stopping an app immediately pauses credit deduction. Your code, configs, and env vars are preserved. Start it again any time — it redeploys in under 30 seconds.</p>
         </div>
       </div>
-      <div class="faq-item card card-sm">
-        <button class="faq-question" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;padding:var(--s4);font-size:var(--text-base);font-weight:600;color:var(--text-primary);display:flex;justify-content:space-between;align-items:center" aria-expanded="false">
-          Do credits expire? <span>+</span>
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false" aria-controls="faq-p-3">
+          Do credits expire? <span class="faq-chevron">▾</span>
         </button>
-        <div class="faq-answer" style="max-height:0;overflow:hidden;transition:max-height .3s ease">
-          <p style="padding:0 var(--s4) var(--s4);color:var(--text-muted)">Credits are valid for 180 days from the date of purchase. We send email reminders 30 days and 7 days before expiry so you never lose credits unexpectedly.</p>
+        <div class="faq-answer" id="faq-p-3">
+          <p>Credits are valid for 180 days from the date of purchase. We send email reminders 30 days and 7 days before expiry so you never lose credits unexpectedly.</p>
         </div>
       </div>
-      <div class="faq-item card card-sm">
-        <button class="faq-question" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;padding:var(--s4);font-size:var(--text-base);font-weight:600;color:var(--text-primary);display:flex;justify-content:space-between;align-items:center" aria-expanded="false">
-          What payment methods do you accept? <span>+</span>
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false" aria-controls="faq-p-4">
+          What payment methods do you accept? <span class="faq-chevron">▾</span>
         </button>
-        <div class="faq-answer" style="max-height:0;overflow:hidden;transition:max-height .3s ease">
-          <p style="padding:0 var(--s4) var(--s4);color:var(--text-muted)">We accept UPI (all apps), PhonePe, Google Pay, Paytm, debit/credit cards, and NEFT/RTGS bank transfer. All payments in ₹ INR with no foreign transaction fees.</p>
+        <div class="faq-answer" id="faq-p-4">
+          <p>We accept UPI (all apps), PhonePe, Google Pay, Paytm, debit/credit cards, and NEFT/RTGS bank transfer. All payments in ₹ INR with no foreign transaction fees.</p>
         </div>
       </div>
-      <div class="faq-item card card-sm">
-        <button class="faq-question" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;padding:var(--s4);font-size:var(--text-base);font-weight:600;color:var(--text-primary);display:flex;justify-content:space-between;align-items:center" aria-expanded="false">
-          Do you offer refunds? <span>+</span>
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false" aria-controls="faq-p-5">
+          Do you offer refunds? <span class="faq-chevron">▾</span>
         </button>
-        <div class="faq-answer" style="max-height:0;overflow:hidden;transition:max-height .3s ease">
-          <p style="padding:0 var(--s4) var(--s4);color:var(--text-muted)">We offer refunds for unused credits within 7 days of purchase. Contact support@elitehosting.in with your payment reference. Partially used packs are refunded on a pro-rata basis.</p>
+        <div class="faq-answer" id="faq-p-5">
+          <p>We offer refunds for unused credits within 7 days of purchase. Contact support@elitehosting.in with your payment reference. Partially used packs are refunded on a pro-rata basis.</p>
         </div>
       </div>
     </div>
@@ -294,20 +294,5 @@
 </footer>
 
 <script type="module" src="/js/pages/landing.js"></script>
-
-<script>
-// FAQ accordion
-document.querySelectorAll('.faq-item').forEach(item => {
-  const btn = item.querySelector('.faq-question');
-  const body = item.querySelector('.faq-answer');
-  const icon = btn.querySelector('span');
-  btn.addEventListener('click', () => {
-    const open = item.classList.toggle('open');
-    btn.setAttribute('aria-expanded', String(open));
-    body.style.maxHeight = open ? body.scrollHeight + 'px' : '0';
-    if (icon) icon.textContent = open ? '−' : '+';
-  });
-});
-</script>
 </body>
 </html>
