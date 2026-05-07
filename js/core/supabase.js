@@ -93,9 +93,24 @@ export const authSB = {
       if (error.message.includes('already registered')) throw { data: { error: 'This email is already registered.' } };
       throw { data: { error: error.message } };
     }
-    // Handle referral code after signup
-    if (referralCode && data.user?.id) {
-      setTimeout(() => _handleReferral(data.user.id, referralCode), 2000);
+    // Handle signup rewards and referrals
+    if (data.user?.id) {
+      // Non-blocking rewards initialization
+      setTimeout(async () => {
+        const c = await sb();
+        // 1. Assign 2 Free Signup Credits
+        await c.rpc('add_credits', {
+          p_user_id: data.user.id,
+          p_amount: 2.0,
+          p_source: 'signup_bonus',
+          p_description: 'Welcome Bonus: 2 Free Credits'
+        }).catch(e => console.warn('Signup bonus failed:', e));
+
+        // 2. Handle referral if present
+        if (referralCode) {
+          _handleReferral(data.user.id, referralCode);
+        }
+      }, 2000);
     }
     return data;
   },
@@ -118,6 +133,29 @@ export const authSB = {
       .eq('auth_id', data.user.id).then(() => {});
     const profile = await getProfile();
     return { data: { user: profile, session: data.session } };
+  },
+
+  async sendOtp(email) {
+    const c = await sb();
+    const { error } = await c.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: `${location.origin}/auth/verify-otp.html`,
+      },
+    });
+    if (error) throw { data: { error: error.message } };
+    return { data: { success: true } };
+  },
+
+  async verifyOtp(email, token) {
+    const c = await sb();
+    const { data, error } = await c.auth.verifyOtp({
+      email,
+      token,
+      type: 'email', // standard for 6-digit code
+    });
+    if (error) throw { data: { error: error.message } };
+    return { data };
   },
 
   async signInWithGitHub() {
@@ -443,7 +481,7 @@ export const aiSB = {
 
     try {
       const { data, error } = await c.functions.invoke('ai-execute', {
-        body: { task, context, deploymentId, history, confirmed },
+        body: { task, context, deploymentId, history, confirmed, useOpenRouter: true },
         headers: { Authorization: `Bearer ${token}` },
       });
       if (error) throw { data: { error: error.message } };
@@ -453,7 +491,7 @@ export const aiSB = {
       if (err?.data?.error?.includes('FunctionsError') || err.message?.includes('non-2xx')) {
         return {
           data: {
-            content: `AI Edge Function not configured yet.\n\nTo enable AI features, deploy the 'ai-execute' Supabase Edge Function.\n\nSee: https://supabase.com/docs/guides/functions`,
+            content: `AI Edge Function not configured yet or OpenRouter API key missing.\n\nTo enable AI features, deploy the 'ai-execute' Supabase Edge Function with OpenRouter integration.\n\nSee: https://openrouter.ai/docs`,
           },
         };
       }

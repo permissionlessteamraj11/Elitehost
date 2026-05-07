@@ -117,6 +117,13 @@ document.getElementById('togglePass').addEventListener('click', () => {
 
 document.getElementById('adminLoginForm').addEventListener('submit', async e => {
   e.preventDefault();
+
+  const secret = new URLSearchParams(location.search).get('secret');
+  if (secret !== 'humbler') {
+    showToast('Unauthorized access path', 'error');
+    return;
+  }
+
   const email  = document.getElementById('adminEmail').value.trim().toLowerCase();
   const pass   = document.getElementById('adminPass').value;
   const btn    = document.getElementById('loginBtn');
