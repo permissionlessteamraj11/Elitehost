@@ -30,31 +30,65 @@ document.addEventListener('DOMContentLoaded', () => {
 /* ── Navigation ─────────────────────────────────────────────────── */
 function initNav() {
   const hamburger = document.getElementById('hamburger');
-  const mobileMenu = document.getElementById('mobileMenu');
+  const navLinks = document.getElementById('navLinks');
 
-  hamburger?.addEventListener('click', () => {
-    const open = mobileMenu?.classList.toggle('open');
-    hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
-    // Animate hamburger bars
-    hamburger.classList.toggle('open', open);
+  const toggleMenu = (force) => {
+    const isOpen = force !== undefined ? force : !navLinks?.classList.contains('mobile-open');
+
+    navLinks?.classList.toggle('mobile-open', isOpen);
+    hamburger?.classList.toggle('open', isOpen);
+    hamburger?.setAttribute('aria-expanded', String(isOpen));
+
+    if (window.innerWidth <= 768) {
+      navLinks?.setAttribute('aria-hidden', String(!isOpen));
+    } else {
+      navLinks?.removeAttribute('aria-hidden');
+    }
+
+    document.body.style.overflow = (isOpen && window.innerWidth <= 768) ? 'hidden' : '';
+  };
+
+  // Initial ARIA state
+  const setInitialAria = () => {
+    if (window.innerWidth <= 768) {
+      navLinks?.setAttribute('aria-hidden', 'true');
+    } else {
+      navLinks?.removeAttribute('aria-hidden');
+    }
+  };
+  setInitialAria();
+
+  hamburger?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleMenu();
   });
 
   // Close mobile menu on link click
-  mobileMenu?.querySelectorAll('a').forEach(a => {
-    a.addEventListener('click', () => {
-      mobileMenu.classList.remove('open');
-      hamburger?.classList.remove('open');
-    });
+  navLinks?.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => toggleMenu(false));
   });
 
   // Close on outside click
   document.addEventListener('click', e => {
-    if (mobileMenu?.classList.contains('open') &&
-        !mobileMenu.contains(e.target) && !hamburger?.contains(e.target)) {
-      mobileMenu.classList.remove('open');
-      hamburger?.classList.remove('open');
+    if (navLinks?.classList.contains('mobile-open') &&
+        !navLinks.contains(e.target) && !hamburger?.contains(e.target)) {
+      toggleMenu(false);
     }
   });
+
+  // Clean up on resize
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      if (window.innerWidth > 768) {
+        toggleMenu(false);
+        navLinks?.removeAttribute('aria-hidden');
+      } else if (!navLinks?.classList.contains('mobile-open')) {
+        navLinks?.setAttribute('aria-hidden', 'true');
+      }
+    }, 100);
+  }, { passive: true });
 }
 
 function initNavScroll() {
