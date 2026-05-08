@@ -7,13 +7,13 @@ import { toast } from '../components/toast.js';
 import { modal } from '../components/modal.js';
 
 const AI_TASKS = [
+  { id: 'write_code',   icon: '✍️', label: 'Write Code',      cost: 0.50, desc: 'Tell AI to write code or a full script for you' },
+  { id: 'debug',        icon: '🔧', label: 'Debug Code',      cost: 0.50, desc: 'Paste your code or logs and AI will fix it' },
   { id: 'dockerfile',   icon: '🐳', label: 'Dockerfile',      cost: 0.25, desc: 'Generate optimized Dockerfile for your app' },
   { id: 'compose',      icon: '📦', label: 'docker-compose',  cost: 0.25, desc: 'Create docker-compose.yml for multi-service apps' },
   { id: 'envguide',     icon: '🔑', label: 'Env Variables',   cost: 0.10, desc: 'Suggest required environment variables' },
   { id: 'startcmd',     icon: '▶',  label: 'Start Command',   cost: 0.10, desc: 'Find the right start command for your framework' },
-  { id: 'debug',        icon: '🔧', label: 'Fix Build Error',  cost: 0.50, desc: 'Analyze and fix deployment errors' },
   { id: 'optimize',     icon: '⚡', label: 'Optimize Build',   cost: 0.50, desc: 'Speed up build time and reduce image size' },
-  { id: 'readme',       icon: '📖', label: 'Generate README',  cost: 0.25, desc: 'Create README.md from your code' },
   { id: 'chat',         icon: '💬', label: 'AI Chat',          cost: 0.10, desc: 'Ask anything about your deployment' },
 ];
 
@@ -173,15 +173,29 @@ function renderResult(content, task) {
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s4)">
       <h3 style="font-size:var(--text-base)">${task.icon} ${task.label} Result</h3>
       <div style="display:flex;gap:var(--s2)">
+        ${['write_code', 'debug', 'dockerfile'].includes(task.id) ?
+          `<button class="btn btn-electric btn-sm" onclick="deployAICode()">🚀 Deploy Code</button>` : ''}
         <button class="btn btn-ghost btn-sm" onclick="copyResult()">📋 Copy</button>
         <button class="btn btn-ghost btn-sm" onclick="clearResult()">✕</button>
       </div>
     </div>
     <div id="resultContent" class="terminal" style="padding:var(--s4);border-radius:var(--r-lg);max-height:500px;overflow-y:auto">
-      <pre style="font-family:var(--font-mono);font-size:12px;line-height:1.65;white-space:pre-wrap;color:var(--text-secondary)">${escHtml(content)}</pre>
+      <pre id="aiResultText" style="font-family:var(--font-mono);font-size:12px;line-height:1.65;white-space:pre-wrap;color:var(--text-secondary)">${escHtml(content)}</pre>
     </div>
   `;
 }
+
+window.deployAICode = function() {
+  const code = document.getElementById('aiResultText')?.textContent;
+  if (!code) return;
+
+  // Store code in session and redirect to new deploy
+  sessionStorage.setItem('eh_ai_code', code);
+  toast.success('Code captured! Redirecting to deployment...');
+  setTimeout(() => {
+    location.href = '/dashboard/deploy-new.html?source=ai';
+  }, 1000);
+};
 
 window.copyResult = function() {
   const el = document.getElementById('resultContent');

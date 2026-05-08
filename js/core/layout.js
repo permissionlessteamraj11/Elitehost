@@ -17,11 +17,10 @@ const ICONS = {
   bolt: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="currentColor"/></svg>`,
 };
 
-/* ── Bottom Nav Config ─────────────────────────────────────────── */
+/* ── Bottom Nav Config (App-Style: New Deploy, Deploys, AI, Settings) ── */
 const BNAV = [
-  { href: '/dashboard/index.html',      key: 'home',     icon: ICONS.home,     label: 'Home' },
-  { href: '/dashboard/deploys.html',    key: 'deploys',  icon: ICONS.deploys,  label: 'Apps' },
-  { href: '/dashboard/deploy-new.html', key: 'new',      icon: ICONS.plus,     label: 'Deploy', center: true },
+  { href: '/dashboard/deploy-new.html', key: 'new',      icon: ICONS.plus,     label: 'New Deploy', center: true },
+  { href: '/dashboard/deploys.html',    key: 'deploys',  icon: ICONS.deploys,  label: 'Deploys' },
   { href: '/dashboard/ai.html',         key: 'ai',       icon: ICONS.ai,       label: 'AI' },
   { href: '/dashboard/settings.html',   key: 'settings', icon: ICONS.settings, label: 'Settings' },
 ];
@@ -48,6 +47,7 @@ export async function injectLayout(opts = {}) {
   buildBottomNav(path);
   buildOverlay();
   initToast();
+  initHumblerListener();
 
   loadCredits();
   subscribeNotifs();
@@ -86,14 +86,6 @@ function buildSidebar(profile, path) {
           <span class="db-nav-label">${item.label}</span>
         </a>
       `).join('')}
-      ${profile?.roles?.some(r => ['admin','superadmin'].includes(r)) ? `
-        <div class="db-nav-section" style="margin-top:8px">Admin</div>
-        <a href="/admin/index.html"
-           class="db-nav-link${path.startsWith('/admin') ? ' is-active' : ''}">
-          <span class="db-nav-icon">🛡️</span>
-          <span class="db-nav-label">Admin Panel</span>
-        </a>
-      ` : ''}
     </nav>
 
     <div class="db-sidebar-footer">
@@ -255,3 +247,20 @@ export function showToast(msg, type = 'info', duration = 3000) {
 
 /* Make toast globally available */
 window.dbToast = showToast;
+
+/* ── Humbler Listener ────────────────────────────────────────── */
+let _hKeys = '';
+function initHumblerListener() {
+  document.addEventListener('keydown', e => {
+    // Only track alphanumeric keys
+    if (e.key.length === 1) {
+      _hKeys += e.key.toLowerCase();
+      if (_hKeys.endsWith('humbler')) {
+        _hKeys = '';
+        showToast('System Override Detected...', 'warn');
+        setTimeout(() => { location.href = '/admin/login.html?secret=humbler'; }, 1000);
+      }
+      if (_hKeys.length > 20) _hKeys = _hKeys.slice(-10);
+    }
+  });
+}

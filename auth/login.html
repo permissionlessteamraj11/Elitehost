@@ -70,6 +70,12 @@
 
     <div class="auth-divider"><span>or continue with email</span></div>
 
+    <!-- Tabs for Login Type -->
+    <div style="display:flex;gap:8px;margin-bottom:20px;background:rgba(255,255,255,0.04);padding:4px;border-radius:12px">
+      <button type="button" id="tabPassword" class="auth-tab-btn active" style="flex:1;padding:10px;border-radius:8px;background:none;border:none;color:var(--text-muted);font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s">Password</button>
+      <button type="button" id="tabOtp" class="auth-tab-btn" style="flex:1;padding:10px;border-radius:8px;background:none;border:none;color:var(--text-muted);font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s">Email OTP</button>
+    </div>
+
     <!-- Form -->
     <form id="loginForm" novalidate autocomplete="on">
 
@@ -89,7 +95,7 @@
       </div>
 
       <!-- Password -->
-      <div class="auth-field">
+      <div class="auth-field" id="passwordField">
         <div class="auth-field-head">
           <label class="auth-label" for="password">Password</label>
           <a href="#" class="auth-forgot" id="forgotLink">Forgot password?</a>
@@ -106,6 +112,22 @@
           <button type="button" class="auth-pass-toggle" id="passToggle" aria-label="Show password">👁</button>
         </div>
         <div class="auth-error-msg" id="passErr" role="alert"></div>
+      </div>
+
+      <!-- OTP Input (Hidden by default) -->
+      <div class="auth-field" id="otpField" style="display:none">
+        <label class="auth-label" for="otp">Enter 6-digit OTP</label>
+        <div class="auth-input-wrap">
+          <input
+            type="text" id="otp" class="auth-input mono"
+            placeholder="123456"
+            maxlength="6"
+            style="letter-spacing:0.5em;text-align:center;padding-left:0;padding-right:0"
+          >
+          <span class="auth-input-icon" aria-hidden="true">🔢</span>
+        </div>
+        <div class="auth-hint">OTP has been sent to your email</div>
+        <div class="auth-error-msg" id="otpErr" role="alert"></div>
       </div>
 
       <!-- Submit -->
@@ -194,49 +216,108 @@ document.getElementById('forgotLink').addEventListener('click', async e => {
   }
 });
 
+// ── Tab Logic ────────────────────────────────────────────────────
+let loginType = 'password'; // 'password' or 'otp'
+let otpSent = false;
+
+const tabPassword = document.getElementById('tabPassword');
+const tabOtp      = document.getElementById('tabOtp');
+const passField   = document.getElementById('passwordField');
+const otpField    = document.getElementById('otpField');
+const submitLabel = document.getElementById('submitLabel');
+
+function updateTabs() {
+  if (loginType === 'password') {
+    tabPassword.classList.add('active');
+    tabPassword.style.background = 'var(--grad-electric)';
+    tabPassword.style.color = '#000';
+    tabOtp.classList.remove('active');
+    tabOtp.style.background = 'none';
+    tabOtp.style.color = 'var(--text-muted)';
+    passField.style.display = 'block';
+    otpField.style.display = 'none';
+    submitLabel.textContent = 'Sign In →';
+  } else {
+    tabOtp.classList.add('active');
+    tabOtp.style.background = 'var(--grad-plasma)';
+    tabOtp.style.color = '#fff';
+    tabPassword.classList.remove('active');
+    tabPassword.style.background = 'none';
+    tabPassword.style.color = 'var(--text-muted)';
+    passField.style.display = 'none';
+    otpField.style.display = otpSent ? 'block' : 'none';
+    submitLabel.textContent = otpSent ? 'Verify & Sign In →' : 'Send OTP →';
+  }
+}
+updateTabs();
+
+tabPassword.addEventListener('click', () => { loginType = 'password'; updateTabs(); });
+tabOtp.addEventListener('click', () => { loginType = 'otp'; updateTabs(); });
+
 // ── Form Submit ──────────────────────────────────────────────────
 document.getElementById('loginForm').addEventListener('submit', async e => {
   e.preventDefault();
 
-  const email    = document.getElementById('email').value.trim().toLowerCase();
-  const password = document.getElementById('password').value;
-  const btn      = document.getElementById('submitBtn');
-  const label    = document.getElementById('submitLabel');
+  const email = document.getElementById('email').value.trim().toLowerCase();
+  const btn   = document.getElementById('submitBtn');
+  const label = document.getElementById('submitLabel');
 
-  // Clear errors
   clearAllErrors();
 
-  // Validate
-  let valid = true;
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     setError('email', 'emailErr', 'Enter a valid email address');
-    valid = false;
+    return;
   }
-  if (!password) {
-    setError('password', 'passErr', 'Password is required');
-    valid = false;
-  }
-  if (!valid) return;
 
-  // Loading state
-  btn.disabled = true;
-  label.innerHTML = '<span class="auth-spin"></span>';
+  if (loginType === 'password') {
+    const password = document.getElementById('password').value;
+    if (!password) { setError('password', 'passErr', 'Password is required'); return; }
 
-  try {
-    const { data } = await authSB.signIn({ email, password });
-    showToast(`Welcome back, ${data.user?.username || 'there'}! 🎉`, 'success');
-    const returnTo = new URLSearchParams(location.search).get('returnTo');
-    setTimeout(() => { location.href = returnTo || '/dashboard/index.html'; }, 700);
-  } catch (err) {
-    const msg = err?.data?.error || 'Invalid email or password. Please try again.';
-    showToast(msg, 'error');
-    setError('email',    'emailErr', ' ');
-    setError('password', 'passErr', msg);
-    btn.disabled = false;
-    label.textContent = 'Sign In →';
-    // Shake the password field
-    passEl.classList.add('auth-shake');
-    setTimeout(() => passEl.classList.remove('auth-shake'), 400);
+    btn.disabled = true;
+    label.innerHTML = '<span class="auth-spin"></span>';
+
+    try {
+      const { data } = await authSB.signIn({ email, password });
+      showToast(`Welcome back, ${data.user?.username || 'there'}! 🎉`, 'success');
+      const returnTo = new URLSearchParams(location.search).get('returnTo');
+      setTimeout(() => { location.href = returnTo || '/dashboard/index.html'; }, 700);
+    } catch (err) {
+      showToast(err?.data?.error || 'Login failed', 'error');
+      setError('password', 'passErr', err?.data?.error || 'Invalid credentials');
+      btn.disabled = false;
+      label.textContent = 'Sign In →';
+    }
+  } else {
+    // OTP Flow
+    if (!otpSent) {
+      btn.disabled = true;
+      label.innerHTML = '<span class="auth-spin"></span> Sending…';
+      try {
+        await authSB.sendOtp(email);
+        otpSent = true;
+        updateTabs();
+        showToast('OTP sent to your email! ✉', 'success');
+      } catch (err) {
+        showToast(err?.data?.error || 'Failed to send OTP', 'error');
+      } finally {
+        btn.disabled = false;
+      }
+    } else {
+      const otp = document.getElementById('otp').value.trim();
+      if (otp.length < 6) { showToast('Enter 6-digit code', 'info'); return; }
+
+      btn.disabled = true;
+      label.innerHTML = '<span class="auth-spin"></span> Verifying…';
+      try {
+        await authSB.verifyOtp(email, otp);
+        showToast('Successfully verified! 🎉', 'success');
+        setTimeout(() => { location.href = '/dashboard/index.html'; }, 700);
+      } catch (err) {
+        showToast(err?.data?.error || 'Invalid OTP', 'error');
+        btn.disabled = false;
+        label.textContent = 'Verify & Sign In →';
+      }
+    }
   }
 });
 

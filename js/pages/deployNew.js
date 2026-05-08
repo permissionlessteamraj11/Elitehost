@@ -37,8 +37,48 @@ document.addEventListener('DOMContentLoaded', async () => {
   initStep3();
   initStep4();
   initDropzone();
+  checkAISource();
   showStep(1);
 });
+
+function checkAISource() {
+  const urlParams = new URLSearchParams(location.search);
+  if (urlParams.get('source') === 'ai') {
+    const code = sessionStorage.getItem('eh_ai_code');
+    if (code) {
+      toast.info('Loaded code from AI assistant');
+      // In a real app, you might save this to a file or pre-fill a 'Code' source type
+      // For now, we'll store it in deployData
+      deployData.sourceType = 'code';
+      deployData.aiCode = code;
+
+      // Update UI to show AI source
+      const gitBtn = document.getElementById('srcGit');
+      const zipBtn = document.getElementById('srcZip');
+      gitBtn?.classList.remove('active');
+      zipBtn?.classList.remove('active');
+
+      const gitBlock = document.getElementById('gitBlock');
+      const zipBlock = document.getElementById('zipBlock');
+      if (gitBlock) gitBlock.hidden = true;
+      if (zipBlock) zipBlock.hidden = true;
+
+      // Add a visual indicator for AI code
+      const panel1 = document.querySelector('.wizard-step-content');
+      if (panel1) {
+        const aiInfo = document.createElement('div');
+        aiInfo.style.cssText = 'background:var(--grad-plasma-soft); padding:16px; border-radius:12px; margin-bottom:20px; border:1px solid var(--plasma)';
+        aiInfo.innerHTML = `
+          <div style="font-weight:700; color:#fff; margin-bottom:8px">🤖 AI Generated Code Ready</div>
+          <div style="font-size:11px; color:var(--text-muted); font-family:var(--font-mono); max-height:60px; overflow:hidden">
+            ${escHtml(code.substring(0, 150))}...
+          </div>
+        `;
+        panel1.insertBefore(aiInfo, panel1.firstChild);
+      }
+    }
+  }
+}
 
 function initSidebar() {
   const toggle = document.getElementById('sidebarToggle');
@@ -90,11 +130,20 @@ function goNext() {
 
 /* ── Step 1: Source ─────────────────────────────────────────────── */
 function initStep1() {
-  const nameEl   = document.getElementById('appName');
-  const gitBtn   = document.getElementById('srcGit');
-  const zipBtn   = document.getElementById('srcZip');
-  const gitBlock = document.getElementById('gitBlock');
-  const zipBlock = document.getElementById('zipBlock');
+  const nameEl    = document.getElementById('appName');
+  const gitBtn    = document.getElementById('srcGit');
+  const zipBtn    = document.getElementById('srcZip');
+  const trialBtn  = document.getElementById('srcTrial');
+  const gitBlock  = document.getElementById('gitBlock');
+  const zipBlock  = document.getElementById('zipBlock');
+  const trialHint = document.getElementById('trialHint');
+
+  // Handle manual source switch (clears AI source)
+  [gitBtn, zipBtn, trialBtn].forEach(btn => btn?.addEventListener('click', () => {
+    deployData.aiCode = null;
+    const aiInfo = document.querySelector('[style*="var(--grad-plasma-soft)"]');
+    if (aiInfo) aiInfo.remove();
+  }));
 
   // App name: sanitize
   nameEl?.addEventListener('input', () => {
@@ -108,12 +157,16 @@ function initStep1() {
     deployData.sourceType = type;
     gitBtn?.classList.toggle('active', type === 'git');
     zipBtn?.classList.toggle('active', type === 'zip');
+    trialBtn?.classList.toggle('active', type === 'trial');
+
     gitBlock && (gitBlock.hidden = type !== 'git');
-    zipBlock && (zipBlock.hidden = type !== 'zip');
+    zipBlock && (zipBlock.hidden = type !== 'zip' && type !== 'trial');
+    if (trialHint) trialHint.style.display = type === 'trial' ? 'block' : 'none';
   }
 
   gitBtn?.addEventListener('click', () => setSourceType('git'));
   zipBtn?.addEventListener('click', () => setSourceType('zip'));
+  trialBtn?.addEventListener('click', () => setSourceType('trial'));
   setSourceType('git');
 
   // Repo URL auto-set branch
@@ -355,6 +408,30 @@ async function doDeploy() {
       form.append('envVars',  JSON.stringify(deployData.envVars));
       form.append('zipFile',  deployData.zipFile);
       payload = { formData: form };
+    } else if (deployData.sourceType === 'code' && deployData.aiCode) {
+      payload = {
+        name:       deployData.name,
+        sourceType: 'code',
+        code:       deployData.aiCode,
+        startCmd:   deployData.startCmd,
+        buildCmd:   deployData.buildCmd,
+        port:       deployData.port,
+        framework:  deployData.framework,
+        envVars:    deployData.envVars,
+      };
+    } else if (deployData.sourceType === 'trial') {
+      payload = {
+        name:       deployData.name,
+        sourceType: 'zip',
+        zipFile:    deployData.zipFile,
+        isTrial:    true,
+        expiresAt:  new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+        startCmd:   deployData.startCmd,
+        buildCmd:   deployData.buildCmd,
+        port:       deployData.port,
+        framework:  deployData.framework,
+        envVars:    deployData.envVars,
+      };
     } else {
       payload = {
         name:       deployData.name,
