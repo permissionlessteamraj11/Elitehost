@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initStatsBar();
   initTerminalInteractivity();
   initCommandPalette();
+  initGlobalCopy();
 
   // Redirect logged-in users' CTA
   if (auth.isLoggedIn()) {
@@ -30,30 +31,63 @@ document.addEventListener('DOMContentLoaded', () => {
 /* ── Navigation ─────────────────────────────────────────────────── */
 function initNav() {
   const hamburger = document.getElementById('hamburger');
-  const mobileMenu = document.getElementById('mobileMenu');
+  const navLinks = document.getElementById('navLinks');
 
-  hamburger?.addEventListener('click', () => {
-    const open = mobileMenu?.classList.toggle('open');
-    hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
-    // Animate hamburger bars
-    hamburger.classList.toggle('open', open);
+  const updateAria = () => {
+    const isMobile = window.innerWidth <= 768;
+    if (isMobile) {
+      const isOpen = navLinks?.classList.contains('mobile-open');
+      navLinks?.setAttribute('aria-hidden', String(!isOpen));
+      hamburger?.setAttribute('aria-expanded', String(!!isOpen));
+    } else {
+      navLinks?.removeAttribute('aria-hidden');
+      hamburger?.removeAttribute('aria-expanded');
+    }
+  };
+
+  const toggleMenu = (force) => {
+    const isOpen = typeof force === 'boolean' ? force : !navLinks?.classList.contains('mobile-open');
+    navLinks?.classList.toggle('mobile-open', isOpen);
+    hamburger?.classList.toggle('open', isOpen);
+    updateAria();
+    if (isOpen && window.innerWidth <= 768) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+  };
+
+  // Initial state
+  updateAria();
+
+  hamburger?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleMenu();
   });
 
   // Close mobile menu on link click
-  mobileMenu?.querySelectorAll('a').forEach(a => {
-    a.addEventListener('click', () => {
-      mobileMenu.classList.remove('open');
-      hamburger?.classList.remove('open');
-    });
+  navLinks?.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => toggleMenu(false));
   });
 
   // Close on outside click
   document.addEventListener('click', e => {
-    if (mobileMenu?.classList.contains('open') &&
-        !mobileMenu.contains(e.target) && !hamburger?.contains(e.target)) {
-      mobileMenu.classList.remove('open');
-      hamburger?.classList.remove('open');
+    if (navLinks?.classList.contains('mobile-open') &&
+        !navLinks.contains(e.target) && !hamburger?.contains(e.target)) {
+      toggleMenu(false);
     }
+  });
+
+  // Debounced resize listener
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      updateAria();
+      if (window.innerWidth > 768) {
+        document.body.style.overflow = '';
+      }
+    }, 150);
   });
 }
 
@@ -239,11 +273,11 @@ function initCounters() {
     });
   }, { threshold: 0.6 });
 
-  document.querySelectorAll('[data-counter]').forEach(el => obs.observe(el));
+  document.querySelectorAll('[data-target]').forEach(el => obs.observe(el));
 }
 
 function animateCounter(el) {
-  const target = parseFloat(el.dataset.counter);
+  const target = parseFloat(el.dataset.target);
   const suffix = el.dataset.suffix || '';
   const prefix = el.dataset.prefix || '';
   const duration = 1800;
@@ -306,20 +340,26 @@ function initTerminalInteractivity() {
   let statIdx = 0;
   let interval;
 
-  terminal.addEventListener('mouseenter', () => {
+  const startStats = () => {
     terminal.classList.add('terminal-active');
+    clearInterval(interval);
     interval = setInterval(() => {
       liveBadge.textContent = stats[statIdx];
       statIdx = (statIdx + 1) % stats.length;
     }, 1200);
-  });
+  };
 
-  terminal.addEventListener('mouseleave', () => {
+  const stopStats = () => {
     terminal.classList.remove('terminal-active');
     clearInterval(interval);
     liveBadge.innerHTML = originalBadge;
     statIdx = 0;
-  });
+  };
+
+  terminal.addEventListener('mouseenter', startStats);
+  terminal.addEventListener('mouseleave', stopStats);
+  terminal.addEventListener('focusin', startStats);
+  terminal.addEventListener('focusout', stopStats);
 }
 
 /* ── FAQ Accordion ──────────────────────────────────────────────── */
@@ -334,6 +374,29 @@ function initFAQ() {
       const open = item.classList.toggle('open');
       trigger.setAttribute('aria-expanded', String(open));
       body.style.maxHeight = open ? body.scrollHeight + 'px' : '0';
+      const icon = trigger.querySelector('span');
+      if (icon) icon.textContent = open ? '−' : '+';
     });
+  });
+}
+
+/* ── Global Copy Utility ───────────────────────────────────────── */
+function initGlobalCopy() {
+  document.addEventListener('click', async (e) => {
+    const target = e.target.closest('[data-copy]');
+    if (!target) return;
+
+    const selector = target.getAttribute('data-copy');
+    const source = document.querySelector(selector);
+    if (!source) return;
+
+    const text = source.innerText || source.value;
+    try {
+      await navigator.clipboard.writeText(text);
+      const { showToast } = await import('../components/toast.js');
+      showToast('Copied to clipboard!', 'success');
+    } catch (err) {
+      console.error('Copy failed:', err);
+    }
   });
 }

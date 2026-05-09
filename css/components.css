@@ -587,9 +587,10 @@ select.input option { background: var(--color-surface-2); color: var(--text-prim
     gap: var(--s5);
     transform: translateY(-100%); opacity: 0;
     pointer-events: none;
+    visibility: hidden;
     transition: all var(--t-base);
   }
-  .nav-links.mobile-open { transform: none; opacity: 1; pointer-events: all; }
+  .nav-links.mobile-open { transform: none; opacity: 1; pointer-events: all; visibility: visible; }
   .nav-links a { font-size: var(--text-base); }
   .nav-actions { display: none; }
 }
@@ -732,6 +733,8 @@ select.input option { background: var(--color-surface-2); color: var(--text-prim
   display: flex; flex-direction: column;
 }
 .pricing-card:hover { border-color: var(--border-2); transform: translateY(-4px); box-shadow: var(--shadow-xl); }
+.pricing-card.hover-electric:hover { border-color: var(--electric); }
+.pricing-card.hover-plasma:hover { border-color: var(--plasma); }
 .pricing-card.featured {
   border-color: rgba(0,212,255,0.3);
   background: linear-gradient(135deg, rgba(0,212,255,0.06) 0%, transparent 60%);
