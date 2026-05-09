@@ -1,0 +1,3 @@
+## 2025-05-14 - Mismatched Selectors and Accessibility in Mobile Navigation
+**Learning:** Broken mobile navigation often stems from a disconnect between HTML IDs, CSS classes, and JS selectors. Additionally, visual-only toggles without corresponding ARIA states (`aria-expanded`, `aria-hidden`) make the interface unusable for screen reader users. Proper state cleanup (like resetting body overflow and aria attributes) during viewport resizing is crucial to prevent "ghost" states.
+**Action:** Always verify that JS selectors exactly match the IDs/classes defined in HTML and CSS. Implement a robust synchronization pattern for ARIA attributes and body scroll locking whenever a mobile menu is toggled.
