@@ -130,6 +130,13 @@
   animation: spin 0.7s linear infinite;
 }
 
+.btn-success-temporary {
+  background: var(--mint) !important;
+  color: #000 !important;
+  border-color: transparent !important;
+  box-shadow: 0 0 15px var(--mint-glow) !important;
+}
+
 /* ── INPUTS ────────────────────────────────────────────────── */
 .input-group { display: flex; flex-direction: column; gap: var(--s2); }
 .input-label {
@@ -586,10 +593,11 @@ select.input option { background: var(--color-surface-2); color: var(--text-prim
     border-bottom: 1px solid var(--border);
     gap: var(--s5);
     transform: translateY(-100%); opacity: 0;
+    visibility: hidden;
     pointer-events: none;
     transition: all var(--t-base);
   }
-  .nav-links.mobile-open { transform: none; opacity: 1; pointer-events: all; }
+  .nav-links.mobile-open { transform: none; opacity: 1; visibility: visible; pointer-events: all; }
   .nav-links a { font-size: var(--text-base); }
   .nav-actions { display: none; }
 }
