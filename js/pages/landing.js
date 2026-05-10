@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initStatsBar();
   initTerminalInteractivity();
   initCommandPalette();
+  initCopyToClipboard();
 
   // Redirect logged-in users' CTA
   if (auth.isLoggedIn()) {
@@ -30,30 +31,52 @@ document.addEventListener('DOMContentLoaded', () => {
 /* ── Navigation ─────────────────────────────────────────────────── */
 function initNav() {
   const hamburger = document.getElementById('hamburger');
-  const mobileMenu = document.getElementById('mobileMenu');
+  const navLinks = document.getElementById('navLinks');
 
-  hamburger?.addEventListener('click', () => {
-    const open = mobileMenu?.classList.toggle('open');
-    hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
-    // Animate hamburger bars
-    hamburger.classList.toggle('open', open);
+  const toggleMenu = (force) => {
+    const isOpen = typeof force === 'boolean' ? force : !navLinks?.classList.contains('mobile-open');
+    navLinks?.classList.toggle('mobile-open', isOpen);
+    hamburger?.classList.toggle('open', isOpen);
+    hamburger?.setAttribute('aria-expanded', String(isOpen));
+    if (navLinks) {
+      navLinks.setAttribute('aria-hidden', String(!isOpen));
+    }
+    // Lock scroll on mobile
+    if (window.innerWidth <= 768) {
+      document.body.style.overflow = isOpen ? 'hidden' : '';
+    }
+  };
+
+  hamburger?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleMenu();
   });
 
   // Close mobile menu on link click
-  mobileMenu?.querySelectorAll('a').forEach(a => {
-    a.addEventListener('click', () => {
-      mobileMenu.classList.remove('open');
-      hamburger?.classList.remove('open');
-    });
+  navLinks?.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => toggleMenu(false));
   });
 
   // Close on outside click
   document.addEventListener('click', e => {
-    if (mobileMenu?.classList.contains('open') &&
-        !mobileMenu.contains(e.target) && !hamburger?.contains(e.target)) {
-      mobileMenu.classList.remove('open');
-      hamburger?.classList.remove('open');
+    if (navLinks?.classList.contains('mobile-open') &&
+        !navLinks.contains(e.target) && !hamburger?.contains(e.target)) {
+      toggleMenu(false);
     }
+  });
+
+  // Handle accessibility on resize
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      if (window.innerWidth > 768) {
+        navLinks?.removeAttribute('aria-hidden');
+        document.body.style.overflow = '';
+      } else if (!navLinks?.classList.contains('mobile-open')) {
+        navLinks?.setAttribute('aria-hidden', 'true');
+      }
+    }, 150);
   });
 }
 
@@ -285,6 +308,37 @@ function initHoverTilt() {
   });
 }
 
+/* ── Copy to Clipboard ─────────────────────────────────────────── */
+function initCopyToClipboard() {
+  document.addEventListener('click', async e => {
+    const btn = e.target.closest('[data-copy]');
+    if (!btn) return;
+
+    const selector = btn.dataset.copy;
+    const target = document.querySelector(selector);
+    const text = target ? (target.innerText || target.value) : btn.dataset.copyText;
+
+    if (!text) return;
+
+    try {
+      await navigator.clipboard.writeText(text.trim());
+      const { toast } = await import('../components/toast.js');
+      toast.success('Copied to clipboard!', { duration: 2000 });
+
+      // Visual feedback on button
+      const originalHtml = btn.innerHTML;
+      btn.innerHTML = '✅ Copied!';
+      btn.classList.add('btn-success-temporary');
+      setTimeout(() => {
+        btn.innerHTML = originalHtml;
+        btn.classList.remove('btn-success-temporary');
+      }, 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  });
+}
+
 /* ── Terminal Interactivity ───────────────────────────────────── */
 function initTerminalInteractivity() {
   const terminal = document.querySelector('.terminal');
@@ -306,20 +360,27 @@ function initTerminalInteractivity() {
   let statIdx = 0;
   let interval;
 
-  terminal.addEventListener('mouseenter', () => {
+  const startStats = () => {
+    if (interval) return;
     terminal.classList.add('terminal-active');
     interval = setInterval(() => {
       liveBadge.textContent = stats[statIdx];
       statIdx = (statIdx + 1) % stats.length;
     }, 1200);
-  });
+  };
 
-  terminal.addEventListener('mouseleave', () => {
+  const stopStats = () => {
     terminal.classList.remove('terminal-active');
     clearInterval(interval);
+    interval = null;
     liveBadge.innerHTML = originalBadge;
     statIdx = 0;
-  });
+  };
+
+  terminal.addEventListener('mouseenter', startStats);
+  terminal.addEventListener('mouseleave', stopStats);
+  terminal.addEventListener('focusin', startStats);
+  terminal.addEventListener('focusout', stopStats);
 }
 
 /* ── FAQ Accordion ──────────────────────────────────────────────── */
