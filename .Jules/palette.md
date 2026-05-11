@@ -1,0 +1,3 @@
+## 2025-05-14 - Mobile Navigation Accessibility Synchronization
+**Learning:** Accessibility attributes like `aria-hidden` and `aria-expanded` must be programmatically synchronized with CSS-driven visibility states, especially across responsive breakpoints. Relying solely on CSS for visibility (e.g., `transform: translateY(-100%)`) can leave elements accessible to screen readers even when visually hidden.
+**Action:** Always implement a centralized toggle function that updates both CSS classes and ARIA attributes. Additionally, use a debounced resize listener to ensure accessibility attributes are correctly adjusted (e.g., removing `aria-hidden` on desktop) when switching between mobile and desktop viewports.
