@@ -1,0 +1,3 @@
+## 2025-05-22 - Accessibility & Navigation Synchronization
+**Learning:** Programmatic control of ARIA attributes (aria-expanded, aria-hidden) and body scroll locking must be perfectly synchronized with CSS visibility classes to ensure a consistent experience across screen readers and visual users. In headless testing, standard `.click()` can fail on elements moved off-screen via CSS transforms; `.dispatch_event('click')` is a more reliable alternative for verification.
+**Action:** Use a centralized state management function for UI components (like the mobile menu) to keep ARIA states and DOM classes in sync, and always verify with debounced resize listeners.
