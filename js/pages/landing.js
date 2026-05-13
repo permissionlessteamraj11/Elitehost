@@ -30,30 +30,59 @@ document.addEventListener('DOMContentLoaded', () => {
 /* ── Navigation ─────────────────────────────────────────────────── */
 function initNav() {
   const hamburger = document.getElementById('hamburger');
-  const mobileMenu = document.getElementById('mobileMenu');
+  const navLinks = document.getElementById('navLinks');
+
+  const setMenuState = (isOpen) => {
+    hamburger?.setAttribute('aria-expanded', String(isOpen));
+    hamburger?.classList.toggle('open', isOpen);
+    navLinks?.classList.toggle('mobile-open', isOpen);
+
+    if (isOpen) {
+      navLinks?.removeAttribute('aria-hidden');
+      document.body.style.overflow = 'hidden';
+    } else {
+      if (window.innerWidth <= 768) navLinks?.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+  };
 
   hamburger?.addEventListener('click', () => {
-    const open = mobileMenu?.classList.toggle('open');
-    hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
-    // Animate hamburger bars
-    hamburger.classList.toggle('open', open);
+    const isOpen = !navLinks?.classList.contains('mobile-open');
+    setMenuState(isOpen);
   });
 
   // Close mobile menu on link click
-  mobileMenu?.querySelectorAll('a').forEach(a => {
-    a.addEventListener('click', () => {
-      mobileMenu.classList.remove('open');
-      hamburger?.classList.remove('open');
-    });
+  navLinks?.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => setMenuState(false));
   });
 
   // Close on outside click
   document.addEventListener('click', e => {
-    if (mobileMenu?.classList.contains('open') &&
-        !mobileMenu.contains(e.target) && !hamburger?.contains(e.target)) {
-      mobileMenu.classList.remove('open');
-      hamburger?.classList.remove('open');
+    if (navLinks?.classList.contains('mobile-open') &&
+        !navLinks.contains(e.target) && !hamburger?.contains(e.target)) {
+      setMenuState(false);
     }
+  });
+
+  // Set initial aria-hidden state
+  if (window.innerWidth <= 768) {
+    navLinks?.setAttribute('aria-hidden', 'true');
+  }
+
+  // Handle window resize
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      if (window.innerWidth > 768) {
+        navLinks?.removeAttribute('aria-hidden');
+        document.body.style.overflow = '';
+        navLinks?.classList.remove('mobile-open');
+        hamburger?.classList.remove('open');
+      } else if (!navLinks?.classList.contains('mobile-open')) {
+        navLinks?.setAttribute('aria-hidden', 'true');
+      }
+    }, 250);
   });
 }
 
