@@ -30,31 +30,61 @@ document.addEventListener('DOMContentLoaded', () => {
 /* ── Navigation ─────────────────────────────────────────────────── */
 function initNav() {
   const hamburger = document.getElementById('hamburger');
-  const mobileMenu = document.getElementById('mobileMenu');
+  const navLinks = document.getElementById('navLinks');
+  if (!hamburger || !navLinks) return;
 
-  hamburger?.addEventListener('click', () => {
-    const open = mobileMenu?.classList.toggle('open');
-    hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
-    // Animate hamburger bars
-    hamburger.classList.toggle('open', open);
+  const setMenuState = (isOpen) => {
+    hamburger.classList.toggle('open', isOpen);
+    navLinks.classList.toggle('mobile-open', isOpen);
+    hamburger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    navLinks.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+
+    if (isOpen && !hamburger.hasAttribute('aria-controls')) {
+      hamburger.setAttribute('aria-controls', 'navLinks');
+    }
+
+    document.body.style.overflow = (isOpen && window.innerWidth <= 768) ? 'hidden' : '';
+  };
+
+  hamburger.addEventListener('click', () => {
+    const isOpen = navLinks.classList.contains('mobile-open');
+    setMenuState(!isOpen);
   });
 
   // Close mobile menu on link click
-  mobileMenu?.querySelectorAll('a').forEach(a => {
-    a.addEventListener('click', () => {
-      mobileMenu.classList.remove('open');
-      hamburger?.classList.remove('open');
-    });
+  navLinks.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => setMenuState(false));
   });
 
   // Close on outside click
   document.addEventListener('click', e => {
-    if (mobileMenu?.classList.contains('open') &&
-        !mobileMenu.contains(e.target) && !hamburger?.contains(e.target)) {
-      mobileMenu.classList.remove('open');
-      hamburger?.classList.remove('open');
+    if (navLinks.classList.contains('mobile-open') &&
+        !navLinks.contains(e.target) && !hamburger.contains(e.target)) {
+      setMenuState(false);
     }
   });
+
+  // Debounced resize listener to clean up mobile state on desktop
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      if (window.innerWidth > 768) {
+        if (navLinks.classList.contains('mobile-open')) {
+          setMenuState(false);
+        }
+        navLinks.removeAttribute('aria-hidden');
+      } else {
+        const isMenuOpen = navLinks.classList.contains('mobile-open');
+        navLinks.setAttribute('aria-hidden', isMenuOpen ? 'false' : 'true');
+      }
+    }, 150);
+  }, { passive: true });
+
+  // Initial a11y state
+  if (window.innerWidth <= 768) {
+    navLinks.setAttribute('aria-hidden', 'true');
+  }
 }
 
 function initNavScroll() {
@@ -329,11 +359,22 @@ function initFAQ() {
     const body    = item.querySelector('.faq-answer');
     if (!trigger || !body) return;
 
-    trigger.setAttribute('aria-expanded', 'false');
+    // Use current state or default to closed
+    const isInitiallyOpen = item.classList.contains('open');
+    trigger.setAttribute('aria-expanded', isInitiallyOpen ? 'true' : 'false');
+
+    if (isInitiallyOpen) {
+      body.style.maxHeight = body.scrollHeight + 'px';
+    }
+
     trigger.addEventListener('click', () => {
-      const open = item.classList.toggle('open');
-      trigger.setAttribute('aria-expanded', String(open));
-      body.style.maxHeight = open ? body.scrollHeight + 'px' : '0';
+      const isOpen = item.classList.toggle('open');
+      trigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      body.style.maxHeight = isOpen ? body.scrollHeight + 'px' : '0';
+
+      // Update icon if exists (for pricing.html compatibility)
+      const icon = trigger.querySelector('span');
+      if (icon) icon.textContent = isOpen ? '−' : '+';
     });
   });
 }
