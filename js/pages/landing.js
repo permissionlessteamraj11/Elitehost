@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initFAQ();
   initStatsBar();
   initTerminalInteractivity();
+  initCopyToClipboard();
   initCommandPalette();
 
   // Redirect logged-in users' CTA
@@ -285,6 +286,36 @@ function initHoverTilt() {
   });
 }
 
+/* ── Copy to Clipboard ──────────────────────────────────────────── */
+function initCopyToClipboard() {
+  document.addEventListener('click', async e => {
+    const btn = e.target.closest('[data-copy]');
+    if (!btn) return;
+
+    const targetSelector = btn.dataset.copy;
+    const targetEl = document.querySelector(targetSelector);
+    if (!targetEl) return;
+
+    const text = targetEl.innerText || targetEl.value;
+    try {
+      await navigator.clipboard.writeText(text);
+      const originalHtml = btn.innerHTML;
+      btn.innerHTML = '✓ Copied!';
+      btn.classList.add('btn-success-temporary');
+
+      const { toast } = await import('../components/toast.js');
+      toast.success('Copied to clipboard!');
+
+      setTimeout(() => {
+        btn.innerHTML = originalHtml;
+        btn.classList.remove('btn-success-temporary');
+      }, 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  });
+}
+
 /* ── Terminal Interactivity ───────────────────────────────────── */
 function initTerminalInteractivity() {
   const terminal = document.querySelector('.terminal');
@@ -306,20 +337,27 @@ function initTerminalInteractivity() {
   let statIdx = 0;
   let interval;
 
-  terminal.addEventListener('mouseenter', () => {
+  const startStats = () => {
+    if (interval) return;
     terminal.classList.add('terminal-active');
     interval = setInterval(() => {
       liveBadge.textContent = stats[statIdx];
       statIdx = (statIdx + 1) % stats.length;
     }, 1200);
-  });
+  };
 
-  terminal.addEventListener('mouseleave', () => {
+  const stopStats = () => {
     terminal.classList.remove('terminal-active');
     clearInterval(interval);
+    interval = null;
     liveBadge.innerHTML = originalBadge;
     statIdx = 0;
-  });
+  };
+
+  terminal.addEventListener('mouseenter', startStats);
+  terminal.addEventListener('mouseleave', stopStats);
+  terminal.addEventListener('focusin', startStats);
+  terminal.addEventListener('focusout', stopStats);
 }
 
 /* ── FAQ Accordion ──────────────────────────────────────────────── */
