@@ -130,6 +130,13 @@
   animation: spin 0.7s linear infinite;
 }
 
+.btn-success-temporary {
+  background: #00FFD1;
+  color: #000;
+  border-color: #00FFD1;
+  box-shadow: 0 0 15px rgba(0, 255, 209, 0.4);
+}
+
 /* ── INPUTS ────────────────────────────────────────────────── */
 .input-group { display: flex; flex-direction: column; gap: var(--s2); }
 .input-label {
