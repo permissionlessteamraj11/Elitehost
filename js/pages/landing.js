@@ -30,31 +30,61 @@ document.addEventListener('DOMContentLoaded', () => {
 /* ── Navigation ─────────────────────────────────────────────────── */
 function initNav() {
   const hamburger = document.getElementById('hamburger');
-  const mobileMenu = document.getElementById('mobileMenu');
+  const navLinks = document.getElementById('navLinks');
+  if (!hamburger || !navLinks) return;
 
-  hamburger?.addEventListener('click', () => {
-    const open = mobileMenu?.classList.toggle('open');
-    hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
-    // Animate hamburger bars
+  const setMenuState = (open) => {
     hamburger.classList.toggle('open', open);
+    navLinks.classList.toggle('mobile-open', open);
+    hamburger.setAttribute('aria-expanded', String(open));
+    navLinks.setAttribute('aria-hidden', String(!open));
+
+    if (window.innerWidth <= 768) {
+      document.body.style.overflow = open ? 'hidden' : '';
+    } else {
+      document.body.style.overflow = '';
+    }
+  };
+
+  hamburger.addEventListener('click', () => {
+    const isOpen = navLinks.classList.contains('mobile-open');
+    setMenuState(!isOpen);
   });
 
   // Close mobile menu on link click
-  mobileMenu?.querySelectorAll('a').forEach(a => {
+  navLinks.querySelectorAll('a').forEach(a => {
     a.addEventListener('click', () => {
-      mobileMenu.classList.remove('open');
-      hamburger?.classList.remove('open');
+      if (window.innerWidth <= 768) setMenuState(false);
     });
   });
 
   // Close on outside click
   document.addEventListener('click', e => {
-    if (mobileMenu?.classList.contains('open') &&
-        !mobileMenu.contains(e.target) && !hamburger?.contains(e.target)) {
-      mobileMenu.classList.remove('open');
-      hamburger?.classList.remove('open');
+    if (navLinks.classList.contains('mobile-open') &&
+        !navLinks.contains(e.target) && !hamburger.contains(e.target)) {
+      setMenuState(false);
     }
   });
+
+  // Handle resize transitions
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      if (window.innerWidth > 768) {
+        setMenuState(false);
+        navLinks.removeAttribute('aria-hidden');
+        document.body.style.overflow = '';
+      } else if (!navLinks.classList.contains('mobile-open')) {
+        navLinks.setAttribute('aria-hidden', 'true');
+      }
+    }, 150);
+  });
+
+  // Initial state check
+  if (window.innerWidth <= 768) {
+    navLinks.setAttribute('aria-hidden', 'true');
+  }
 }
 
 function initNavScroll() {
