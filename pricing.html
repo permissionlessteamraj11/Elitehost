@@ -58,7 +58,7 @@
         <a href="/auth/login.html" class="btn btn-ghost btn-sm">Login</a>
         <a href="/auth/register.html" class="btn btn-electric btn-sm cta-register">Get Started Free</a>
       </div>
-      <button class="nav-hamburger" id="hamburger" aria-label="Toggle navigation" aria-expanded="false">
+      <button class="nav-hamburger" id="hamburger" aria-label="Toggle navigation" aria-expanded="false" aria-controls="navLinks">
         <span></span><span></span><span></span>
       </button>
     </div>
@@ -294,20 +294,5 @@
 </footer>
 
 <script type="module" src="/js/pages/landing.js"></script>
-
-<script>
-// FAQ accordion
-document.querySelectorAll('.faq-item').forEach(item => {
-  const btn = item.querySelector('.faq-question');
-  const body = item.querySelector('.faq-answer');
-  const icon = btn.querySelector('span');
-  btn.addEventListener('click', () => {
-    const open = item.classList.toggle('open');
-    btn.setAttribute('aria-expanded', String(open));
-    body.style.maxHeight = open ? body.scrollHeight + 'px' : '0';
-    if (icon) icon.textContent = open ? '−' : '+';
-  });
-});
-</script>
 </body>
 </html>
