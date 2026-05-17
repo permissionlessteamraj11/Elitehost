@@ -30,31 +30,61 @@ document.addEventListener('DOMContentLoaded', () => {
 /* ── Navigation ─────────────────────────────────────────────────── */
 function initNav() {
   const hamburger = document.getElementById('hamburger');
-  const mobileMenu = document.getElementById('mobileMenu');
+  const navLinks  = document.getElementById('navLinks');
+
+  const setMenuState = (open) => {
+    navLinks?.classList.toggle('mobile-open', open);
+    hamburger?.classList.toggle('open', open);
+    hamburger?.setAttribute('aria-expanded', String(open));
+
+    if (navLinks) {
+      if (window.innerWidth <= 768) {
+        navLinks.setAttribute('aria-hidden', String(!open));
+        document.body.style.overflow = open ? 'hidden' : '';
+      } else {
+        navLinks.removeAttribute('aria-hidden');
+        document.body.style.overflow = '';
+      }
+    }
+  };
 
   hamburger?.addEventListener('click', () => {
-    const open = mobileMenu?.classList.toggle('open');
-    hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
-    // Animate hamburger bars
-    hamburger.classList.toggle('open', open);
+    const isOpen = navLinks?.classList.contains('mobile-open');
+    setMenuState(!isOpen);
   });
 
   // Close mobile menu on link click
-  mobileMenu?.querySelectorAll('a').forEach(a => {
-    a.addEventListener('click', () => {
-      mobileMenu.classList.remove('open');
-      hamburger?.classList.remove('open');
-    });
+  navLinks?.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => setMenuState(false));
   });
 
   // Close on outside click
   document.addEventListener('click', e => {
-    if (mobileMenu?.classList.contains('open') &&
-        !mobileMenu.contains(e.target) && !hamburger?.contains(e.target)) {
-      mobileMenu.classList.remove('open');
-      hamburger?.classList.remove('open');
+    const isOpen = navLinks?.classList.contains('mobile-open');
+    if (isOpen && !navLinks.contains(e.target) && !hamburger?.contains(e.target)) {
+      setMenuState(false);
     }
   });
+
+  // Handle resize transitions
+  const handleResize = debounce(() => {
+    if (window.innerWidth > 768) {
+      setMenuState(false);
+    } else {
+      const isOpen = navLinks?.classList.contains('mobile-open');
+      navLinks?.setAttribute('aria-hidden', String(!isOpen));
+    }
+  }, 150);
+
+  window.addEventListener('resize', handleResize);
+}
+
+function debounce(fn, ms) {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => fn.apply(this, args), ms);
+  };
 }
 
 function initNavScroll() {
@@ -329,11 +359,20 @@ function initFAQ() {
     const body    = item.querySelector('.faq-answer');
     if (!trigger || !body) return;
 
-    trigger.setAttribute('aria-expanded', 'false');
+    const icon = trigger.querySelector('span') || trigger.querySelector('.faq-chevron');
+
     trigger.addEventListener('click', () => {
       const open = item.classList.toggle('open');
       trigger.setAttribute('aria-expanded', String(open));
       body.style.maxHeight = open ? body.scrollHeight + 'px' : '0';
+
+      if (icon) {
+        if (icon.classList.contains('faq-chevron')) {
+          // CSS handles rotation for chevron
+        } else {
+          icon.textContent = open ? '−' : '+';
+        }
+      }
     });
   });
 }
