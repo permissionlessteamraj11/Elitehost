@@ -122,7 +122,7 @@
         <div class="auth-free-badge">🎁 2 free credits — no card required</div>
         <h2 class="reg-form-title">Create your account</h2>
         <p class="reg-form-sub">
-          Join <b>2,847+</b> Indian developers already hosting on EliteHosting.
+          Join <b id="devCount">2,847+</b> Indian developers already hosting on EliteHosting.
         </p>
 
         <!-- OAuth -->
@@ -165,7 +165,10 @@
 
           <!-- Username -->
           <div class="auth-field">
-            <label class="auth-label" for="username">Username</label>
+            <div class="auth-field-head">
+              <label class="auth-label" for="username">Username</label>
+              <span id="unStatus" style="font-size:var(--text-xs);font-weight:600"></span>
+            </div>
             <div class="auth-input-wrap">
               <input
                 type="text" id="username" class="auth-input mono"
@@ -289,6 +292,20 @@ import { auth }   from '/js/core/auth.js';
 // Auth guard
 await auth.requireGuest().catch(() => {});
 
+// ── Fetch dynamic stats ──────────────────────────────────────────
+(async () => {
+  try {
+    const { total_users } = await authSB.getPublicStats();
+    if (total_users) {
+      const formatted = new Intl.NumberFormat('en-IN').format(total_users);
+      document.getElementById('devCount').textContent = formatted + '+';
+      // Also update the stat card in the left panel if it exists
+      const leftStat = document.querySelector('.reg-stat-val.v-m');
+      if (leftStat) leftStat.textContent = formatted + '+';
+    }
+  } catch {}
+})();
+
 // ── Toast ────────────────────────────────────────────────────────
 const toastEl = document.getElementById('authToast');
 let toastTimer;
@@ -307,11 +324,36 @@ if (urlRef) {
   if (refEl) refEl.value = urlRef.toUpperCase();
 }
 
-// ── Username: auto sanitize ───────────────────────────────────────
+// ── Username: auto sanitize & availability check ──────────────────
+let unTimeout;
+const unStatus = document.getElementById('unStatus');
 document.getElementById('username').addEventListener('input', e => {
-  e.target.value = e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '');
+  const val = e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '');
+  e.target.value = val;
   document.getElementById('username').classList.remove('has-error');
   document.getElementById('unErr').textContent = '';
+
+  unStatus.textContent = '';
+  clearTimeout(unTimeout);
+
+  if (val.length >= 3) {
+    unStatus.style.color = 'var(--text-disabled)';
+    unStatus.textContent = 'Checking…';
+    unTimeout = setTimeout(async () => {
+      try {
+        const { available } = await authSB.checkUsername(val);
+        if (available) {
+          unStatus.textContent = '✓ Available';
+          unStatus.style.color = 'var(--mint)';
+        } else {
+          unStatus.textContent = '✕ Taken';
+          unStatus.style.color = 'var(--fire)';
+        }
+      } catch {
+        unStatus.textContent = '';
+      }
+    }, 600);
+  }
 });
 
 // ── Password strength meter ───────────────────────────────────────
@@ -395,6 +437,15 @@ document.getElementById('regForm').addEventListener('submit', async e => {
   label.innerHTML = '<span class="auth-spin"></span> Creating account…';
 
   try {
+    // Final username availability check
+    const { available } = await authSB.checkUsername(username);
+    if (!available) {
+      setError('username', 'unErr', 'This username is already taken');
+      btn.disabled = false;
+      label.textContent = 'Create Free Account 🎁';
+      return;
+    }
+
     await authSB.signUp({ email, password, username, referralCode: refCode });
 
     // Show success screen
@@ -414,14 +465,33 @@ document.getElementById('regForm').addEventListener('submit', async e => {
     });
 
   } catch (err) {
-    const msg = err?.data?.error || 'Registration failed. Please try again.';
-    showToast(msg, 'error');
+    let msg = err?.data?.error || 'Registration failed. Please try again.';
+
+    // Better error messages for common Supabase Auth errors
     const lower = msg.toLowerCase();
+    if (lower.includes('already registered') || lower.includes('already exists')) {
+      msg = 'This email is already registered. Try signing in.';
+      setError('email', 'emailErr', ' ');
+    } else if (lower.includes('weak password')) {
+      msg = 'Password is too weak. Use more characters.';
+      setError('password', 'passErr', ' ');
+    } else if (lower.includes('rate limit')) {
+      msg = 'Too many attempts. Please wait a few minutes.';
+    }
+
+    showToast(msg, 'error');
+
     if (lower.includes('email'))              setError('email',    'emailErr', msg);
     else if (lower.includes('user'))          setError('username', 'unErr', msg);
     else if (lower.includes('pass'))          setError('password', 'passErr', msg);
+
     btn.disabled = false;
     label.textContent = 'Create Free Account 🎁';
+
+    // Shake on error
+    const formEl = document.getElementById('regForm');
+    formEl.classList.add('auth-shake');
+    setTimeout(() => formEl.classList.remove('auth-shake'), 400);
   }
 });
 
