@@ -1,0 +1,3 @@
+## 2025-05-15 - Mobile Navigation Accessibility Synchronization
+**Learning:** Mobile navigation state requires strict synchronization between visual visibility (classes), semantic state (aria-expanded, aria-hidden), and behavioral constraints (body scroll locking). Mismatched selectors or unsynchronized ARIA attributes create "ghost" menus for screen readers or broken interactions for keyboard users.
+**Action:** Use a centralized `setMenuState` helper to manage all navigation-related attributes and styles simultaneously, and include a debounced resize listener to clean up state when transitioning between viewports.
