@@ -112,6 +112,13 @@
 .btn-icon.btn-sm { width: 32px; height: 32px; padding: 7px; }
 .btn-icon.btn-lg { width: 48px; height: 48px; padding: 13px; }
 
+.btn-success-temporary {
+  background: var(--mint);
+  color: #000;
+  border-color: var(--mint);
+  box-shadow: 0 0 15px var(--mint);
+}
+
 .btn:disabled, .btn[aria-disabled="true"] {
   opacity: 0.42;
   cursor: not-allowed;
