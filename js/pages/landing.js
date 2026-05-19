@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initStatsBar();
   initTerminalInteractivity();
   initCommandPalette();
+  initCopyUtils();
 
   // Redirect logged-in users' CTA
   if (auth.isLoggedIn()) {
@@ -282,6 +283,46 @@ function initHoverTilt() {
     card.addEventListener('mouseleave', () => {
       card.style.transform = '';
     });
+  });
+}
+
+/**
+ * Global Copy Utility
+ * Targets elements with [data-copy="#selector"]
+ */
+function initCopyUtils() {
+  document.addEventListener('click', async (e) => {
+    const btn = e.target.closest('[data-copy]');
+    if (!btn || btn.classList.contains('btn-success-temporary')) return;
+
+    const selector = btn.getAttribute('data-copy');
+    const target = document.querySelector(selector);
+    const text = target ? (target.value || target.textContent) : selector;
+
+    try {
+      await navigator.clipboard.writeText(text.trim());
+
+      const originalContent = btn.innerHTML;
+      btn.classList.add('btn-success-temporary');
+
+      const btnText = btn.querySelector('.btn-text');
+      if (btnText) {
+        btnText.textContent = 'Copied!';
+      } else {
+        btn.textContent = '✓ Copied!';
+      }
+
+      const { toast } = await import('../components/toast.js');
+      toast.success('Copied to clipboard!');
+
+      setTimeout(() => {
+        btn.classList.remove('btn-success-temporary');
+        btn.innerHTML = originalContent;
+      }, 2000);
+    } catch (err) {
+      const { toast } = await import('../components/toast.js');
+      toast.error('Failed to copy');
+    }
   });
 }
 
