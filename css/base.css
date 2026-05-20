@@ -94,6 +94,26 @@ table { border-collapse: collapse; width: 100%; }
 .container-lg { max-width: var(--max-w-2xl); margin: 0 auto; padding: 0 var(--s6); }
 .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
 
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: var(--s5);
+  background: var(--color-surface-2);
+  color: var(--electric);
+  padding: var(--s3) var(--s5);
+  z-index: var(--z-tooltip);
+  border-radius: 0 0 var(--r-sm) var(--r-sm);
+  font-weight: 700;
+  text-decoration: none;
+  transition: top var(--t-fast);
+}
+
+.skip-link:focus {
+  top: 0;
+  outline: 2px solid var(--electric);
+  outline-offset: 4px;
+}
+
 .text-left { text-align: left; }
 .text-center { text-align: center; }
 .text-right { text-align: right; }
