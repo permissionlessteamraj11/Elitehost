@@ -118,6 +118,13 @@
   pointer-events: none;
 }
 
+.btn-success-temporary {
+  background-color: #00FFD1;
+  color: #000;
+  border-color: #00FFD1;
+  box-shadow: 0 0 15px rgba(0, 255, 209, 0.6);
+}
+
 .btn-loading { pointer-events: none; }
 .btn-loading .btn-text { opacity: 0; }
 .btn-loading::after {
