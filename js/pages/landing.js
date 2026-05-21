@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initStatsBar();
   initTerminalInteractivity();
   initCommandPalette();
+  initCopyUtility();
 
   // Redirect logged-in users' CTA
   if (auth.isLoggedIn()) {
@@ -282,6 +283,38 @@ function initHoverTilt() {
     card.addEventListener('mouseleave', () => {
       card.style.transform = '';
     });
+  });
+}
+
+/* ── Copy to Clipboard ─────────────────────────────────────────── */
+function initCopyUtility() {
+  document.addEventListener('click', async (e) => {
+    const btn = e.target.closest('[data-copy]');
+    if (!btn) return;
+
+    const targetSelector = btn.getAttribute('data-copy');
+    const targetEl = document.querySelector(targetSelector);
+    if (!targetEl) return;
+
+    const text = targetEl.innerText || targetEl.value;
+
+    try {
+      await navigator.clipboard.writeText(text);
+
+      // Visual feedback
+      btn.classList.add('btn-success-temporary');
+
+      const { toast } = await import('../components/toast.js');
+      toast.success('Copied to clipboard!');
+
+      setTimeout(() => {
+        btn.classList.remove('btn-success-temporary');
+      }, 2000);
+    } catch (err) {
+      console.error('Failed to copy: ', err);
+      const { toast } = await import('../components/toast.js');
+      toast.error('Failed to copy');
+    }
   });
 }
 
