@@ -1,0 +1,3 @@
+## 2025-05-22 - Mobile Navigation ID Mismatch and Overlap Fix
+**Learning:** In projects using CSS transitions for mobile menus (like `translateY(-100%)`), simply toggling a class for visibility can leave the element in the accessibility tree and potentially cause click-interception or visual overlap if not properly managed with `visibility: hidden` or `pointer-events: none`. Additionally, always verify that JS selectors match the HTML IDs across all pages (e.g., `#navLinks` vs `#mobileMenu`).
+**Action:** Use a centralized `setMenuState` helper to synchronize `aria-expanded`, `aria-hidden`, `visibility`, and body scroll locking. Ensure a debounced resize listener resets these states when transitioning to desktop viewports.
