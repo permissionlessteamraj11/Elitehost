@@ -292,34 +292,30 @@ function initTerminalInteractivity() {
   if (!terminal || !liveBadge) return;
 
   const originalBadge = liveBadge.innerHTML;
-  const stats = [
-    '🟢 SYSTEM: OPTIMAL',
-    '📊 CPU: 12.4% LOAD',
-    '🧠 RAM: 184MB/512MB',
-    '🌐 NET: 850MB/s',
-    '🔒 CSP: ENFORCED',
-    '🛡️ WAF: ACTIVE',
-    '📡 UPTIME: 99.99%',
-    '⚡ NODES: MUM-01'
-  ];
+  const stats = ['🟢 SYSTEM: OPTIMAL', '📊 CPU: 12.4% LOAD', '🧠 RAM: 184MB/512MB', '🌐 NET: 850MB/s', '🔒 CSP: ENFORCED', '🛡️ WAF: ACTIVE', '📡 UPTIME: 99.99%', '⚡ NODES: MUM-01'];
+  let statIdx = 0, interval;
 
-  let statIdx = 0;
-  let interval;
-
-  terminal.addEventListener('mouseenter', () => {
+  const start = () => {
+    if (interval) return;
     terminal.classList.add('terminal-active');
     interval = setInterval(() => {
       liveBadge.textContent = stats[statIdx];
       statIdx = (statIdx + 1) % stats.length;
     }, 1200);
-  });
+  };
 
-  terminal.addEventListener('mouseleave', () => {
+  const stop = () => {
     terminal.classList.remove('terminal-active');
     clearInterval(interval);
+    interval = null;
     liveBadge.innerHTML = originalBadge;
     statIdx = 0;
-  });
+  };
+
+  terminal.addEventListener('mouseenter', start);
+  terminal.addEventListener('mouseleave', stop);
+  terminal.addEventListener('focusin', start);
+  terminal.addEventListener('focusout', stop);
 }
 
 /* ── FAQ Accordion ──────────────────────────────────────────────── */
