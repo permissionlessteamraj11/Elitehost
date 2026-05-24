@@ -108,6 +108,13 @@
 }
 .btn-dark:hover { background: var(--color-surface-3); color: var(--text-primary); }
 
+.btn-success-temporary {
+  background: var(--success);
+  color: var(--color-void);
+  border-color: var(--success);
+  box-shadow: 0 0 15px var(--success-border);
+}
+
 .btn-icon { padding: 10px; width: 40px; height: 40px; border-radius: var(--r-sm); }
 .btn-icon.btn-sm { width: 32px; height: 32px; padding: 7px; }
 .btn-icon.btn-lg { width: 48px; height: 48px; padding: 13px; }
