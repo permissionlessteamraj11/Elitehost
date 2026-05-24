@@ -32,7 +32,7 @@
         <div class="nav-logo-icon" aria-hidden="true">E</div>
         Elite<span class="nav-domain">Hosting.in</span>
       </a>
-      <div class="nav-links" id="navLinks">
+      <div class="nav-links" id="mobileMenu">
         <a href="/" class="nav-link">Home</a>
         <a href="/features.html" class="nav-link" aria-current="page">Features</a>
         <a href="/pricing.html" class="nav-link">Pricing</a>
@@ -44,7 +44,7 @@
         <a href="/auth/login.html" class="btn btn-ghost btn-sm">Login</a>
         <a href="/auth/register.html" class="btn btn-electric btn-sm cta-register">Get Started Free</a>
       </div>
-      <button class="nav-hamburger" id="hamburger" aria-label="Toggle navigation" aria-expanded="false">
+      <button class="nav-hamburger" id="hamburger" aria-label="Toggle navigation" aria-expanded="false" aria-controls="mobileMenu">
         <span></span><span></span><span></span>
       </button>
     </div>
@@ -156,7 +156,7 @@
   <section style="display:grid;grid-template-columns:1fr 1fr;gap:var(--s10);align-items:center;padding:var(--s10) 0;border-bottom:1px solid var(--border)">
     <div class="card card-electric" style="padding:var(--s5)">
       <h4 style="margin-bottom:var(--s4);display:flex;align-items:center;gap:var(--s2)">🤖 AI Generated Dockerfile</h4>
-      <pre style="font-size:11px;line-height:1.7;margin:0;color:var(--text-secondary)"><code>FROM node:20-alpine
+      <pre style="font-size:11px;line-height:1.7;margin:0;color:var(--text-secondary)"><code id="dockerfile-snippet">FROM node:20-alpine
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci --production
@@ -164,7 +164,7 @@ COPY . .
 EXPOSE 3000
 CMD ["node", "index.js"]</code></pre>
       <div style="margin-top:var(--s4);display:flex;gap:var(--s3)">
-        <button class="btn btn-electric btn-sm">📋 Copy</button>
+        <button class="btn btn-electric btn-sm" data-copy="#dockerfile-snippet" aria-label="Copy Dockerfile snippet">📋 Copy</button>
         <span style="font-size:var(--text-xs);color:var(--text-muted);align-self:center">0.25 credits used</span>
       </div>
     </div>
