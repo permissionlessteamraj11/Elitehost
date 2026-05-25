@@ -13,7 +13,7 @@ const methods = [
 
 export function ProjectCreationFlow() {
   const [method, setMethod] = useState<string>("git");
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -27,6 +27,7 @@ export function ProjectCreationFlow() {
           <button
             key={m.id}
             onClick={() => setMethod(m.id)}
+            aria-pressed={method === m.id}
             className={cn(
               "flex items-start gap-4 p-6 rounded-xl border text-left transition-all",
               method === m.id
@@ -51,22 +52,34 @@ export function ProjectCreationFlow() {
       <div className="p-8 rounded-xl border border-white/5 bg-white/5 space-y-6">
         {method === "git" && (
           <div className="space-y-4">
-            <label className="block text-sm font-medium text-gray-400">GitHub Repository URL</label>
+            <label htmlFor="repo-url" className="block text-sm font-medium text-gray-400">
+              GitHub Repository URL <span className="text-red-500">*</span>
+            </label>
             <div className="flex gap-2">
               <input
+                id="repo-url"
                 type="text"
                 placeholder="https://github.com/username/repo"
+                required
                 className="flex-1 bg-black/40 border border-white/10 rounded-lg px-4 py-2 focus:outline-none focus:border-[#00E5FF]/50"
               />
-              <button className="px-6 py-2 bg-[#00E5FF] text-black font-bold rounded-lg flex items-center gap-2">
-                Import <ArrowRight className="w-4 h-4" />
+              <button
+                disabled={loading}
+                className="px-6 py-2 bg-[#00E5FF] text-black font-bold rounded-lg flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed min-w-[120px] justify-center"
+              >
+                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <>Import <ArrowRight className="w-4 h-4" /></>}
               </button>
             </div>
           </div>
         )}
 
         {method === "zip" && (
-          <div className="border-2 border-dashed border-white/10 rounded-xl p-12 text-center hover:border-[#00E5FF]/30 transition-colors cursor-pointer">
+          <div
+            role="button"
+            tabIndex={0}
+            aria-label="Upload ZIP project files"
+            className="border-2 border-dashed border-white/10 rounded-xl p-12 text-center hover:border-[#00E5FF]/30 transition-colors cursor-pointer focus:outline-none focus:border-[#00E5FF]/50"
+          >
             <Upload className="w-12 h-12 text-gray-500 mx-auto mb-4" />
             <div className="text-lg font-medium text-gray-300">Drop your ZIP here</div>
             <div className="text-sm text-gray-500">Maximum file size: 50MB</div>
@@ -75,26 +88,40 @@ export function ProjectCreationFlow() {
 
         {method === "raw" && (
           <div className="space-y-4">
-            <label className="block text-sm font-medium text-gray-400">Source Code</label>
+            <label htmlFor="source-code" className="block text-sm font-medium text-gray-400">
+              Source Code <span className="text-red-500">*</span>
+            </label>
             <textarea
+              id="source-code"
               placeholder="Paste your code here..."
+              required
               className="w-full h-64 bg-black/40 border border-white/10 rounded-lg p-4 font-mono text-sm focus:outline-none focus:border-[#00E5FF]/50"
             />
-            <button className="px-6 py-2 bg-[#00E5FF] text-black font-bold rounded-lg">
-              Deploy Snippet
+            <button
+              disabled={loading}
+              className="px-6 py-2 bg-[#00E5FF] text-black font-bold rounded-lg flex items-center justify-center min-w-[140px] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Deploy Snippet"}
             </button>
           </div>
         )}
 
         {method === "json" && (
           <div className="space-y-4">
-            <label className="block text-sm font-medium text-gray-400">Deployment Config (JSON)</label>
+            <label htmlFor="json-config" className="block text-sm font-medium text-gray-400">
+              Deployment Config (JSON) <span className="text-red-500">*</span>
+            </label>
             <textarea
+              id="json-config"
               placeholder='{ "framework": "nextjs", ... }'
+              required
               className="w-full h-64 bg-black/40 border border-white/10 rounded-lg p-4 font-mono text-sm focus:outline-none focus:border-[#00E5FF]/50"
             />
-            <button className="px-6 py-2 bg-[#00E5FF] text-black font-bold rounded-lg">
-              Deploy with Config
+            <button
+              disabled={loading}
+              className="px-6 py-2 bg-[#00E5FF] text-black font-bold rounded-lg flex items-center justify-center min-w-[160px] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Deploy with Config"}
             </button>
           </div>
         )}
