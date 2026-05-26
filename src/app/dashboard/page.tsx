@@ -9,10 +9,10 @@ import { AnimatedButton } from "@/components/ui/animated-button";
 import Link from "next/link";
 
 const stats = [
-  { label: "Active Engines", value: "12", icon: Zap, color: "text-electric", trend: "+2" },
-  { label: "Total Projects", value: "24", icon: Box, color: "text-white" },
-  { label: "CPU Usage", value: "32%", icon: Activity, color: "text-neon-purple", trend: "Low" },
-  { label: "Total Bandwidth", value: "1.2 TB", icon: Rocket, color: "text-emerald-500" },
+  { label: "Active Engines", value: "Active", icon: Zap, color: "text-primary", trend: "Stable" },
+  { label: "Projects", value: "Ready", icon: Box, color: "text-white" },
+  { label: "Node Latency", value: "24ms", icon: Activity, color: "text-accent", trend: "Low" },
+  { label: "Mumbai Datacenter", value: "Connected", icon: Rocket, color: "text-emerald-500" },
 ];
 
 const container = {
