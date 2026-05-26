@@ -7,7 +7,7 @@ import {
   LayoutDashboard,
   Layers,
   PlusCircle,
-  Globe,
+  Sparkles,
   Settings
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -16,7 +16,7 @@ const navItems = [
   { icon: LayoutDashboard, label: "Home", href: "/dashboard" },
   { icon: Layers, label: "Deployments", href: "/dashboard/deployments" },
   { icon: PlusCircle, label: "New", href: "/dashboard/new", center: true },
-  { icon: Globe, label: "Domains", href: "/dashboard/domains" },
+  { icon: Sparkles, label: "AI", href: "/dashboard/ai-studio" },
   { icon: Settings, label: "Settings", href: "/dashboard/settings" },
 ];
 
@@ -33,7 +33,7 @@ export function MobileBottomNav() {
             if (item.center) {
               return (
                 <Link key={item.href} href={item.href} className="relative group">
-                  <div className="w-12 h-12 rounded-2xl bg-electric text-void flex items-center justify-center shadow-[0_0_20px_rgba(0,229,255,0.4)] transition-transform active:scale-90">
+                  <div className="w-12 h-12 rounded-2xl bg-primary text-background flex items-center justify-center shadow-[0_0_20px_rgba(99,102,241,0.4)] transition-transform active:scale-90">
                     <item.icon className="w-6 h-6" strokeWidth={2.5} />
                   </div>
                 </Link>
@@ -44,13 +44,13 @@ export function MobileBottomNav() {
               <Link key={item.href} href={item.href} className="relative flex flex-col items-center justify-center px-4 py-1.5 transition-all active:scale-95">
                 <div className={cn(
                   "p-2 rounded-xl transition-colors relative z-10",
-                  isActive ? "text-electric" : "text-white/40 group-hover:text-white"
+                  isActive ? "text-primary" : "text-white/40 group-hover:text-white"
                 )}>
                   <item.icon className="w-6 h-6" strokeWidth={isActive ? 2.5 : 2} />
                 </div>
                 <span className={cn(
                   "text-[10px] font-bold mt-0.5 tracking-tighter uppercase transition-colors relative z-10",
-                  isActive ? "text-electric" : "text-white/40"
+                  isActive ? "text-primary" : "text-white/40"
                 )}>
                   {item.label}
                 </span>
@@ -58,7 +58,7 @@ export function MobileBottomNav() {
                 {isActive && (
                   <motion.div
                     layoutId="activeTab"
-                    className="absolute inset-0 bg-electric/5 rounded-2xl -z-0"
+                    className="absolute inset-0 bg-primary/5 rounded-2xl -z-0"
                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                   />
                 )}
