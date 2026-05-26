@@ -1,0 +1,3 @@
+## 2025-05-15 - Improving Dashboard Accessibility with ARIA Attributes
+**Learning:** Icon-only buttons and selection-based UI elements (like framework/model pickers) are often inaccessible to screen readers because they lack descriptive text and state communication. Adding `aria-label`, `aria-pressed`, and `aria-busy` significantly improves the experience for assistive technology users without changing the visual design.
+**Action:** When creating or auditing UI components, ensure icon-only buttons have descriptive labels, selection groups use `aria-pressed` to communicate active state, and loading states are reflected via `aria-busy`.

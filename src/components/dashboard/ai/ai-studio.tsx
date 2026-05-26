@@ -116,6 +116,7 @@ export function AIStudio() {
                   <button
                     key={model.id}
                     onClick={() => setSelectedModel(model.id)}
+                    aria-pressed={selectedModel === model.id}
                     className={cn(
                       "w-full text-left p-3 rounded-xl border transition-all",
                       selectedModel === model.id
@@ -139,6 +140,7 @@ export function AIStudio() {
                   <button
                     key={fw.id}
                     onClick={() => setSelectedFramework(fw.id)}
+                    aria-pressed={selectedFramework === fw.id}
                     className={cn(
                       "flex items-center gap-2 p-3 rounded-xl border text-sm transition-all",
                       selectedFramework === fw.id
