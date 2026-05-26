@@ -9,6 +9,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { GlassCard } from "@/components/ui/glass-card";
 
 const data = [
   { time: "00:00", cpu: 12, ram: 45 },
@@ -23,8 +24,14 @@ const data = [
 export function ResourceCharts() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <div className="p-6 rounded-xl border border-white/5 bg-white/5">
-        <h3 className="text-lg font-bold mb-6">CPU Usage (%)</h3>
+      <GlassCard className="p-6" hover={false}>
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-sm font-bold uppercase tracking-widest text-white/50">CPU Usage (%)</h3>
+          <div className="flex items-center gap-2">
+             <div className="w-2 h-2 rounded-full bg-electric shadow-[0_0_8px_#00E5FF]" />
+             <span className="text-[10px] font-bold text-electric">LIVE</span>
+          </div>
+        </div>
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={data}>
@@ -34,23 +41,30 @@ export function ResourceCharts() {
                   <stop offset="95%" stopColor="#00E5FF" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
               <XAxis
                 dataKey="time"
-                stroke="#666"
-                fontSize={12}
+                stroke="#ffffff20"
+                fontSize={10}
                 tickLine={false}
                 axisLine={false}
+                dy={10}
               />
               <YAxis
-                stroke="#666"
-                fontSize={12}
+                stroke="#ffffff20"
+                fontSize={10}
                 tickLine={false}
                 axisLine={false}
                 tickFormatter={(val) => `${val}%`}
               />
               <Tooltip
-                contentStyle={{ backgroundColor: "#020108", border: "1px solid #ffffff10", borderRadius: "8px" }}
+                contentStyle={{
+                  backgroundColor: "rgba(5, 5, 16, 0.8)",
+                  backdropFilter: "blur(12px)",
+                  border: "1px solid rgba(255, 255, 255, 0.1)",
+                  borderRadius: "12px",
+                  fontSize: "12px"
+                }}
                 itemStyle={{ color: "#00E5FF" }}
               />
               <Area
@@ -59,15 +73,22 @@ export function ResourceCharts() {
                 stroke="#00E5FF"
                 fillOpacity={1}
                 fill="url(#colorCpu)"
-                strokeWidth={2}
+                strokeWidth={3}
+                animationDuration={2000}
               />
             </AreaChart>
           </ResponsiveContainer>
         </div>
-      </div>
+      </GlassCard>
 
-      <div className="p-6 rounded-xl border border-white/5 bg-white/5">
-        <h3 className="text-lg font-bold mb-6">RAM Usage (MB)</h3>
+      <GlassCard className="p-6" hover={false}>
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-sm font-bold uppercase tracking-widest text-white/50">RAM Usage (MB)</h3>
+          <div className="flex items-center gap-2">
+             <div className="w-2 h-2 rounded-full bg-neon-purple shadow-[0_0_8px_#7C3AED]" />
+             <span className="text-[10px] font-bold text-neon-purple">LIVE</span>
+          </div>
+        </div>
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={data}>
@@ -77,23 +98,30 @@ export function ResourceCharts() {
                   <stop offset="95%" stopColor="#7C3AED" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
               <XAxis
                 dataKey="time"
-                stroke="#666"
-                fontSize={12}
+                stroke="#ffffff20"
+                fontSize={10}
                 tickLine={false}
                 axisLine={false}
+                dy={10}
               />
               <YAxis
-                stroke="#666"
-                fontSize={12}
+                stroke="#ffffff20"
+                fontSize={10}
                 tickLine={false}
                 axisLine={false}
                 tickFormatter={(val) => `${val}MB`}
               />
               <Tooltip
-                contentStyle={{ backgroundColor: "#020108", border: "1px solid #ffffff10", borderRadius: "8px" }}
+                contentStyle={{
+                  backgroundColor: "rgba(5, 5, 16, 0.8)",
+                  backdropFilter: "blur(12px)",
+                  border: "1px solid rgba(255, 255, 255, 0.1)",
+                  borderRadius: "12px",
+                  fontSize: "12px"
+                }}
                 itemStyle={{ color: "#7C3AED" }}
               />
               <Area
@@ -102,12 +130,13 @@ export function ResourceCharts() {
                 stroke="#7C3AED"
                 fillOpacity={1}
                 fill="url(#colorRam)"
-                strokeWidth={2}
+                strokeWidth={3}
+                animationDuration={2000}
               />
             </AreaChart>
           </ResponsiveContainer>
         </div>
-      </div>
+      </GlassCard>
     </div>
   );
 }
