@@ -72,7 +72,11 @@ export function ProjectCreationFlow() {
                 </div>
                 <div className="space-y-4">
                   <div className="relative group">
+                    <label htmlFor="github-url" className="sr-only">
+                      GitHub Repository URL
+                    </label>
                     <input
+                      id="github-url"
                       type="text"
                       placeholder="https://github.com/username/repo"
                       className="w-full bg-void/50 border border-white/10 rounded-2xl px-6 py-4 text-base focus:outline-none focus:border-electric/50 focus:ring-1 focus:ring-electric/20 transition-all placeholder:text-white/20"
