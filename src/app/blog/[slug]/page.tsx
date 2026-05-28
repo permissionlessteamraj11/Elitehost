@@ -6,7 +6,7 @@ import { GlassCard } from "@/components/ui/glass-card";
 import { AnimatedButton } from "@/components/ui/animated-button";
 import Link from "next/link";
 import { use } from "react";
-import { blogPosts } from "../page";
+import { blogPosts } from "@/lib/blog-data";
 
 export default function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);

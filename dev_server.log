@@ -4,56 +4,9 @@ $ next dev
    - Network:      http://192.168.0.2:3000
 
  ✓ Starting...
- ✓ Ready in 2.1s
- ○ Compiling / ...
- ✓ Compiled / in 13.7s (1562 modules)
- GET / 200 in 15214ms
- ○ Compiling /auth/login ...
- ✓ Compiled /auth/login in 1325ms (1572 modules)
- GET / 200 in 395ms
- GET /auth/login 200 in 1757ms
+ ✓ Ready in 1849ms
  ○ Compiling /blog ...
- ✓ Compiled /blog in 667ms (1583 modules)
- GET /blog 200 in 1019ms
- ○ Compiling /src/middleware ...
- ✓ Compiled /src/middleware in 596ms (104 modules)
-[Upstash Redis] The 'url' property is missing or undefined in your Redis config.
-[Upstash Redis] The 'token' property is missing or undefined in your Redis config.
- ○ Compiling /admin ...
-<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (155kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
- ✓ Compiled /admin in 1606ms (1674 modules)
- GET /admin 200 in 2149ms
- ✓ Compiled in 779ms (813 modules)
- ⨯ ./src/middleware.ts:1:1
-Module not found: Can't resolve '@supabase/ssr'
-> 1 | import { createServerClient, type CookieOptions } from '@supabase/ssr'
-    | ^
-  2 | import { NextResponse, type NextRequest } from 'next/server'
-  3 | import { ratelimit } from '@/lib/ratelimit'
-  4 |
-
-https://nextjs.org/docs/messages/module-not-found
- ✓ Compiled in 316ms (813 modules)
- ✓ Compiled in 223ms (813 modules)
- ✓ Compiled in 251ms (813 modules)
- ⨯ ./src/middleware.ts:1:1
-Module not found: Can't resolve '@supabase/ssr'
-> 1 | import { createServerClient, type CookieOptions } from '@supabase/ssr'
-    | ^
-  2 | import { NextResponse, type NextRequest } from 'next/server'
-  3 | import { ratelimit } from '@/lib/ratelimit'
-  4 |
-
-https://nextjs.org/docs/messages/module-not-found
- ✓ Compiled in 240ms (813 modules)
- ⨯ ./src/middleware.ts:1:1
-Module not found: Can't resolve '@supabase/ssr'
-> 1 | import { createServerClient, type CookieOptions } from '@supabase/ssr'
-    | ^
-  2 | import { NextResponse, type NextRequest } from 'next/server'
-  3 | import { ratelimit } from '@/lib/ratelimit'
-  4 |
-
-https://nextjs.org/docs/messages/module-not-found
- ✓ Compiled in 233ms (813 modules)
-<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (155kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+ ✓ Compiled /blog in 8.5s (1559 modules)
+ GET /blog 200 in 9460ms
+ ○ Compiling /blog/[slug] ...
+ ✓ Compiled /blog/[slug] in 1047ms (1575 modules)
