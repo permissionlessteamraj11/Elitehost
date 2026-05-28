@@ -30,7 +30,11 @@ export function ProjectCreationFlow() {
         <p className="text-white/40 mt-2 text-lg">Select your preferred deployment method to begin.</p>
       </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div
+        className="grid grid-cols-1 md:grid-cols-2 gap-4"
+        role="radiogroup"
+        aria-label="Deployment method"
+      >
         {methods.map((m, idx) => (
           <motion.div
             key={m.id}
@@ -72,7 +76,9 @@ export function ProjectCreationFlow() {
                 </div>
                 <div className="space-y-4">
                   <div className="relative group">
+                    <label htmlFor="github-url" className="sr-only">GitHub Repository URL</label>
                     <input
+                      id="github-url"
                       type="text"
                       placeholder="https://github.com/username/repo"
                       className="w-full bg-void/50 border border-white/10 rounded-2xl px-6 py-4 text-base focus:outline-none focus:border-electric/50 focus:ring-1 focus:ring-electric/20 transition-all placeholder:text-white/20"
@@ -104,7 +110,9 @@ export function ProjectCreationFlow() {
                     <h3 className="text-lg font-bold font-poppins">Deploy Raw Snippet</h3>
                     <p className="text-sm text-white/40">Paste your source code to deploy instantly</p>
                   </div>
+                <label htmlFor="raw-code" className="sr-only">Source Code</label>
                 <textarea
+                  id="raw-code"
                   placeholder="Paste your code here..."
                   className="w-full h-80 bg-void/50 border border-white/10 rounded-2xl p-6 font-mono text-sm focus:outline-none focus:border-electric/50 focus:ring-1 focus:ring-electric/20 transition-all placeholder:text-white/20"
                 />
@@ -120,7 +128,9 @@ export function ProjectCreationFlow() {
                     <h3 className="text-lg font-bold font-poppins">Configuration Deployment</h3>
                     <p className="text-sm text-white/40">Use elitehosting.json for advanced control</p>
                   </div>
+                <label htmlFor="config-json" className="sr-only">Configuration JSON</label>
                 <textarea
+                  id="config-json"
                   placeholder='{ "framework": "nextjs", ... }'
                   className="w-full h-80 bg-void/50 border border-white/10 rounded-2xl p-6 font-mono text-sm focus:outline-none focus:border-electric/50 focus:ring-1 focus:ring-electric/20 transition-all placeholder:text-white/20"
                 />
