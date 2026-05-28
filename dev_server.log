@@ -4,9 +4,17 @@ $ next dev
    - Network:      http://192.168.0.2:3000
 
  ✓ Starting...
- ✓ Ready in 1849ms
- ○ Compiling /blog ...
- ✓ Compiled /blog in 8.5s (1559 modules)
- GET /blog 200 in 9460ms
- ○ Compiling /blog/[slug] ...
- ✓ Compiled /blog/[slug] in 1047ms (1575 modules)
+ ✓ Ready in 1798ms
+ ○ Compiling /src/middleware ...
+ ✓ Compiled /src/middleware in 1405ms (158 modules)
+[Upstash Redis] The 'url' property is missing or undefined in your Redis config.
+[Upstash Redis] The 'token' property is missing or undefined in your Redis config.
+ ○ Compiling /dashboard/new ...
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (155kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (101kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (231kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+ ✓ Compiled /dashboard/new in 8.8s (1655 modules)
+ HEAD /dashboard/new 200 in 9693ms
+ GET /dashboard/new 200 in 84ms
+[ELIFECYCLE] Command failed.
+[?25h
