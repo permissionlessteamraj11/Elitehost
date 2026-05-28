@@ -4,34 +4,56 @@ $ next dev
    - Network:      http://192.168.0.2:3000
 
  ✓ Starting...
- ✓ Ready in 1825ms
+ ✓ Ready in 2.1s
+ ○ Compiling / ...
+ ✓ Compiled / in 13.7s (1562 modules)
+ GET / 200 in 15214ms
+ ○ Compiling /auth/login ...
+ ✓ Compiled /auth/login in 1325ms (1572 modules)
+ GET / 200 in 395ms
+ GET /auth/login 200 in 1757ms
+ ○ Compiling /blog ...
+ ✓ Compiled /blog in 667ms (1583 modules)
+ GET /blog 200 in 1019ms
  ○ Compiling /src/middleware ...
- ✓ Compiled /src/middleware in 982ms (104 modules)
+ ✓ Compiled /src/middleware in 596ms (104 modules)
 [Upstash Redis] The 'url' property is missing or undefined in your Redis config.
 [Upstash Redis] The 'token' property is missing or undefined in your Redis config.
- ○ Compiling /dashboard ...
-<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (155kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
- ✓ Compiled /dashboard in 17.4s (2588 modules)
-The width(-1) and height(-1) of chart should be greater than 0,
-       please check the style of container, or the props width(100%) and height(100%),
-       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
-       height and width.
-The width(-1) and height(-1) of chart should be greater than 0,
-       please check the style of container, or the props width(100%) and height(100%),
-       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
-       height and width.
- GET /dashboard 200 in 18868ms
- ○ Compiling /dashboard/ai-studio ...
- ✓ Compiled /dashboard/ai-studio in 1968ms (2662 modules)
- GET /dashboard/ai-studio 200 in 2569ms
- ○ Compiling /dashboard/settings ...
- ✓ Compiled /dashboard/settings in 754ms (2677 modules)
- GET /dashboard/settings 200 in 1050ms
  ○ Compiling /admin ...
- ✓ Compiled /admin in 652ms (2692 modules)
- GET /admin 200 in 840ms
- ✓ Compiled in 678ms (1322 modules)
- ✓ Compiled in 926ms (2682 modules)
- ✓ Compiled in 1446ms (1323 modules)
- ✓ Compiled in 366ms (1323 modules)
- ✓ Compiled in 5.7s (2682 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (155kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+ ✓ Compiled /admin in 1606ms (1674 modules)
+ GET /admin 200 in 2149ms
+ ✓ Compiled in 779ms (813 modules)
+ ⨯ ./src/middleware.ts:1:1
+Module not found: Can't resolve '@supabase/ssr'
+> 1 | import { createServerClient, type CookieOptions } from '@supabase/ssr'
+    | ^
+  2 | import { NextResponse, type NextRequest } from 'next/server'
+  3 | import { ratelimit } from '@/lib/ratelimit'
+  4 |
+
+https://nextjs.org/docs/messages/module-not-found
+ ✓ Compiled in 316ms (813 modules)
+ ✓ Compiled in 223ms (813 modules)
+ ✓ Compiled in 251ms (813 modules)
+ ⨯ ./src/middleware.ts:1:1
+Module not found: Can't resolve '@supabase/ssr'
+> 1 | import { createServerClient, type CookieOptions } from '@supabase/ssr'
+    | ^
+  2 | import { NextResponse, type NextRequest } from 'next/server'
+  3 | import { ratelimit } from '@/lib/ratelimit'
+  4 |
+
+https://nextjs.org/docs/messages/module-not-found
+ ✓ Compiled in 240ms (813 modules)
+ ⨯ ./src/middleware.ts:1:1
+Module not found: Can't resolve '@supabase/ssr'
+> 1 | import { createServerClient, type CookieOptions } from '@supabase/ssr'
+    | ^
+  2 | import { NextResponse, type NextRequest } from 'next/server'
+  3 | import { ratelimit } from '@/lib/ratelimit'
+  4 |
+
+https://nextjs.org/docs/messages/module-not-found
+ ✓ Compiled in 233ms (813 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (155kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
