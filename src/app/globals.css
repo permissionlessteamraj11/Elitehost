@@ -5,16 +5,16 @@
   --font-heading: "Satoshi", "Poppins", sans-serif;
   --font-inter: var(--font-inter);
 
-  --color-primary: #6366F1;
-  --color-accent: #8B5CF6;
+  --color-primary: #00E5FF;
+  --color-accent: #7C3AED;
   --color-background: #0B0F19;
   --color-card: #111827;
   --color-text: #F9FAFB;
   --color-text-secondary: #9CA3AF;
 
-  --color-electric: #6366F1;
-  --color-electric-soft: rgba(99, 102, 241, 0.1);
-  --color-neon-purple: #8B5CF6;
+  --color-electric: #00E5FF;
+  --color-electric-soft: rgba(0, 229, 255, 0.1);
+  --color-neon-purple: #7C3AED;
   --color-void: #0B0F19;
   --color-midnight: #111827;
 
@@ -82,12 +82,12 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   .neon-border {
-    box-shadow: 0 0 10px rgba(99, 102, 241, 0.1), inset 0 0 5px rgba(99, 102, 241, 0.05);
-    border: 1px solid rgba(99, 102, 241, 0.2);
+    box-shadow: 0 0 10px rgba(0, 229, 255, 0.1), inset 0 0 5px rgba(0, 229, 255, 0.05);
+    border: 1px solid rgba(0, 229, 255, 0.2);
   }
 
   .text-glow {
-    text-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+    text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
   }
 
   .shimmer-bg {
