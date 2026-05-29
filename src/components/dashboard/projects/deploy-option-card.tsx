@@ -21,15 +21,26 @@ export function DeployOptionCard({
   isActive,
   onClick,
 }: DeployOptionCardProps) {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onClick();
+    }
+  };
+
   return (
     <GlassCard
       className={cn(
-        "p-6 cursor-pointer transition-all duration-300",
+        "p-6 cursor-pointer transition-all duration-300 focus-visible:ring-2 focus-visible:ring-electric/50 outline-none",
         isActive
           ? "neon-border bg-electric/5 ring-1 ring-electric/30"
           : "hover:bg-white/5 border-white/5"
       )}
       onClick={onClick}
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+      role="radio"
+      aria-checked={isActive}
       glow={isActive}
     >
       <div className="flex items-start gap-4">

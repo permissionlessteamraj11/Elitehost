@@ -9,11 +9,17 @@ interface FloatingActionButtonProps {
   href: string;
   icon?: React.ElementType;
   className?: string;
+  "aria-label"?: string;
 }
 
-export function FloatingActionButton({ href, icon: Icon = Plus, className }: FloatingActionButtonProps) {
+export function FloatingActionButton({
+  href,
+  icon: Icon = Plus,
+  className,
+  "aria-label": ariaLabel = "Action",
+}: FloatingActionButtonProps) {
   return (
-    <Link href={href}>
+    <Link href={href} aria-label={ariaLabel}>
       <motion.button
         whileHover={{ scale: 1.1, rotate: 90 }}
         whileTap={{ scale: 0.9 }}

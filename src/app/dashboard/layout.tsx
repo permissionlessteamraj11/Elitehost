@@ -38,7 +38,7 @@ export default function DashboardLayout({
           </AnimatePresence>
         </main>
 
-        <FloatingActionButton href="/dashboard/new" />
+        <FloatingActionButton href="/dashboard/new" aria-label="Create new project" />
         <MobileBottomNav />
 
         {/* Pull to refresh visual hint */}
