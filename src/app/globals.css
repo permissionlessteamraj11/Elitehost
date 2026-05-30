@@ -107,6 +107,14 @@ h1, h2, h3, h4, h5, h6 {
   .safe-bottom {
     padding-bottom: env(safe-area-inset-bottom);
   }
+
+  .skip-link {
+    @apply absolute left-4 top-4 -translate-y-[200%] focus:translate-y-0 bg-electric text-void px-4 py-2 rounded-xl font-bold z-[600] transition-transform shadow-[0_0_20px_rgba(0,229,255,0.5)];
+  }
+
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric focus-visible:ring-offset-2 focus-visible:ring-offset-void;
+  }
 }
 
 /* Custom Scrollbar */

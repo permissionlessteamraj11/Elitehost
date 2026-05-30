@@ -32,7 +32,7 @@ export function MobileBottomNav() {
 
             if (item.center) {
               return (
-                <Link key={item.href} href={item.href} className="relative group">
+                <Link key={item.href} href={item.href} className="relative group focus-ring rounded-2xl" aria-label={`Create ${item.label}`}>
                   <div className="w-12 h-12 rounded-2xl bg-primary text-background flex items-center justify-center shadow-[0_0_20px_rgba(99,102,241,0.4)] transition-transform active:scale-90">
                     <item.icon className="w-6 h-6" strokeWidth={2.5} />
                   </div>
@@ -41,7 +41,7 @@ export function MobileBottomNav() {
             }
 
             return (
-              <Link key={item.href} href={item.href} className="relative flex flex-col items-center justify-center px-4 py-1.5 transition-all active:scale-95">
+              <Link key={item.href} href={item.href} className="relative flex flex-col items-center justify-center px-4 py-1.5 transition-all active:scale-95 focus-ring rounded-2xl">
                 <div className={cn(
                   "p-2 rounded-xl transition-colors relative z-10",
                   isActive ? "text-primary" : "text-white/40 group-hover:text-white"
