@@ -4,9 +4,23 @@ $ next dev
    - Network:      http://192.168.0.2:3000
 
  ✓ Starting...
- ✓ Ready in 1849ms
- ○ Compiling /blog ...
- ✓ Compiled /blog in 8.5s (1559 modules)
- GET /blog 200 in 9460ms
- ○ Compiling /blog/[slug] ...
- ✓ Compiled /blog/[slug] in 1047ms (1575 modules)
+ ✓ Ready in 2.6s
+ ○ Compiling /src/middleware ...
+ ✓ Compiled /src/middleware in 1626ms (158 modules)
+[Upstash Redis] The 'url' property is missing or undefined in your Redis config.
+[Upstash Redis] The 'token' property is missing or undefined in your Redis config.
+ ○ Compiling /dashboard ...
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (155kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (101kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (231kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+ ✓ Compiled /dashboard in 21s (2588 modules)
+The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+ GET /dashboard 200 in 22515ms
+ ✓ Compiled in 898ms (1276 modules)

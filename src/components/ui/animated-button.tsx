@@ -41,8 +41,9 @@ export function AnimatedButton({
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.95 }}
       disabled={disabled || loading}
+      aria-busy={loading}
       className={cn(
-        "relative inline-flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none overflow-hidden",
+        "relative inline-flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none overflow-hidden focus-ring",
         variants[variant],
         sizes[size],
         glow && variant === "primary" && "animate-glow-pulse",

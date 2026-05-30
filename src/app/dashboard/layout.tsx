@@ -16,6 +16,10 @@ export default function DashboardLayout({
 
   return (
     <div className="flex min-h-screen bg-[#020108] text-white selection:bg-electric/30 overflow-x-hidden">
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
+
       {/* Sidebar for Desktop */}
       <div className="hidden lg:block">
         <Sidebar />
@@ -24,7 +28,7 @@ export default function DashboardLayout({
       <div className="flex-1 lg:ml-64 flex flex-col min-h-screen relative pb-32 lg:pb-8">
         <AppHeader />
 
-        <main className="flex-1 px-4 py-6 lg:px-8 max-w-7xl mx-auto w-full overflow-x-hidden">
+        <main id="main-content" className="flex-1 px-4 py-6 lg:px-8 max-w-7xl mx-auto w-full overflow-x-hidden outline-none" tabIndex={-1}>
           <AnimatePresence mode="wait">
             <motion.div
               key={pathname}
