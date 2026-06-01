@@ -21,6 +21,13 @@ export function DeployOptionCard({
   isActive,
   onClick,
 }: DeployOptionCardProps) {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onClick();
+    }
+  };
+
   return (
     <GlassCard
       className={cn(
@@ -30,6 +37,11 @@ export function DeployOptionCard({
           : "hover:bg-white/5 border-white/5"
       )}
       onClick={onClick}
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+      role="radio"
+      aria-checked={isActive}
+      aria-label={label}
       glow={isActive}
     >
       <div className="flex items-start gap-4">
