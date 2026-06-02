@@ -16,7 +16,9 @@ import {
   FolderTree,
   FileText,
   AlertCircle,
-  CheckCircle2
+  CheckCircle2,
+  Copy,
+  Check
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Editor from "@monaco-editor/react";
@@ -47,6 +49,7 @@ export function AIStudio() {
   const [selectedFile, setSelectedFile] = useState<any>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [diagnosis, setDiagnosis] = useState<any>(null);
+  const [isCopied, setIsCopied] = useState(false);
   const [logs, setLogs] = useState<string[]>(["[System] AI Studio Initialized. Waiting for prompt..."]);
 
   const addLog = (msg: string) => setLogs(prev => [...prev, msg]);
@@ -87,6 +90,14 @@ export function AIStudio() {
     setTimeout(() => {
       addLog("[System] Build queued (ID: build_82k2m)");
     }, 1000);
+  };
+
+  const handleCopy = () => {
+    if (!selectedFile) return;
+    navigator.clipboard.writeText(selectedFile.content);
+    setIsCopied(true);
+    addLog(`[System] Copied ${selectedFile.name} to clipboard.`);
+    setTimeout(() => setIsCopied(false), 2000);
   };
 
   return (
@@ -219,9 +230,18 @@ export function AIStudio() {
 
                 <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 sm:pb-0">
                   <button
+                    onClick={handleCopy}
+                    disabled={!selectedFile}
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold bg-white/5 text-text-secondary hover:text-white transition-all whitespace-nowrap border border-white/5 hover:border-white/10"
+                    title="Copy Code"
+                  >
+                    {isCopied ? <Check className="w-3.5 h-3.5 text-electric" /> : <Copy className="w-3.5 h-3.5" />}
+                    {isCopied ? "Copied!" : "Copy"}
+                  </button>
+                  <button
                     onClick={handleDiagnose}
                     disabled={!selectedFile || isDiagnosing}
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold bg-white/5 text-text-secondary hover:text-white transition-all whitespace-nowrap"
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold bg-white/5 text-text-secondary hover:text-white transition-all whitespace-nowrap border border-white/5 hover:border-white/10"
                   >
                     {isDiagnosing ? <div className="w-3 h-3 border border-white/20 border-t-white rounded-full animate-spin" /> : <AlertCircle className="w-3.5 h-3.5" />}
                     Detect Errors
@@ -253,18 +273,27 @@ export function AIStudio() {
                       exit={{ opacity: 0 }}
                       className="absolute inset-0 bg-[#000] flex items-center justify-center p-8 text-center"
                     >
-                      <div className="space-y-4">
-                        <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto border border-primary/20">
-                          <Globe className="w-8 h-8 text-primary" />
+                      {files.length > 0 ? (
+                        <div className="space-y-4">
+                          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto border border-primary/20">
+                            <Globe className="w-8 h-8 text-primary" />
+                          </div>
+                          <h3 className="text-xl font-bold font-heading text-white">Live Preview Ready</h3>
+                          <p className="text-text-secondary max-w-xs mx-auto text-sm">
+                            Your <span className="text-primary font-bold">{selectedFramework.toUpperCase()}</span> app has been generated with elite precision and is ready for the world.
+                          </p>
+                          <AnimatedButton variant="outline" className="gap-2">
+                            <Play className="w-4 h-4" /> Run {selectedFramework} Environment
+                          </AnimatedButton>
                         </div>
-                        <h3 className="text-xl font-bold font-heading text-white">Live Preview Ready</h3>
-                        <p className="text-text-secondary max-w-xs mx-auto text-sm">
-                          Your {selectedFramework} app has been generated and is ready for the world.
-                        </p>
-                        <AnimatedButton variant="outline" className="gap-2">
-                          <Play className="w-4 h-4" /> Run Environment
-                        </AnimatedButton>
-                      </div>
+                      ) : (
+                         <div className="space-y-4">
+                            <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mx-auto border border-white/10 animate-pulse">
+                              <Sparkles className="w-6 h-6 text-white/20" />
+                            </div>
+                            <p className="text-text-secondary text-sm">Generate a project to see its live preview.</p>
+                         </div>
+                      )}
                     </motion.div>
                   ) : (
                     <motion.div
