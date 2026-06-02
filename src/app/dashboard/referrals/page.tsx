@@ -47,6 +47,7 @@ export default function ReferralsPage() {
            <div className="px-4 py-2 text-sm font-mono text-electric">{referralCode}</div>
            <button
              onClick={copyToClipboard}
+             aria-label="Copy referral link"
              className="p-2 bg-electric text-void rounded-xl hover:scale-105 active:scale-95 transition-all"
            >
              {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
@@ -112,8 +113,9 @@ export default function ReferralsPage() {
 
             <form onSubmit={handleWithdraw} className="space-y-4">
                <div className="space-y-2">
-                 <label className="text-xs font-bold text-white/40 uppercase ml-1">Withdraw Amount</label>
+                 <label htmlFor="withdraw-amount" className="text-xs font-bold text-white/40 uppercase ml-1">Withdraw Amount</label>
                  <input
+                   id="withdraw-amount"
                    type="number"
                    required
                    value={withdrawAmount}
@@ -123,8 +125,9 @@ export default function ReferralsPage() {
                  />
                </div>
                <div className="space-y-2">
-                 <label className="text-xs font-bold text-white/40 uppercase ml-1">UPI ID / Bank Details</label>
+                 <label htmlFor="upi-id" className="text-xs font-bold text-white/40 uppercase ml-1">UPI ID / Bank Details</label>
                  <input
+                   id="upi-id"
                    type="text"
                    required
                    value={upiId}
