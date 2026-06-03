@@ -66,16 +66,18 @@ export default function SettingsPage() {
 
                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                     <label className="text-xs font-bold text-text-secondary uppercase tracking-widest">Username</label>
+                     <label htmlFor="username" className="text-xs font-bold text-text-secondary uppercase tracking-widest">Username</label>
                      <input
+                        id="username"
                         type="text"
                         defaultValue="elite_user"
                         className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary/50"
                      />
                   </div>
                   <div className="space-y-2">
-                     <label className="text-xs font-bold text-text-secondary uppercase tracking-widest">Email Address</label>
+                     <label htmlFor="email" className="text-xs font-bold text-text-secondary uppercase tracking-widest">Email Address</label>
                      <input
+                        id="email"
                         type="email"
                         defaultValue="user@elitehosting.in"
                         className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-white/20 opacity-50"
@@ -83,8 +85,9 @@ export default function SettingsPage() {
                      />
                   </div>
                   <div className="md:col-span-2 space-y-2">
-                     <label className="text-xs font-bold text-text-secondary uppercase tracking-widest">Bio</label>
+                     <label htmlFor="bio" className="text-xs font-bold text-text-secondary uppercase tracking-widest">Bio</label>
                      <textarea
+                        id="bio"
                         className="w-full h-24 bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary/50"
                         placeholder="Tell us about yourself..."
                      />
@@ -114,14 +117,18 @@ export default function SettingsPage() {
                         <div className="text-sm font-bold">Production CLI</div>
                         <div className="flex items-center gap-2 font-mono text-xs text-text-secondary">
                            <span>{showKey ? "eh_live_9k2m1n8v7b6c5x4z3a2s1" : "eh_live_••••••••••••••••••••••"}</span>
-                           <button onClick={() => setShowKey(!showKey)} className="hover:text-white transition-colors">
+                           <button
+                             onClick={() => setShowKey(!showKey)}
+                             className="hover:text-white transition-colors"
+                             aria-label={showKey ? "Hide API Key" : "Show API Key"}
+                           >
                               {showKey ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
                            </button>
                         </div>
                      </div>
                      <div className="flex items-center gap-2">
-                        <button className="p-2 hover:bg-white/10 rounded-lg transition-colors"><Copy className="w-4 h-4" /></button>
-                        <button className="p-2 hover:bg-red-400/10 text-red-400 rounded-lg transition-colors"><Trash2 className="w-4 h-4" /></button>
+                        <button className="p-2 hover:bg-white/10 rounded-lg transition-colors" aria-label="Copy API Key"><Copy className="w-4 h-4" /></button>
+                        <button className="p-2 hover:bg-red-400/10 text-red-400 rounded-lg transition-colors" aria-label="Delete API Key"><Trash2 className="w-4 h-4" /></button>
                      </div>
                   </div>
                </div>
@@ -137,8 +144,8 @@ export default function SettingsPage() {
                 <GlassCard className="p-8 space-y-6" hover={false}>
                    <h3 className="text-xl font-bold font-heading">Password</h3>
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2"><label className="text-xs font-bold text-text-secondary uppercase tracking-widest">Current Password</label><input type="password" title="current password" name="current_password"  className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary/50" /></div>
-                      <div className="space-y-2"><label className="text-xs font-bold text-text-secondary uppercase tracking-widest">New Password</label><input type="password" title="new password" name="new_password" className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary/50" /></div>
+                      <div className="space-y-2"><label htmlFor="current_password" className="text-xs font-bold text-text-secondary uppercase tracking-widest">Current Password</label><input id="current_password" type="password" title="current password" name="current_password"  className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary/50" /></div>
+                      <div className="space-y-2"><label htmlFor="new_password" className="text-xs font-bold text-text-secondary uppercase tracking-widest">New Password</label><input id="new_password" type="password" title="new password" name="new_password" className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary/50" /></div>
                    </div>
                    <AnimatedButton variant="secondary" size="sm">Update Password</AnimatedButton>
                 </GlassCard>
@@ -228,9 +235,14 @@ export default function SettingsPage() {
                       <div className="text-sm font-bold">{item.label}</div>
                       <div className="text-xs text-text-secondary">{item.desc}</div>
                     </div>
-                    <div className="w-10 h-5 bg-primary/20 rounded-full relative cursor-pointer border border-primary/30">
+                    <button
+                      role="switch"
+                      aria-checked="true"
+                      aria-label={`Toggle ${item.label} notification`}
+                      className="w-10 h-5 bg-primary/20 rounded-full relative cursor-pointer border border-primary/30 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-void"
+                    >
                        <div className="absolute right-0.5 top-0.5 w-4 h-4 bg-primary rounded-full" />
-                    </div>
+                    </button>
                   </div>
                 ))}
               </div>
