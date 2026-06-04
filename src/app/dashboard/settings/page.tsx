@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import {
   User,
   Lock,
@@ -32,6 +33,16 @@ const tabs = [
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("account");
   const [showKey, setShowKey] = useState(false);
+  const [notifications, setNotifications] = useState({
+    success: true,
+    failure: true,
+    usage: false,
+    security: true,
+  });
+
+  const toggleNotification = (key: keyof typeof notifications) => {
+    setNotifications(prev => ({ ...prev, [key]: !prev[key] }));
+  };
 
   return (
     <div className="max-w-5xl mx-auto space-y-8 pb-20">
@@ -66,16 +77,18 @@ export default function SettingsPage() {
 
                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                     <label className="text-xs font-bold text-text-secondary uppercase tracking-widest">Username</label>
+                     <label htmlFor="username" className="text-xs font-bold text-text-secondary uppercase tracking-widest cursor-pointer">Username</label>
                      <input
+                        id="username"
                         type="text"
                         defaultValue="elite_user"
                         className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary/50"
                      />
                   </div>
                   <div className="space-y-2">
-                     <label className="text-xs font-bold text-text-secondary uppercase tracking-widest">Email Address</label>
+                     <label htmlFor="email" className="text-xs font-bold text-text-secondary uppercase tracking-widest">Email Address</label>
                      <input
+                        id="email"
                         type="email"
                         defaultValue="user@elitehosting.in"
                         className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-white/20 opacity-50"
@@ -83,8 +96,9 @@ export default function SettingsPage() {
                      />
                   </div>
                   <div className="md:col-span-2 space-y-2">
-                     <label className="text-xs font-bold text-text-secondary uppercase tracking-widest">Bio</label>
+                     <label htmlFor="bio" className="text-xs font-bold text-text-secondary uppercase tracking-widest cursor-pointer">Bio</label>
                      <textarea
+                        id="bio"
                         className="w-full h-24 bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary/50"
                         placeholder="Tell us about yourself..."
                      />
@@ -137,8 +151,14 @@ export default function SettingsPage() {
                 <GlassCard className="p-8 space-y-6" hover={false}>
                    <h3 className="text-xl font-bold font-heading">Password</h3>
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2"><label className="text-xs font-bold text-text-secondary uppercase tracking-widest">Current Password</label><input type="password" title="current password" name="current_password"  className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary/50" /></div>
-                      <div className="space-y-2"><label className="text-xs font-bold text-text-secondary uppercase tracking-widest">New Password</label><input type="password" title="new password" name="new_password" className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary/50" /></div>
+                      <div className="space-y-2">
+                        <label htmlFor="current_password" className="text-xs font-bold text-text-secondary uppercase tracking-widest cursor-pointer">Current Password</label>
+                        <input id="current_password" type="password" title="current password" name="current_password"  className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary/50" />
+                      </div>
+                      <div className="space-y-2">
+                        <label htmlFor="new_password" className="text-xs font-bold text-text-secondary uppercase tracking-widest cursor-pointer">New Password</label>
+                        <input id="new_password" type="password" title="new password" name="new_password" className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary/50" />
+                      </div>
                    </div>
                    <AnimatedButton variant="secondary" size="sm">Update Password</AnimatedButton>
                 </GlassCard>
@@ -218,21 +238,38 @@ export default function SettingsPage() {
               </div>
               <div className="space-y-4">
                 {[
-                  { label: "Deployment Success", desc: "Notify when a build is successful." },
-                  { label: "Deployment Failure", desc: "Urgent alerts for failed builds." },
-                  { label: "Usage Alerts", desc: "Notify when approaching plan limits." },
-                  { label: "Security Alerts", desc: "Notifications about account security." }
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center justify-between p-4 rounded-xl border border-white/5">
-                    <div>
-                      <div className="text-sm font-bold">{item.label}</div>
-                      <div className="text-xs text-text-secondary">{item.desc}</div>
+                  { id: "success", label: "Deployment Success", desc: "Notify when a build is successful." },
+                  { id: "failure", label: "Deployment Failure", desc: "Urgent alerts for failed builds." },
+                  { id: "usage", label: "Usage Alerts", desc: "Notify when approaching plan limits." },
+                  { id: "security", label: "Security Alerts", desc: "Notifications about account security." }
+                ].map((item) => {
+                  const isEnabled = notifications[item.id as keyof typeof notifications];
+                  return (
+                    <div key={item.id} className="flex items-center justify-between p-4 rounded-xl border border-white/5 bg-white/[0.02]">
+                      <div>
+                        <div className="text-sm font-bold">{item.label}</div>
+                        <div className="text-xs text-text-secondary">{item.desc}</div>
+                      </div>
+                      <button
+                        role="switch"
+                        aria-checked={isEnabled}
+                        aria-label={`Toggle ${item.label}`}
+                        onClick={() => toggleNotification(item.id as keyof typeof notifications)}
+                        className={cn(
+                          "w-10 h-5 rounded-full relative transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary/40",
+                          isEnabled ? "bg-primary" : "bg-white/10"
+                        )}
+                      >
+                        <motion.div
+                          initial={false}
+                          animate={{ x: isEnabled ? 20 : 2 }}
+                          transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                          className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full shadow-lg"
+                        />
+                      </button>
                     </div>
-                    <div className="w-10 h-5 bg-primary/20 rounded-full relative cursor-pointer border border-primary/30">
-                       <div className="absolute right-0.5 top-0.5 w-4 h-4 bg-primary rounded-full" />
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </GlassCard>
           )}
