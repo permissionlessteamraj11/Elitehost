@@ -48,6 +48,7 @@ export default function ReferralsPage() {
            <button
              onClick={copyToClipboard}
              className="p-2 bg-electric text-void rounded-xl hover:scale-105 active:scale-95 transition-all"
+             aria-label={copied ? "Copied" : "Copy referral link"}
            >
              {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
            </button>
