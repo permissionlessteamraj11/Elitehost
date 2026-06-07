@@ -4,7 +4,8 @@ import { motion } from "framer-motion";
 import { Zap, Shield, CreditCard, ArrowRight, Check, Star, Sparkles } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { AnimatedButton } from "@/components/ui/animated-button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getPlatformSetting } from "@/app/actions/platform";
 
 const creditPlans = [
   {
@@ -39,6 +40,13 @@ const creditPlans = [
 
 export default function CreditsPage() {
   const [loading, setLoading] = useState<string | null>(null);
+  const [freePlanEnabled, setFreePlanEnabled] = useState(true);
+
+  useEffect(() => {
+    getPlatformSetting('free_plan_enabled').then(val => {
+        if (val !== null) setFreePlanEnabled(val === true);
+    });
+  }, []);
 
   const handlePurchase = (planId: string) => {
     setLoading(planId);
@@ -63,7 +71,7 @@ export default function CreditsPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-        {creditPlans.map((plan, idx) => (
+        {creditPlans.filter(p => freePlanEnabled || p.id !== 'basic').map((plan, idx) => (
           <motion.div
             key={plan.id}
             initial={{ opacity: 0, y: 20 }}

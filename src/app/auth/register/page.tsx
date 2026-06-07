@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Mail, Lock, ArrowRight, Zap, User, Gift } from "lucide-react";
+import { getPlatformSetting } from "@/app/actions/platform";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
@@ -13,9 +14,16 @@ export default function RegisterPage() {
   const [username, setUsername] = useState("");
   const [referralCode, setReferralCode] = useState("");
   const [loading, setLoading] = useState(false);
+  const [freePlanEnabled, setFreePlanEnabled] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    getPlatformSetting('free_plan_enabled').then(val => {
+        if (val !== null) setFreePlanEnabled(val === true);
+    });
+  }, []);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -92,10 +100,12 @@ export default function RegisterPage() {
         </div>
 
         <div className="p-8 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl">
-          <div className="mb-6 p-3 rounded-xl bg-[#00E5FF]/10 border border-[#00E5FF]/20 flex items-center gap-3">
-            <Gift className="w-5 h-5 text-[#00E5FF]" />
-            <span className="text-sm font-medium text-[#00E5FF]">2 free credits — no card required</span>
-          </div>
+          {freePlanEnabled && (
+            <div className="mb-6 p-3 rounded-xl bg-[#00E5FF]/10 border border-[#00E5FF]/20 flex items-center gap-3">
+              <Gift className="w-5 h-5 text-[#00E5FF]" />
+              <span className="text-sm font-medium text-[#00E5FF]">2 free credits — no card required</span>
+            </div>
+          )}
 
           <form onSubmit={handleRegister} className="space-y-4">
             <div>
