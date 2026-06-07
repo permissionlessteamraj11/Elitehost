@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import {
   User,
   Lock,
@@ -32,6 +33,19 @@ const tabs = [
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("account");
   const [showKey, setShowKey] = useState(false);
+  const [notifications, setNotifications] = useState({
+    "Deployment Success": true,
+    "Deployment Failure": true,
+    "Usage Alerts": true,
+    "Security Alerts": false,
+  });
+
+  const toggleNotification = (label: string) => {
+    setNotifications(prev => ({
+      ...prev,
+      [label]: !prev[label as keyof typeof prev]
+    }));
+  };
 
   return (
     <div className="max-w-5xl mx-auto space-y-8 pb-20">
@@ -228,9 +242,29 @@ export default function SettingsPage() {
                       <div className="text-sm font-bold">{item.label}</div>
                       <div className="text-xs text-text-secondary">{item.desc}</div>
                     </div>
-                    <div className="w-10 h-5 bg-primary/20 rounded-full relative cursor-pointer border border-primary/30">
-                       <div className="absolute right-0.5 top-0.5 w-4 h-4 bg-primary rounded-full" />
-                    </div>
+                    <button
+                      role="switch"
+                      aria-checked={notifications[item.label as keyof typeof notifications]}
+                      aria-label={`Toggle ${item.label}`}
+                      onClick={() => toggleNotification(item.label)}
+                      className={cn(
+                        "w-10 h-5 rounded-full relative transition-colors duration-200 border outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                        notifications[item.label as keyof typeof notifications]
+                          ? "bg-primary/20 border-primary/30"
+                          : "bg-white/5 border-white/10"
+                      )}
+                    >
+                      <motion.div
+                        initial={false}
+                        animate={{
+                          x: notifications[item.label as keyof typeof notifications] ? 20 : 2
+                        }}
+                        className={cn(
+                          "absolute top-0.5 w-4 h-4 rounded-full transition-colors duration-200",
+                          notifications[item.label as keyof typeof notifications] ? "bg-primary" : "bg-text-secondary"
+                        )}
+                      />
+                    </button>
                   </div>
                 ))}
               </div>
