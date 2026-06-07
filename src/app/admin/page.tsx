@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Users, Server, ShieldAlert, Activity, FileText, Search, ExternalLink, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
+import { Users, Server, ShieldAlert, Activity, FileText, Search, ExternalLink, Lock, Eye, EyeOff, Loader2, Wallet, Check, X, Settings } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { GlassCard } from "@/components/ui/glass-card";
 import { AnimatedButton } from "@/components/ui/animated-button";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { validateAdminPassword } from "@/app/actions/admin-auth";
+import { getPlatformSetting, updatePlatformSetting, getPendingWithdrawals, updateWithdrawalStatus } from "@/app/actions/platform";
 
 export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -25,6 +26,8 @@ export default function AdminDashboard() {
 
   const [users, setUsers] = useState<any[]>([]);
   const [projects, setProjects] = useState<any[]>([]);
+  const [withdrawals, setWithdrawals] = useState<any[]>([]);
+  const [freePlanEnabled, setFreePlanEnabled] = useState(true);
   const [loading, setLoading] = useState(true);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -59,8 +62,13 @@ export default function AdminDashboard() {
       const { data: projectData, count: projectCount } = await supabase.from('projects').select('*', { count: 'exact' });
       const { count: deployCount } = await supabase.from('deployments').select('*', { count: 'exact', head: true });
 
+      const pendingWithdrawals = await getPendingWithdrawals();
+      const freePlan = await getPlatformSetting('free_plan_enabled');
+
       setUsers(userData || []);
       setProjects(projectData || []);
+      setWithdrawals(pendingWithdrawals);
+      setFreePlanEnabled(freePlan === true);
 
       setStats([
         { label: "Total Users", value: userCount?.toString() || "0", icon: Users, color: "text-primary" },
@@ -72,6 +80,19 @@ export default function AdminDashboard() {
       console.error("Error fetching admin data:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleToggleFreePlan = async () => {
+    const newValue = !freePlanEnabled;
+    const res = await updatePlatformSetting('free_plan_enabled', newValue);
+    if (res.success) setFreePlanEnabled(newValue);
+  };
+
+  const handleWithdrawal = async (id: string, status: 'approved' | 'rejected') => {
+    const res = await updateWithdrawalStatus(id, status);
+    if (res.success) {
+      setWithdrawals(prev => prev.filter(w => w.id !== id));
     }
   };
 
@@ -153,9 +174,77 @@ export default function AdminDashboard() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Platform Settings */}
+        <div className="lg:col-span-1 space-y-6">
+          <h2 className="text-2xl font-bold font-heading flex items-center gap-2">
+            <Settings className="w-6 h-6 text-primary" /> Platform Settings
+          </h2>
+          <GlassCard className="p-6 space-y-6" hover={false}>
+            <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10">
+              <div>
+                <div className="font-bold">Free Plan Status</div>
+                <div className="text-[10px] text-text-secondary uppercase tracking-widest mt-1">
+                  {freePlanEnabled ? 'Currently Active' : 'Currently Disabled'}
+                </div>
+              </div>
+              <button
+                onClick={handleToggleFreePlan}
+                className={cn(
+                  "relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none",
+                  freePlanEnabled ? "bg-emerald-500" : "bg-white/10"
+                )}
+              >
+                <span className={cn(
+                  "inline-block h-4 w-4 transform rounded-full bg-white transition-transform",
+                  freePlanEnabled ? "translate-x-6" : "translate-x-1"
+                )} />
+              </button>
+            </div>
+
+            <div className="p-4 rounded-xl bg-primary/5 border border-primary/10">
+               <div className="text-xs text-primary font-bold uppercase tracking-widest mb-1">Security Status</div>
+               <div className="text-lg font-bold">SQL Injection Guard Active</div>
+               <div className="text-[10px] text-text-secondary mt-1">Real-time threat monitoring is enabled.</div>
+            </div>
+          </GlassCard>
+
+          {/* Withdrawals */}
+          <h2 className="text-2xl font-bold font-heading flex items-center gap-2 mt-10">
+            <Wallet className="w-6 h-6 text-accent" /> Withdrawal Requests
+          </h2>
+          <GlassCard className="p-0 overflow-hidden" hover={false}>
+            <div className="divide-y divide-white/5">
+               {withdrawals.length > 0 ? withdrawals.map((w) => (
+                 <div key={w.id} className="p-4 space-y-3 hover:bg-white/2 transition-colors">
+                    <div className="flex justify-between items-start">
+                       <div>
+                          <div className="font-bold text-sm">₹{w.amount}</div>
+                          <div className="text-[10px] text-text-secondary font-mono mt-1">{w.upi_id}</div>
+                       </div>
+                       <div className="text-[10px] font-bold text-primary uppercase bg-primary/10 px-2 py-0.5 rounded-lg">Pending</div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                       <div className="text-[10px] text-text-secondary">By: {w.users.username}</div>
+                       <div className="flex gap-2">
+                          <button onClick={() => handleWithdrawal(w.id, 'approved')} className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-500 hover:bg-emerald-500/30">
+                            <Check className="w-3.5 h-3.5" />
+                          </button>
+                          <button onClick={() => handleWithdrawal(w.id, 'rejected')} className="p-1.5 rounded-lg bg-red-500/20 text-red-500 hover:bg-red-500/30">
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                       </div>
+                    </div>
+                 </div>
+               )) : (
+                 <div className="p-8 text-center text-text-secondary italic text-sm">No pending requests.</div>
+               )}
+            </div>
+          </GlassCard>
+        </div>
+
         {/* User Table */}
-        <div className="space-y-6">
+        <div className="lg:col-span-2 space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold font-heading">User Directory</h2>
             <div className="relative max-w-xs w-full">

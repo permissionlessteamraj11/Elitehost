@@ -1,23 +1,68 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Users, Gift, TrendingUp, Wallet, ArrowRight, Copy, Check, Clock, ExternalLink } from "lucide-react";
+import { Users, Gift, TrendingUp, Wallet, ArrowRight, Copy, Check, Clock, ExternalLink, AlertCircle } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { AnimatedButton } from "@/components/ui/animated-button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
+import { submitWithdrawalRequest } from "@/app/actions/credits";
 
 export default function ReferralsPage() {
   const [copied, setCopied] = useState(false);
-  const [stats] = useState({
-    totalRefers: 12,
-    activeRefers: 8,
-    totalEarnings: 458.00,
-    pendingBalance: 120.00
+  const [user, setUser] = useState<any>(null);
+  const [stats, setStats] = useState({
+    totalRefers: 0,
+    activeRefers: 0,
+    totalEarnings: 0,
+    walletBalance: 0
   });
-  const [referralCode] = useState("ELITE-USER-X");
+  const [recentReferrals, setRecentReferrals] = useState<any[]>([]);
+  const [referralCode, setReferralCode] = useState("LOADING...");
   const [withdrawAmount, setWithdrawAmount] = useState("");
   const [upiId, setUpiId] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    const { data: { user: authUser } } = await supabase.auth.getUser();
+    if (!authUser) return;
+
+    const { data: userData } = await supabase
+      .from('users')
+      .select('*')
+      .eq('auth_id', authUser.id)
+      .single();
+
+    if (userData) {
+      setUser(userData);
+      setReferralCode(userData.username.toUpperCase());
+      setStats(prev => ({
+        ...prev,
+        walletBalance: Number(userData.wallet_balance || 0)
+      }));
+
+      // Fetch referrals
+      const { data: referrals, count } = await supabase
+        .from('referrals')
+        .select('*, referred:referred_id(username, created_at)', { count: 'exact' })
+        .eq('referrer_id', userData.id);
+
+      if (referrals) {
+        setRecentReferrals(referrals);
+        setStats(prev => ({
+          ...prev,
+          totalRefers: count || 0,
+          activeRefers: referrals.filter(r => r.status === 'completed').length,
+          totalEarnings: referrals.reduce((acc, r) => acc + (r.status === 'completed' ? Number(r.reward_amount) : 0), 0)
+        }));
+      }
+    }
+  };
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(`https://www.elitehosting.in/auth/register?ref=${referralCode}`);
@@ -25,15 +70,22 @@ export default function ReferralsPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleWithdraw = (e: React.FormEvent) => {
+  const handleWithdraw = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-        setLoading(false);
+    setError(null);
+
+    const res = await submitWithdrawalRequest(user.id, Number(withdrawAmount), upiId);
+
+    if (res.success) {
         setWithdrawAmount("");
         setUpiId("");
         alert("Withdrawal request submitted successfully!");
-    }, 2000);
+        fetchData();
+    } else {
+        setError(res.error || "Failed to submit request");
+    }
+    setLoading(false);
   };
 
   return (
@@ -58,8 +110,8 @@ export default function ReferralsPage() {
         {[
           { label: "Total Refers", value: stats.totalRefers, icon: Users, color: "text-blue-500" },
           { label: "Active Refers", value: stats.activeRefers, icon: TrendingUp, color: "text-emerald-500" },
-          { label: "Total Earnings", value: `₹${stats.totalEarnings}`, icon: Gift, color: "text-purple-500" },
-          { label: "Wallet Balance", value: `₹${stats.pendingBalance}`, icon: Wallet, color: "text-electric" },
+          { label: "Total Earnings", value: `₹${stats.totalEarnings.toFixed(2)}`, icon: Gift, color: "text-purple-500" },
+          { label: "Wallet Balance", value: `₹${stats.walletBalance.toFixed(2)}`, icon: Wallet, color: "text-electric" },
         ].map((stat, idx) => (
           <GlassCard key={idx} className="p-6" hover={false}>
             <div className={`p-2 w-fit rounded-lg bg-white/5 ${stat.color} mb-4`}>
@@ -85,17 +137,21 @@ export default function ReferralsPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5">
-                  {[
-                    { user: "alex_dev", joined: "2 days ago", amount: "₹39.80", status: "completed" },
-                    { user: "sarah_k", joined: "5 days ago", amount: "₹19.80", status: "completed" },
-                    { user: "mike_codes", joined: "1 week ago", amount: "₹0.00", status: "pending" },
-                  ].map((ref, i) => (
+                  {recentReferrals.length > 0 ? recentReferrals.map((ref, i) => (
                     <tr key={i} className="hover:bg-white/2 transition-colors">
-                       <td className="px-6 py-4 text-sm font-medium">{ref.user}</td>
-                       <td className="px-6 py-4 text-sm text-white/40">{ref.joined}</td>
-                       <td className="px-6 py-4 font-mono text-sm text-emerald-500">{ref.amount}</td>
+                       <td className="px-6 py-4 text-sm font-medium">{(ref.referred as any)?.username || 'Unknown'}</td>
+                       <td className="px-6 py-4 text-sm text-white/40">{new Date(ref.created_at).toLocaleDateString()}</td>
+                       <td className={`px-6 py-4 font-mono text-sm ${ref.status === 'completed' ? 'text-emerald-500' : 'text-amber-500'}`}>
+                        ₹{Number(ref.reward_amount).toFixed(2)}
+                       </td>
                     </tr>
-                  ))}
+                  )) : (
+                    <tr>
+                      <td colSpan={3} className="px-6 py-8 text-center text-white/20 italic text-sm">
+                        No referrals yet. Start sharing your link!
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -107,7 +163,7 @@ export default function ReferralsPage() {
           <GlassCard className="p-6 space-y-6" hover={false} glow>
             <div className="p-4 rounded-xl bg-electric/10 border border-electric/20">
                <div className="text-xs text-electric font-bold uppercase tracking-widest mb-1">Available for Withdrawal</div>
-               <div className="text-3xl font-bold font-mono">₹{stats.pendingBalance.toFixed(2)}</div>
+               <div className="text-3xl font-bold font-mono">₹{stats.walletBalance.toFixed(2)}</div>
             </div>
 
             <form onSubmit={handleWithdraw} className="space-y-4">
@@ -133,6 +189,13 @@ export default function ReferralsPage() {
                    className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-electric/50"
                  />
                </div>
+               {error && (
+                 <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-bold uppercase flex items-center gap-2">
+                   <AlertCircle className="w-3.5 h-3.5" />
+                   {error}
+                 </div>
+               )}
+
                <AnimatedButton type="submit" loading={loading} className="w-full">
                  Request Withdrawal
                </AnimatedButton>
