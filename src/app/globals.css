@@ -104,6 +104,10 @@ h1, h2, h3, h4, h5, h6 {
     scrollbar-width: none;
   }
 
+  .focus-ring {
+    @apply focus-visible:ring-2 focus-visible:ring-electric focus-visible:ring-offset-2 focus-visible:ring-offset-void transition-shadow;
+  }
+
   .safe-bottom {
     padding-bottom: env(safe-area-inset-bottom);
   }
