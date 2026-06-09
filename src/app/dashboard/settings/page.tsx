@@ -15,14 +15,23 @@ import {
   MessageCircle,
   Mail,
   FileText,
-  ExternalLink
+  ExternalLink,
+  Wallet,
+  ArrowUpRight,
+  TrendingUp,
+  Clock,
+  AlertCircle
 } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { AnimatedButton } from "@/components/ui/animated-button";
 import { cn } from "@/lib/utils";
+import { useEffect } from "react";
+import { submitWithdrawalRequest } from "@/app/actions/credits";
+import { getReferralStats } from "@/app/actions/referrals";
 
 const tabs = [
   { id: "account", label: "Account", icon: User },
+  { id: "wallet", label: "My Wallet", icon: Wallet },
   { id: "security", label: "Security", icon: Lock },
   { id: "help", label: "Help & Support", icon: HelpCircle },
   { id: "notifications", label: "Notifications", icon: Bell },
@@ -38,6 +47,50 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
+  // Wallet State
+  const [walletStats, setWalletStats] = useState({
+    totalEarnings: 0,
+    walletBalance: 0
+  });
+  const [withdrawAmount, setWithdrawAmount] = useState("");
+  const [upiId, setUpiId] = useState("");
+  const [withdrawLoading, setWithdrawLoading] = useState(false);
+  const [withdrawError, setWithdrawError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (activeTab === "wallet") {
+      fetchWalletData();
+    }
+  }, [activeTab]);
+
+  const fetchWalletData = async () => {
+    const data = await getReferralStats();
+    if (data) {
+      setWalletStats({
+        totalEarnings: data.stats.totalEarnings,
+        walletBalance: data.stats.walletBalance
+      });
+    }
+  };
+
+  const handleWithdraw = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setWithdrawLoading(true);
+    setWithdrawError(null);
+
+    const res = await submitWithdrawalRequest(Number(withdrawAmount), upiId);
+
+    if (res.success) {
+      setWithdrawAmount("");
+      setUpiId("");
+      alert("Withdrawal request submitted successfully!");
+      fetchWalletData();
+    } else {
+      setWithdrawError(res.error || "Failed to submit request");
+    }
+    setWithdrawLoading(false);
+  };
+
   return (
     <div className="max-w-5xl mx-auto space-y-8 pb-20">
       <div className="flex flex-col md:flex-row gap-8">
@@ -48,7 +101,7 @@ export default function SettingsPage() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium text-sm",
+                    "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold text-xs uppercase tracking-widest small-caps",
                 activeTab === tab.id
                   ? "bg-primary/10 text-primary border border-primary/20"
                   : "text-text-secondary hover:text-white hover:bg-white/5"
@@ -65,13 +118,13 @@ export default function SettingsPage() {
           {activeTab === "account" && (
             <GlassCard className="p-8 space-y-8" hover={false}>
                <div className="space-y-1">
-                  <h2 className="text-2xl font-bold font-heading">Account Settings</h2>
+                  <h2 className="text-2xl font-bold font-heading small-caps">Account Settings</h2>
                   <p className="text-text-secondary text-sm">Update your public profile and account details.</p>
                </div>
 
                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                     <label className="text-xs font-bold text-text-secondary uppercase tracking-widest">Username</label>
+                     <label className="text-xs font-bold text-text-secondary uppercase tracking-widest small-caps">Username</label>
                      <input
                         type="text"
                         defaultValue={user?.username}
@@ -125,13 +178,88 @@ export default function SettingsPage() {
             </GlassCard>
           )}
 
+          {activeTab === "wallet" && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <GlassCard className="p-6" hover={false}>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-500">
+                      <TrendingUp className="w-5 h-5" />
+                    </div>
+                    <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Commission 30%</span>
+                  </div>
+                  <div className="text-2xl font-bold font-mono">₹{walletStats.totalEarnings.toFixed(2)}</div>
+                  <div className="text-[10px] text-text-secondary font-bold uppercase tracking-widest mt-1 small-caps">Total Earnings</div>
+                </GlassCard>
+                <GlassCard className="p-6" hover={false} glow>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                      <Wallet className="w-5 h-5" />
+                    </div>
+                    <span className="text-[10px] font-bold text-primary uppercase tracking-widest">Ready to Withdraw</span>
+                  </div>
+                  <div className="text-2xl font-bold font-mono">₹{walletStats.walletBalance.toFixed(2)}</div>
+                  <div className="text-[10px] text-text-secondary font-bold uppercase tracking-widest mt-1 small-caps">Wallet Balance</div>
+                </GlassCard>
+              </div>
+
+              <GlassCard className="p-8 space-y-6" hover={false}>
+                <div className="space-y-1">
+                  <h3 className="text-xl font-bold font-heading small-caps">Withdraw Funds</h3>
+                  <p className="text-text-secondary text-sm">Transfer your earnings to your bank account or UPI.</p>
+                </div>
+
+                <form onSubmit={handleWithdraw} className="space-y-4 max-w-md">
+                   <div className="space-y-2">
+                     <label className="text-xs font-bold text-text-secondary uppercase tracking-widest small-caps">Withdraw Amount</label>
+                     <input
+                       type="number"
+                       required
+                       value={withdrawAmount}
+                       onChange={(e) => setWithdrawAmount(e.target.value)}
+                       placeholder="₹100 minimum"
+                       className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary/50"
+                     />
+                   </div>
+                   <div className="space-y-2">
+                     <label className="text-xs font-bold text-text-secondary uppercase tracking-widest small-caps">UPI ID / Payment Details</label>
+                     <input
+                       type="text"
+                       required
+                       value={upiId}
+                       onChange={(e) => setUpiId(e.target.value)}
+                       placeholder="user@upi"
+                       className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary/50"
+                     />
+                   </div>
+
+                   {withdrawError && (
+                     <div className="p-3 rounded-lg bg-red-500/10 text-red-500 text-[10px] font-bold uppercase flex items-center gap-2">
+                       <AlertCircle className="w-3.5 h-3.5" />
+                       {withdrawError}
+                     </div>
+                   )}
+
+                   <AnimatedButton type="submit" loading={withdrawLoading} className="w-full sm:w-auto uppercase tracking-widest small-caps">
+                     Request Withdrawal
+                   </AnimatedButton>
+                </form>
+
+                <div className="flex items-center gap-2 text-[10px] text-text-secondary font-bold uppercase tracking-widest pt-4 border-t border-white/5">
+                   <Clock className="w-3.5 h-3.5" />
+                   Processed within 24-48 hours • Min ₹100
+                </div>
+              </GlassCard>
+            </div>
+          )}
+
           {activeTab === "security" && (
              <div className="space-y-6">
                 <GlassCard className="p-8 space-y-6" hover={false}>
-                   <h3 className="text-xl font-bold font-heading">Password</h3>
+                   <h3 className="text-xl font-bold font-heading small-caps">Password</h3>
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <label className="text-xs font-bold text-text-secondary uppercase tracking-widest">Current Password</label>
+                        <label className="text-xs font-bold text-text-secondary uppercase tracking-widest small-caps">Current Password</label>
                         <input
                           type="password"
                           value={currentPwd}

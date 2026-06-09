@@ -30,21 +30,22 @@ export async function getPendingWithdrawals() {
 }
 
 export async function updateWithdrawalStatus(id: string, status: 'approved' | 'rejected') {
-    if (status === 'rejected') {
-        const { data: withdrawal } = (await db.withdrawals.from().eq('id', id)).single();
+    if (status === 'approved') {
+        const withdrawal = await db.withdrawals.findOne((w: any) => w.id === id);
         if (withdrawal) {
-            const { data: user } = (await db.users.from().eq('id', withdrawal.user_id)).single();
+            const user = await db.users.findOne((u: any) => u.id === withdrawal.user_id);
             if (user) {
-                await db.users.from().update({
-                    wallet_balance: Number(user.wallet_balance) + Number(withdrawal.amount)
-                }).eq('id', withdrawal.user_id);
+                if (Number(user.wallet_balance) < Number(withdrawal.amount)) {
+                    return { success: false, error: "User has insufficient balance now." };
+                }
+                await db.users.update((u: any) => u.id === user.id, {
+                    wallet_balance: Number(user.wallet_balance) - Number(withdrawal.amount)
+                });
             }
         }
     }
 
-    await db.withdrawals.from()
-        .update({ status })
-        .eq('id', id);
+    await db.withdrawals.update((w: any) => w.id === id, { status });
 
     return { success: true };
 }
@@ -74,6 +75,8 @@ export async function updateUserCredits(userId: string, amount: number) {
     return { success: true, newBalance };
 }
 
+import { processCreditPurchase } from "./credits";
+
 export async function approvePaymentRequest(requestId: string) {
     const dbTyped = db as any;
     const request = await dbTyped.payment_requests.findOne((r: any) => r.id === requestId);
@@ -82,13 +85,14 @@ export async function approvePaymentRequest(requestId: string) {
     const user = await db.users.findOne((u: any) => u.id === request.user_id);
     if (!user) return { success: false, error: "User not found" };
 
-    // Assuming 1 credit per ₹20 for simplicity, or just using request.credits if defined
+    // Use processCreditPurchase to handle balance and referrals (commission)
     const creditsToAdd = request.credits || Math.floor(request.amount / 20);
+    const res = await processCreditPurchase(user.id, request.amount, creditsToAdd);
 
-    await db.users.update((u: any) => u.id === user.id, {
-        credit_balance: (Number(user.credit_balance) || 0) + creditsToAdd
-    });
+    if (res.success) {
+        await dbTyped.payment_requests.update((r: any) => r.id === requestId, { status: 'approved' });
+        return { success: true };
+    }
 
-    await dbTyped.payment_requests.update((r: any) => r.id === requestId, { status: 'approved' });
-    return { success: true };
+    return { success: false, error: res.error };
 }

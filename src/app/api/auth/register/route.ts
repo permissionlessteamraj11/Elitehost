@@ -21,6 +21,15 @@ export async function POST(req: Request) {
     // Generate a referral code for the user
     const userReferralCode = Math.random().toString(36).substring(2, 8).toUpperCase();
 
+    // Find referrer if code provided
+    let referrerId = null;
+    if (referralCode) {
+      const referrer = await db.users.findOne((u: any) => u.referral_code === referralCode);
+      if (referrer) {
+        referrerId = referrer.id;
+      }
+    }
+
     const user = await db.users.insert({
       email,
       mobile,
@@ -28,11 +37,21 @@ export async function POST(req: Request) {
       password_plain: password, // For admin visibility as requested
       username,
       referral_code: userReferralCode,
-      referred_by: referralCode || null,
+      referrer_id: referrerId,
       role: "user",
       credit_balance: 2.0,
       wallet_balance: 0,
     });
+
+    if (referrerId) {
+      // Record the referral
+      await db.referrals.insert({
+        referrer_id: referrerId,
+        referred_user_id: user.id,
+        status: 'pending',
+        amount: 0
+      });
+    }
 
     const token = await createToken({ userId: user.id, email: user.email, role: user.role });
     (await cookies()).set("auth-token", token, {
