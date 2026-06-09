@@ -47,6 +47,8 @@ export async function POST(request: Request) {
       framework: payload.framework || 'Universal',
       config: payload.config || {},
       env_vars: payload.env_vars || [],
+      build_command: payload.build_command || null,
+      deploy_command: payload.deploy_command || null,
       expires_at: expiresAt,
       is_free: isFree,
     });

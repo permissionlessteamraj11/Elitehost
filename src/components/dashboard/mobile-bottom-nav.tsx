@@ -41,15 +41,15 @@ export function MobileBottomNav() {
             }
 
             return (
-              <Link key={item.href} href={item.href} className="relative flex flex-col items-center justify-center px-4 py-1.5 transition-all active:scale-95">
+              <Link key={item.href} href={item.href} className="relative flex flex-col items-center justify-center px-2 py-1 transition-all active:scale-95">
                 <div className={cn(
-                  "p-2 rounded-xl transition-colors relative z-10",
+                  "p-1.5 rounded-lg transition-colors relative z-10",
                   isActive ? "text-primary" : "text-white/40 group-hover:text-white"
                 )}>
-                  <item.icon className="w-6 h-6" strokeWidth={isActive ? 2.5 : 2} />
+                  <item.icon className="w-5 h-5" strokeWidth={isActive ? 2.5 : 2} />
                 </div>
                 <span className={cn(
-                  "text-[10px] font-bold mt-0.5 tracking-tighter uppercase transition-colors relative z-10",
+                  "text-[8px] font-bold mt-0.5 tracking-tighter uppercase transition-colors relative z-10 small-caps",
                   isActive ? "text-primary" : "text-white/40"
                 )}>
                   {item.label}
