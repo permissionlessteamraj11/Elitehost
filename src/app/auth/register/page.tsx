@@ -4,11 +4,12 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Mail, Lock, ArrowRight, Zap, User, Gift } from "lucide-react";
+import { Mail, Lock, ArrowRight, Zap, User, Gift, Phone } from "lucide-react";
 import { getPlatformSetting } from "@/app/actions/platform";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
+  const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [referralCode, setReferralCode] = useState("");
@@ -32,7 +33,7 @@ export default function RegisterPage() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, username, referralCode }),
+        body: JSON.stringify({ email, mobile, password, username, referralCode }),
       });
 
       const data = await res.json();
@@ -91,6 +92,21 @@ export default function RegisterPage() {
                   onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ""))}
                   placeholder="johndoe"
                   className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#00E5FF]/50 transition-all font-mono"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-400 mb-1.5 ml-1">Mobile Number</label>
+              <div className="relative">
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                <input
+                  type="tel"
+                  required
+                  value={mobile}
+                  onChange={(e) => setMobile(e.target.value.replace(/\D/g, ""))}
+                  placeholder="9931989952"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#00E5FF]/50 transition-all"
                 />
               </div>
             </div>

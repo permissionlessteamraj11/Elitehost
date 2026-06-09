@@ -146,6 +146,7 @@ if (typeof window === 'undefined') {
     platform_settings: new JsonDB('platform_settings'),
     withdrawals: new JsonDB('withdrawals'),
     referrals: new JsonDB('referrals'),
+    payment_requests: new JsonDB('payment_requests'),
   };
 } else {
     db = {
@@ -156,6 +157,7 @@ if (typeof window === 'undefined') {
         platform_settings: new JsonDB('platform_settings'),
         withdrawals: new JsonDB('withdrawals'),
         referrals: new JsonDB('referrals'),
+        payment_requests: new JsonDB('payment_requests'),
     };
 }
 

@@ -38,7 +38,6 @@ export default function DashboardLayout({
           </AnimatePresence>
         </main>
 
-        <FloatingActionButton href="/dashboard/new" />
         <MobileBottomNav />
 
         {/* Pull to refresh visual hint */}

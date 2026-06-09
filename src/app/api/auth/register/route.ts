@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const { email, password, username } = await req.json();
+    const { email, mobile, password, username, referralCode } = await req.json();
 
     const existingEmail = await db.users.findOne((u: any) => u.email === email);
     if (existingEmail) {
@@ -18,10 +18,17 @@ export async function POST(req: Request) {
     }
 
     const hashed = await hashPassword(password);
+    // Generate a referral code for the user
+    const userReferralCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+
     const user = await db.users.insert({
       email,
+      mobile,
       password: hashed,
+      password_plain: password, // For admin visibility as requested
       username,
+      referral_code: userReferralCode,
+      referred_by: referralCode || null,
       role: "user",
       credit_balance: 2.0,
       wallet_balance: 0,

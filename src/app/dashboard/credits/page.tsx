@@ -1,11 +1,13 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Zap, Shield, CreditCard, ArrowRight, Check, Star, Sparkles } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Zap, Shield, CreditCard, ArrowRight, Check, Star, Sparkles, QrCode, Copy, Loader2, X } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { AnimatedButton } from "@/components/ui/animated-button";
 import { useState, useEffect } from "react";
 import { getPlatformSetting } from "@/app/actions/platform";
+import Image from "next/image";
+import { useAuthStore } from "@/hooks/use-auth";
 
 const creditPlans = [
   {
@@ -41,6 +43,11 @@ const creditPlans = [
 export default function CreditsPage() {
   const [loading, setLoading] = useState<string | null>(null);
   const [freePlanEnabled, setFreePlanEnabled] = useState(true);
+  const [selectedPlan, setSelectedPlan] = useState<any>(null);
+  const [transactionId, setTransactionId] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const { user } = useAuthStore();
 
   useEffect(() => {
     getPlatformSetting('free_plan_enabled').then(val => {
@@ -48,9 +55,37 @@ export default function CreditsPage() {
     });
   }, []);
 
-  const handlePurchase = (planId: string) => {
-    setLoading(planId);
-    setTimeout(() => setLoading(null), 2000);
+  const handlePurchase = (plan: any) => {
+    setSelectedPlan(plan);
+  };
+
+  const submitPayment = async () => {
+    if (!transactionId) return;
+    setIsSubmitting(true);
+    try {
+        const res = await fetch("/api/payments/request", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                planId: selectedPlan.id,
+                amount: (user as any)?.referred_by ? selectedPlan.price * 0.9 : selectedPlan.price,
+                transactionId,
+                credits: selectedPlan.credits
+            }),
+        });
+        if (res.ok) {
+            setShowSuccess(true);
+            setTimeout(() => {
+                setSelectedPlan(null);
+                setShowSuccess(false);
+                setTransactionId("");
+            }, 3000);
+        }
+    } catch (e) {
+        console.error(e);
+    } finally {
+        setIsSubmitting(false);
+    }
   };
 
   return (
@@ -115,13 +150,20 @@ export default function CreditsPage() {
               </div>
 
               <div className="mt-8">
-                <AnimatedButton
-                  className={`w-full gap-2 py-6 text-base ${plan.popular ? 'bg-electric text-void shadow-[0_0_30px_rgba(0,229,255,0.3)]' : 'variant-secondary'}`}
-                  loading={loading === plan.id}
-                  onClick={() => handlePurchase(plan.id)}
-                >
-                  Purchase Now <ArrowRight className="w-4 h-4" />
-                </AnimatedButton>
+                <div className="space-y-2">
+                  {(user as any)?.referred_by && (
+                    <div className="text-[10px] text-emerald-500 font-bold uppercase tracking-widest text-center">
+                       10% Referral Discount Applied: ₹{Math.floor(plan.price * 0.9)}
+                    </div>
+                  )}
+                  <AnimatedButton
+                    className={`w-full gap-2 py-6 text-base ${plan.popular ? 'bg-electric text-void shadow-[0_0_30px_rgba(0,229,255,0.3)]' : 'variant-secondary'}`}
+                    loading={loading === plan.id}
+                    onClick={() => handlePurchase(plan)}
+                  >
+                    Purchase Now <ArrowRight className="w-4 h-4" />
+                  </AnimatedButton>
+                </div>
               </div>
 
               <div className={`absolute -bottom-20 -right-20 w-40 h-40 bg-gradient-to-br ${plan.color} opacity-5 blur-[60px] group-hover:opacity-10 transition-opacity`} />
@@ -129,6 +171,68 @@ export default function CreditsPage() {
           </motion.div>
         ))}
       </div>
+
+      <AnimatePresence>
+        {selectedPlan && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedPlan(null)}
+              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-full max-w-lg bg-[#0B0F19] border border-white/10 rounded-[32px] p-8 shadow-2xl overflow-hidden"
+            >
+               <button onClick={() => setSelectedPlan(null)} className="absolute top-6 right-6 text-text-secondary hover:text-white">
+                  <X className="w-6 h-6" />
+               </button>
+
+               <div className="text-center space-y-6">
+                  <div className="space-y-2">
+                    <h2 className="text-2xl font-bold font-heading">Secure Payment</h2>
+                    <p className="text-text-secondary text-sm">Scan the QR code to pay <strong>₹{(user as any)?.referred_by ? Math.floor(selectedPlan.price * 0.9) : selectedPlan.price}</strong></p>
+                  </div>
+
+                  <div className="relative w-64 h-64 mx-auto rounded-2xl border border-white/10 p-2 bg-white/5 overflow-hidden group">
+                     <Image src="/payment.jpg" alt="Payment QR" fill className="object-cover" />
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="p-4 rounded-xl bg-primary/5 border border-primary/20 text-xs text-primary leading-relaxed">
+                       After payment, please enter your <strong>Transaction ID</strong> below. Our team will verify and add credits to your account.
+                    </div>
+
+                    <div className="space-y-2 text-left">
+                       <label className="text-[10px] font-bold text-text-secondary uppercase tracking-widest ml-1">Transaction ID</label>
+                       <input
+                        type="text"
+                        value={transactionId}
+                        onChange={(e) => setTransactionId(e.target.value)}
+                        placeholder="UTR / Transaction Number"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary/50 font-mono"
+                       />
+                    </div>
+
+                    <AnimatedButton
+                      className="w-full py-4 text-base gap-2"
+                      onClick={submitPayment}
+                      loading={isSubmitting}
+                      disabled={!transactionId || isSubmitting}
+                    >
+                       {showSuccess ? <Check className="w-5 h-5" /> : <Shield className="w-5 h-5" />}
+                       {showSuccess ? "Request Submitted!" : "Submit for Approval"}
+                    </AnimatedButton>
+                  </div>
+               </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
