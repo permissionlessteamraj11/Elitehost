@@ -5,6 +5,8 @@ import { jwtVerify } from 'jose'
 const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET || 'elite-hosting-secret-key-2025')
 
 export async function middleware(request: NextRequest) {
+  const ip = request.headers.get('x-forwarded-for') ?? '127.0.0.1'
+
   const response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -13,7 +15,6 @@ export async function middleware(request: NextRequest) {
 
   // Rate limiting for API routes
   if (request.nextUrl.pathname.startsWith('/api')) {
-    const ip = request.headers.get('x-forwarded-for') ?? '127.0.0.1'
     if (process.env.UPSTASH_REDIS_REST_URL) {
       const { success } = await ratelimit.limit(ip)
       if (!success) {
@@ -28,10 +29,15 @@ export async function middleware(request: NextRequest) {
   if (token) {
     try {
       const { payload } = await jwtVerify(token, SECRET_KEY)
-      user = payload
+      user = payload as any
     } catch (err) {
       // Invalid token
     }
+  }
+
+  // Security Check: Ban System
+  if (user && (user as any).is_banned) {
+    return new NextResponse('Your account has been suspended.', { status: 403 })
   }
 
   // Protect dashboard and admin routes

@@ -17,7 +17,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
-    const token = await createToken({ userId: user.id, email: user.email, role: user.role });
+    const token = await createToken({ userId: user.id, email: user.email, role: user.role, is_banned: !!user.is_banned });
     (await cookies()).set("auth-token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",

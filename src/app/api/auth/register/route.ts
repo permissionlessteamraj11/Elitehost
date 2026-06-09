@@ -53,7 +53,7 @@ export async function POST(req: Request) {
       });
     }
 
-    const token = await createToken({ userId: user.id, email: user.email, role: user.role });
+    const token = await createToken({ userId: user.id, email: user.email, role: user.role, is_banned: false });
     (await cookies()).set("auth-token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
