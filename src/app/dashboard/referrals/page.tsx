@@ -5,8 +5,8 @@ import { Users, Gift, TrendingUp, Wallet, ArrowRight, Copy, Check, Clock, Extern
 import { GlassCard } from "@/components/ui/glass-card";
 import { AnimatedButton } from "@/components/ui/animated-button";
 import { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabase";
 import { submitWithdrawalRequest } from "@/app/actions/credits";
+import { getReferralStats } from "@/app/actions/referrals";
 
 export default function ReferralsPage() {
   const [copied, setCopied] = useState(false);
@@ -29,38 +29,23 @@ export default function ReferralsPage() {
   }, []);
 
   const fetchData = async () => {
-    const { data: { user: authUser } } = await supabase.auth.getUser();
-    if (!authUser) return;
+    try {
+        const res = await fetch('/api/auth/me');
+        if (!res.ok) return;
+        const data = await res.json();
+        const authUser = data.user;
+        if (!authUser) return;
 
-    const { data: userData } = await supabase
-      .from('users')
-      .select('*')
-      .eq('auth_id', authUser.id)
-      .single();
+        setUser(authUser);
+        setReferralCode(authUser.username.toUpperCase());
 
-    if (userData) {
-      setUser(userData);
-      setReferralCode(userData.username.toUpperCase());
-      setStats(prev => ({
-        ...prev,
-        walletBalance: Number(userData.wallet_balance || 0)
-      }));
-
-      // Fetch referrals
-      const { data: referrals, count } = await supabase
-        .from('referrals')
-        .select('*, referred:referred_id(username, created_at)', { count: 'exact' })
-        .eq('referrer_id', userData.id);
-
-      if (referrals) {
-        setRecentReferrals(referrals);
-        setStats(prev => ({
-          ...prev,
-          totalRefers: count || 0,
-          activeRefers: referrals.filter(r => r.status === 'completed').length,
-          totalEarnings: referrals.reduce((acc, r) => acc + (r.status === 'completed' ? Number(r.reward_amount) : 0), 0)
-        }));
-      }
+        const referralData = await getReferralStats();
+        if (referralData) {
+            setRecentReferrals(referralData.referrals);
+            setStats(referralData.stats);
+        }
+    } catch (e) {
+        console.error("Fetch data error", e);
     }
   };
 
@@ -75,7 +60,7 @@ export default function ReferralsPage() {
     setLoading(true);
     setError(null);
 
-    const res = await submitWithdrawalRequest(user.id, Number(withdrawAmount), upiId);
+    const res = await submitWithdrawalRequest(Number(withdrawAmount), upiId);
 
     if (res.success) {
         setWithdrawAmount("");
@@ -93,7 +78,7 @@ export default function ReferralsPage() {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <h1 className="text-4xl font-bold tracking-tight">Referral Program</h1>
-          <p className="text-white/40 mt-1">Invite friends and earn 20% commission on every purchase.</p>
+          <p className="text-white/40 mt-1">Invite friends and earn 30% commission on every purchase.</p>
         </div>
         <div className="flex items-center gap-3 p-1 bg-white/5 border border-white/10 rounded-2xl">
            <div className="px-4 py-2 text-sm font-mono text-electric">{referralCode}</div>
@@ -139,10 +124,10 @@ export default function ReferralsPage() {
                 <tbody className="divide-y divide-white/5">
                   {recentReferrals.length > 0 ? recentReferrals.map((ref, i) => (
                     <tr key={i} className="hover:bg-white/2 transition-colors">
-                       <td className="px-6 py-4 text-sm font-medium">{(ref.referred as any)?.username || 'Unknown'}</td>
+                       <td className="px-6 py-4 text-sm font-medium">{ref.referred?.username || 'Unknown'}</td>
                        <td className="px-6 py-4 text-sm text-white/40">{new Date(ref.created_at).toLocaleDateString()}</td>
                        <td className={`px-6 py-4 font-mono text-sm ${ref.status === 'completed' ? 'text-emerald-500' : 'text-amber-500'}`}>
-                        ₹{Number(ref.reward_amount).toFixed(2)}
+                        ₹{Number(ref.amount || 0).toFixed(2)}
                        </td>
                     </tr>
                   )) : (

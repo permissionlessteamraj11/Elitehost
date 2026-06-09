@@ -1,77 +1,41 @@
 "use client";
 
 import { useState } from "react";
-import { supabase } from "@/lib/supabase";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Mail, Lock, ArrowRight, Zap, Hash } from "lucide-react";
+import { Mail, Lock, ArrowRight, Zap } from "lucide-react";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [loginType, setLoginType] = useState<"password" | "otp">("password");
-  const [otpSent, setOtpSent] = useState(false);
   const router = useRouter();
 
-  const handlePasswordLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (error) {
-      setError(error.message);
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "Login failed");
+      } else {
+        router.push("/dashboard");
+        router.refresh();
+      }
+    } catch (err) {
+      setError("An error occurred. Please try again.");
+    } finally {
       setLoading(false);
-    } else {
-      router.push("/dashboard");
-    }
-  };
-
-  const handleSendOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        shouldCreateUser: false,
-      },
-    });
-
-    if (error) {
-      setError(error.message);
-      setLoading(false);
-    } else {
-      setOtpSent(true);
-      setLoading(false);
-    }
-  };
-
-  const handleVerifyOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    const { error } = await supabase.auth.verifyOtp({
-      email,
-      token: otp,
-      type: "email",
-    });
-
-    if (error) {
-      setError(error.message);
-      setLoading(false);
-    } else {
-      router.push("/dashboard");
     }
   };
 
@@ -98,30 +62,7 @@ export default function LoginPage() {
         </div>
 
         <div className="p-8 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl">
-          <div className="flex p-1 mb-6 bg-white/5 rounded-xl border border-white/10">
-            <button
-              onClick={() => { setLoginType("password"); setError(null); }}
-              className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
-                loginType === "password" ? "bg-[#00E5FF] text-black" : "text-gray-400 hover:text-white"
-              }`}
-            >
-              Password
-            </button>
-            <button
-              onClick={() => { setLoginType("otp"); setError(null); }}
-              className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
-                loginType === "otp" ? "bg-[#7C3AED] text-white" : "text-gray-400 hover:text-white"
-              }`}
-            >
-              Email OTP
-            </button>
-          </div>
-
-          <form onSubmit={
-            loginType === "password"
-              ? handlePasswordLogin
-              : (otpSent ? handleVerifyOtp : handleSendOtp)
-          } className="space-y-4">
+          <form onSubmit={handleLogin} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-400 mb-1.5 ml-1">Email Address</label>
               <div className="relative">
@@ -133,53 +74,31 @@ export default function LoginPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@example.com"
                   className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#00E5FF]/50 transition-all"
-                  disabled={loading || (loginType === "otp" && otpSent)}
+                  disabled={loading}
                 />
               </div>
             </div>
 
-            {loginType === "password" && (
-              <div>
-                <div className="flex items-center justify-between mb-1.5 ml-1">
-                  <label className="text-sm font-medium text-gray-400">Password</label>
-                  <Link href="/auth/forgot-password" title="Coming soon" className="text-xs text-[#00E5FF] hover:underline">
-                    Forgot?
-                  </Link>
-                </div>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                  <input
-                    type="password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#00E5FF]/50 transition-all"
-                    disabled={loading}
-                  />
-                </div>
+            <div>
+              <div className="flex items-center justify-between mb-1.5 ml-1">
+                <label className="text-sm font-medium text-gray-400">Password</label>
+                <Link href="/auth/forgot-password" title="Coming soon" className="text-xs text-[#00E5FF] hover:underline">
+                  Forgot?
+                </Link>
               </div>
-            )}
-
-            {loginType === "otp" && otpSent && (
-              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}>
-                <label className="block text-sm font-medium text-gray-400 mb-1.5 ml-1">Enter OTP</label>
-                <div className="relative">
-                  <Hash className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                  <input
-                    type="text"
-                    required
-                    maxLength={6}
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
-                    placeholder="123456"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/50 transition-all tracking-[0.5em] font-mono"
-                    disabled={loading}
-                  />
-                </div>
-                <p className="mt-2 text-xs text-gray-500">Check your inbox for the 6-digit code.</p>
-              </motion.div>
-            )}
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                <input
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#00E5FF]/50 transition-all"
+                  disabled={loading}
+                />
+              </div>
+            </div>
 
             {error && (
               <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-500 text-sm">
@@ -190,17 +109,15 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${
+              className={`w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all bg-[#00E5FF] text-black shadow-[0_0_20px_rgba(0,229,255,0.3)] ${
                 loading ? "opacity-50 cursor-not-allowed" : "hover:scale-[1.02] active:scale-[0.98]"
-              } ${loginType === "password" ? "bg-[#00E5FF] text-black shadow-[0_0_20px_rgba(0,229,255,0.3)]" : "bg-[#7C3AED] text-white shadow-[0_0_20px_rgba(124,58,237,0.3)]"}`}
+              }`}
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
               ) : (
                 <>
-                  {loginType === "password"
-                    ? "Sign In"
-                    : (otpSent ? "Verify & Sign In" : "Send OTP")}
+                  Sign In
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}

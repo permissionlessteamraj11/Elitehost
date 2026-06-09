@@ -1,56 +1,64 @@
 "use server";
 
-import { supabase } from "@/lib/supabase";
+import { db } from "@/lib/db/json-db";
 
 export async function getPlatformSetting(key: string) {
-  const { data, error } = await supabase
-    .from('platform_settings')
-    .select('value')
-    .eq('key', key)
-    .single();
+  const { data } = await db.platform_settings.from()
+    .eq('key', key);
 
-  if (error) return null;
-  return data.value;
+  const setting = data[0];
+  if (!setting) return null;
+  return setting.value;
 }
 
 export async function updatePlatformSetting(key: string, value: any) {
-  const { error } = await supabase
-    .from('platform_settings')
+  await db.platform_settings.from()
     .upsert({ key, value, updated_at: new Date().toISOString() });
 
-  if (error) return { success: false, error: error.message };
   return { success: true };
 }
 
 export async function getPendingWithdrawals() {
-    const { data, error } = await supabase
-        .from('withdrawals')
-        .select('*, users(username, email)')
+    const { data } = await db.withdrawals.from()
         .eq('status', 'pending');
 
-    if (error) return [];
-    return data;
+    const users = await db.users.read();
+    return data.map((w: any) => ({
+        ...w,
+        users: users.find((u: any) => u.id === w.user_id)
+    }));
 }
 
 export async function updateWithdrawalStatus(id: string, status: 'approved' | 'rejected') {
-    // If rejected, refund the wallet
     if (status === 'rejected') {
-        const { data: withdrawal } = await supabase.from('withdrawals').select('*').eq('id', id).single();
+        const { data: withdrawal } = (await db.withdrawals.from().eq('id', id)).single();
         if (withdrawal) {
-            const { data: user } = await supabase.from('users').select('wallet_balance').eq('id', withdrawal.user_id).single();
+            const { data: user } = (await db.users.from().eq('id', withdrawal.user_id)).single();
             if (user) {
-                await supabase.from('users').update({
+                await db.users.from().update({
                     wallet_balance: Number(user.wallet_balance) + Number(withdrawal.amount)
                 }).eq('id', withdrawal.user_id);
             }
         }
     }
 
-    const { error } = await supabase
-        .from('withdrawals')
+    await db.withdrawals.from()
         .update({ status })
         .eq('id', id);
 
-    if (error) return { success: false, error: error.message };
     return { success: true };
+}
+
+export async function getAdminData() {
+    const users = await db.users.read();
+    const projects = await db.projects.read();
+    const deployments = await db.deployments.read();
+
+    return {
+        users,
+        projects,
+        userCount: users.length,
+        projectCount: projects.length,
+        deployCount: deployments.filter((d: any) => d.status === 'ready').length,
+    };
 }

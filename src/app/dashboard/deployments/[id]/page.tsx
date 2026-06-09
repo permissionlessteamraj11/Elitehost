@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { TerminalLogs } from "@/components/dashboard/deployments/terminal-logs";
-import { supabase } from "@/lib/supabase";
 import { use } from "react";
 
 export default function DeploymentDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -16,28 +15,26 @@ export default function DeploymentDetailPage({ params }: { params: Promise<{ id:
   const [status, setStatus] = useState("building");
 
   useEffect(() => {
-    const channel = supabase
-      .channel(`deployment:${id}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "deployments",
-          filter: `id=eq.${id}`,
-        },
-        (payload) => {
-          setStatus(payload.new.status);
-          if (payload.new.logs) {
-            setLogs(prev => [...prev, payload.new.logs]);
-          }
+    // Poll for logs every 3 seconds
+    const interval = setInterval(async () => {
+        try {
+            const res = await fetch(`/api/deployments/${id}/logs`);
+            if (res.ok) {
+                const data = await res.json();
+                if (data.logs) {
+                    // Split logs by newline and update
+                    setLogs(data.logs.split('\n'));
+                }
+                if (data.status) {
+                    setStatus(data.status);
+                }
+            }
+        } catch (e) {
+            console.error("Polling error", e);
         }
-      )
-      .subscribe();
+    }, 3000);
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    return () => clearInterval(interval);
   }, [id]);
 
   return (

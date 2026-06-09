@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabase";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -16,7 +15,6 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [freePlanEnabled, setFreePlanEnabled] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -30,52 +28,26 @@ export default function RegisterPage() {
     setLoading(true);
     setError(null);
 
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          username,
-          referral_code: referralCode,
-        },
-      },
-    });
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, username, referralCode }),
+      });
 
-    if (error) {
-      setError(error.message);
-      setLoading(false);
-    } else {
-      setSuccess(true);
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "Registration failed");
+      } else {
+        router.push("/dashboard");
+        router.refresh();
+      }
+    } catch (err) {
+      setError("An error occurred. Please try again.");
+    } finally {
       setLoading(false);
     }
   };
-
-  if (success) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#020108] px-4 text-center">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="max-w-md w-full p-8 rounded-2xl border border-[#00E5FF]/20 bg-[#00E5FF]/5 backdrop-blur-xl"
-        >
-          <div className="w-16 h-16 bg-[#00E5FF]/20 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Mail className="w-8 h-8 text-[#00E5FF]" />
-          </div>
-          <h2 className="text-2xl font-bold mb-4">Check your inbox!</h2>
-          <p className="text-gray-400 mb-8">
-            We've sent a verification link to <span className="text-white font-medium">{email}</span>.
-            Click the link to activate your account and claim your 2 free credits.
-          </p>
-          <Link
-            href="/auth/login"
-            className="block w-full py-3 bg-[#00E5FF] text-black font-bold rounded-xl hover:bg-[#00E5FF]/90 transition-all"
-          >
-            Go to Login
-          </Link>
-        </motion.div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#020108] px-4 py-12">
