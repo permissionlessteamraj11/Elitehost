@@ -1,14 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Users, Server, ShieldAlert, Activity, FileText, Search, ExternalLink, Lock, Eye, EyeOff, Loader2, Wallet, Check, X, Settings } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { Users, Server, ShieldAlert, Activity, FileText, Search, Lock, Eye, EyeOff, Loader2, Wallet, Check, X, Settings } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { AnimatedButton } from "@/components/ui/animated-button";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { validateAdminPassword } from "@/app/actions/admin-auth";
-import { getPlatformSetting, updatePlatformSetting, getPendingWithdrawals, updateWithdrawalStatus } from "@/app/actions/platform";
+import { getPlatformSetting, updatePlatformSetting, getPendingWithdrawals, updateWithdrawalStatus, getAdminData } from "@/app/actions/platform";
 
 export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -58,22 +57,19 @@ export default function AdminDashboard() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const { data: userData, count: userCount } = await supabase.from('users').select('*', { count: 'exact' });
-      const { data: projectData, count: projectCount } = await supabase.from('projects').select('*', { count: 'exact' });
-      const { count: deployCount } = await supabase.from('deployments').select('*', { count: 'exact', head: true });
-
+      const adminData = await getAdminData();
       const pendingWithdrawals = await getPendingWithdrawals();
       const freePlan = await getPlatformSetting('free_plan_enabled');
 
-      setUsers(userData || []);
-      setProjects(projectData || []);
+      setUsers(adminData.users);
+      setProjects(adminData.projects);
       setWithdrawals(pendingWithdrawals);
       setFreePlanEnabled(freePlan === true);
 
       setStats([
-        { label: "Total Users", value: userCount?.toString() || "0", icon: Users, color: "text-primary" },
-        { label: "Total Projects", value: projectCount?.toString() || "0", icon: Server, color: "text-emerald-500" },
-        { label: "Active Deployments", value: deployCount?.toString() || "0", icon: Activity, color: "text-accent" },
+        { label: "Total Users", value: adminData.userCount.toString(), icon: Users, color: "text-primary" },
+        { label: "Total Projects", value: adminData.projectCount.toString(), icon: Server, color: "text-emerald-500" },
+        { label: "Active Deployments", value: adminData.deployCount.toString(), icon: Activity, color: "text-accent" },
         { label: "Mumbai Node", value: "Online", icon: ShieldAlert, color: "text-emerald-500" },
       ]);
     } catch (error) {
@@ -225,7 +221,7 @@ export default function AdminDashboard() {
                        <div className="text-[10px] font-bold text-primary uppercase bg-primary/10 px-2 py-0.5 rounded-lg">Pending</div>
                     </div>
                     <div className="flex items-center justify-between">
-                       <div className="text-[10px] text-text-secondary">By: {w.users.username}</div>
+                       <div className="text-[10px] text-text-secondary">By: {w.users?.username || 'Unknown'}</div>
                        <div className="flex gap-2">
                           <button onClick={() => handleWithdrawal(w.id, 'approved')} className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-500 hover:bg-emerald-500/30">
                             <Check className="w-3.5 h-3.5" />
@@ -268,7 +264,7 @@ export default function AdminDashboard() {
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">
-                             {u.username[0].toUpperCase()}
+                             {u.username[0]?.toUpperCase() || 'U'}
                            </div>
                            <div>
                               <div className="font-bold text-sm">{u.username}</div>
@@ -281,11 +277,11 @@ export default function AdminDashboard() {
                           "px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border",
                           u.plan === 'pro' ? 'bg-primary/10 border-primary/20 text-primary' : 'bg-white/5 border-white/10 text-text-secondary'
                         )}>
-                          {u.plan}
+                          {u.plan || 'free'}
                         </span>
                       </td>
                       <td className="px-6 py-4 font-mono text-sm">
-                        {u.credit_balance.toFixed(2)}
+                        {(Number(u.credit_balance) || 0).toFixed(2)}
                       </td>
                     </tr>
                   )) : (

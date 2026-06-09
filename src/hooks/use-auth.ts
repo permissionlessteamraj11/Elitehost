@@ -1,12 +1,10 @@
 import { create } from 'zustand';
-import { supabase } from '@/lib/supabase';
-import { User } from '@supabase/supabase-js';
 
 interface AuthState {
-  user: User | null;
+  user: any | null;
   profile: any | null;
   loading: boolean;
-  setUser: (user: User | null) => void;
+  setUser: (user: any | null) => void;
   setProfile: (profile: any | null) => void;
   signOut: () => Promise<void>;
 }
@@ -18,7 +16,10 @@ export const useAuthStore = create<AuthState>((set) => ({
   setUser: (user) => set({ user }),
   setProfile: (profile) => set({ profile }),
   signOut: async () => {
-    await supabase.auth.signOut();
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } catch (e) {}
     set({ user: null, profile: null });
+    window.location.href = '/auth/login';
   },
 }));
