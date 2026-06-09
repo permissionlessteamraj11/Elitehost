@@ -35,6 +35,7 @@ const frameworks = [
 const models = [
   { id: "elite-v4", label: "Elite v4 (Fast)", description: "Optimized for UI/UX generation" },
   { id: "elite-ultra", label: "Elite Ultra", description: "Best for complex full-stack logic" },
+  { id: "architect-v1", label: "Architect Master", description: "Senior Architect + DevOps Persona" },
 ];
 
 export function AIStudio() {
@@ -97,13 +98,13 @@ export function AIStudio() {
           <div className="space-y-6">
             <div className="space-y-3">
               <label className="text-sm font-bold text-text-secondary uppercase tracking-widest flex items-center gap-2">
-                <Sparkles className="w-3.5 h-3.5 text-primary" /> Describe your app
+                <Sparkles className="w-3.5 h-3.5 text-primary" /> System Objective
               </label>
               <textarea
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
-                placeholder="e.g. Build a luxury portfolio for a software engineer with glassmorphism and framer motion..."
-                className="w-full h-32 bg-void/50 border border-white/5 rounded-2xl p-4 text-sm focus:outline-none focus:ring-1 focus:ring-primary/30 transition-all placeholder:text-white/10"
+                placeholder="Describe the complete project architecture and requirements..."
+                className="w-full h-40 bg-void/50 border border-white/5 rounded-2xl p-4 text-sm focus:outline-none focus:ring-1 focus:ring-primary/30 transition-all placeholder:text-white/10 font-mono"
               />
             </div>
 

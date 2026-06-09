@@ -70,9 +70,25 @@ export async function updateUserCredits(userId: string, amount: number) {
     const user = await db.users.findOne((u: any) => u.id === userId);
     if (!user) return { success: false, error: "User not found" };
 
-    const newBalance = (Number(user.credit_balance) || 0) + amount;
-    await db.users.update((u: any) => u.id === userId, { credit_balance: newBalance });
+    // Admin added credits are considered paid credits
+    const newBalance = (Number(user.paid_credits) || 0) + amount;
+    await db.users.update((u: any) => u.id === userId, { paid_credits: newBalance });
     return { success: true, newBalance };
+}
+
+export async function banUser(userId: string) {
+    await db.users.update((u: any) => u.id === userId, { is_banned: true });
+    return { success: true };
+}
+
+export async function blockIP(ip: string) {
+    await db.banned_ips.insert({ ip, created_at: new Date().toISOString() });
+    return { success: true };
+}
+
+export async function unbanUser(userId: string) {
+    await db.users.update((u: any) => u.id === userId, { is_banned: false });
+    return { success: true };
 }
 
 import { processCreditPurchase } from "./credits";

@@ -9,7 +9,7 @@ export async function processCreditPurchase(userId: string, amount: number, cred
   if (!user) return { success: false, error: "User not found" };
 
   await db.users.update((u: any) => u.id === userId, {
-    credit_balance: Number(user.credit_balance || 0) + credits
+    paid_credits: Number(user.paid_credits || 0) + credits
   });
 
   if (user.referrer_id) {

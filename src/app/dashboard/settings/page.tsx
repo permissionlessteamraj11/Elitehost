@@ -28,6 +28,7 @@ import { cn } from "@/lib/utils";
 import { useEffect } from "react";
 import { submitWithdrawalRequest } from "@/app/actions/credits";
 import { getReferralStats } from "@/app/actions/referrals";
+import { sendMessage, getMessages } from "@/app/actions/chat";
 
 const tabs = [
   { id: "account", label: "Account", icon: User },
@@ -57,11 +58,41 @@ export default function SettingsPage() {
   const [withdrawLoading, setWithdrawLoading] = useState(false);
   const [withdrawError, setWithdrawError] = useState<string | null>(null);
 
+  // Chat State
+  const [chatMessages, setChatMessages] = useState<any[]>([]);
+  const [newMessage, setNewMessage] = useState("");
+  const [chatLoading, setChatLoading] = useState(false);
+
   useEffect(() => {
     if (activeTab === "wallet") {
       fetchWalletData();
     }
+    if (activeTab === "help") {
+      fetchMessages();
+      const interval = setInterval(fetchMessages, 5000);
+      return () => clearInterval(interval);
+    }
   }, [activeTab]);
+
+  const fetchMessages = async () => {
+    const res = await getMessages();
+    if (res.success) {
+      setChatMessages(res.messages || []);
+    }
+  };
+
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newMessage.trim()) return;
+
+    setChatLoading(true);
+    const res = await sendMessage(newMessage);
+    if (res.success) {
+      setNewMessage("");
+      fetchMessages();
+    }
+    setChatLoading(false);
+  };
 
   const fetchWalletData = async () => {
     const data = await getReferralStats();
@@ -326,47 +357,93 @@ export default function SettingsPage() {
 
           {activeTab === "help" && (
             <div className="space-y-6">
-              <GlassCard className="p-8 space-y-8" hover={false}>
-                <div className="space-y-1">
-                  <h2 className="text-2xl font-bold font-heading">Help & Support</h2>
-                  <p className="text-text-secondary text-sm">Get assistance with your deployments or account.</p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-6 rounded-2xl bg-primary/5 border border-primary/20 space-y-3">
-                    <MessageCircle className="w-8 h-8 text-primary" />
-                    <h3 className="font-bold">Live Chat</h3>
-                    <p className="text-xs text-text-secondary">Typical response time: &lt; 2 hours</p>
-                    <AnimatedButton size="sm" className="w-full mt-2">Start Chat</AnimatedButton>
+              <GlassCard className="p-0 overflow-hidden flex flex-col h-[600px]" hover={false}>
+                <div className="p-6 border-b border-white/5 bg-white/2 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                      <MessageCircle className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <h2 className="text-lg font-bold font-heading small-caps">Elite Support Chat</h2>
+                      <p className="text-[10px] text-emerald-500 font-bold uppercase tracking-widest">Online • Typical reply &lt; 2h</p>
+                    </div>
                   </div>
-                  <div className="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-3">
-                    <Mail className="w-8 h-8 text-text-secondary" />
-                    <h3 className="font-bold">Email Support</h3>
-                    <p className="text-xs text-text-secondary">zynochat.in@zynochat.in</p>
-                      <p className="text-[10px] text-primary">Call: 9931989952</p>
-                    <AnimatedButton variant="outline" size="sm" className="w-full mt-2" onClick={() => window.location.href='mailto:zynochat.in@zynochat.in'}>Send Email</AnimatedButton>
+                  <div className="flex items-center gap-2">
+                     <div className="text-[10px] text-text-secondary font-bold uppercase tracking-widest hidden sm:block">ID: #{user?.id?.substring(0,8)}</div>
                   </div>
                 </div>
 
-                <div className="space-y-4 pt-4">
-                  <h3 className="font-bold text-sm uppercase tracking-widest text-text-secondary">Quick Links</h3>
-                  <div className="space-y-2">
-                    {[
-                      { label: "Documentation", icon: FileText, href: "/docs" },
-                      { label: "System Status", icon: ExternalLink, href: "https://status.elitehosting.in" },
-                      { label: "Community Discord", icon: MessageCircle, href: "https://discord.gg/elitehosting" }
-                    ].map((item, i) => (
-                      <a key={i} href={item.href} target="_blank" rel="noreferrer" className="flex items-center justify-between p-4 rounded-xl border border-white/5 hover:bg-white/5 transition-colors">
-                        <div className="flex items-center gap-3">
-                          <item.icon className="w-4 h-4 text-primary" />
-                          <span className="text-sm">{item.label}</span>
+                <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-void/30">
+                  {chatMessages.length === 0 ? (
+                    <div className="h-full flex flex-col items-center justify-center text-center space-y-4 opacity-50">
+                      <div className="p-4 rounded-full bg-white/5">
+                        <MessageCircle className="w-8 h-8" />
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm font-bold">No messages yet</p>
+                        <p className="text-xs">Send a message to start a conversation with our support team.</p>
+                      </div>
+                    </div>
+                  ) : (
+                    chatMessages.map((msg, i) => (
+                      <div key={i} className={cn(
+                        "flex flex-col max-w-[80%]",
+                        msg.sender === 'user' ? "ml-auto items-end" : "mr-auto items-start"
+                      )}>
+                        <div className={cn(
+                          "px-4 py-2.5 rounded-2xl text-sm",
+                          msg.sender === 'user'
+                            ? "bg-primary text-void font-medium rounded-tr-none"
+                            : "bg-white/10 text-white rounded-tl-none border border-white/5"
+                        )}>
+                          {msg.content}
                         </div>
-                        <ExternalLink className="w-3 h-3 text-text-secondary" />
-                      </a>
-                    ))}
-                  </div>
+                        <span className="text-[9px] text-text-secondary mt-1 px-1">
+                          {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      </div>
+                    ))
+                  )}
                 </div>
+
+                <form onSubmit={handleSendMessage} className="p-4 bg-white/2 border-t border-white/5 flex gap-2">
+                  <input
+                    type="text"
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    placeholder="Type your message..."
+                    className="flex-1 bg-void/50 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-primary/50"
+                  />
+                  <AnimatedButton type="submit" size="sm" loading={chatLoading} disabled={!newMessage.trim()}>
+                    Send
+                  </AnimatedButton>
+                </form>
               </GlassCard>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <GlassCard className="p-6 space-y-4" hover={false}>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-white/5 text-text-secondary">
+                      <Mail className="w-5 h-5" />
+                    </div>
+                    <h3 className="font-bold text-sm uppercase tracking-widest small-caps">Email Support</h3>
+                  </div>
+                  <p className="text-xs text-text-secondary">Direct email for formal inquiries and business matters.</p>
+                  <div className="text-xs font-bold text-primary">zynochat.in@zynochat.in</div>
+                  <AnimatedButton variant="outline" size="sm" className="w-full" onClick={() => window.location.href='mailto:zynochat.in@zynochat.in'}>Compose Email</AnimatedButton>
+                </GlassCard>
+
+                <GlassCard className="p-6 space-y-4" hover={false}>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-white/5 text-text-secondary">
+                      <FileText className="w-5 h-5" />
+                    </div>
+                    <h3 className="font-bold text-sm uppercase tracking-widest small-caps">Documentation</h3>
+                  </div>
+                  <p className="text-xs text-text-secondary">Browse our extensive guides and API references.</p>
+                  <AnimatedButton variant="outline" size="sm" className="w-full" onClick={() => window.open('/docs')}>Read Docs</AnimatedButton>
+                </GlassCard>
+              </div>
 
               <GlassCard className="p-8" hover={false}>
                  <h3 className="font-bold mb-4">Frequently Asked Questions</h3>

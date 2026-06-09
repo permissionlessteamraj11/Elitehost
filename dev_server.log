@@ -7,27 +7,67 @@
    - Network:      http://192.168.0.2:3000
 
  ✓ Starting...
- ✓ Ready in 1849ms
- ○ Compiling /auth/register ...
- ✓ Compiled /auth/register in 18.9s (1502 modules)
- GET /auth/register 200 in 19875ms
- POST /auth/register 200 in 141ms
+ ✓ Ready in 2.1s
+ ○ Compiling /auth/login ...
+ ✓ Compiled /auth/login in 12.1s (1464 modules)
+ GET /auth/login 200 in 13133ms
  ○ Compiling /src/middleware ...
-<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (155kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
- ✓ Compiled /auth/login in 2.6s (1660 modules)
+ ✓ Compiled /src/middleware in 1152ms (158 modules)
 [Upstash Redis] The 'url' property is missing or undefined in your Redis config.
 [Upstash Redis] The 'token' property is missing or undefined in your Redis config.
- GET /auth/register 200 in 518ms
- GET /auth/login 200 in 2835ms
  ○ Compiling /api/auth/me ...
- ✓ Compiled /api/auth/me in 1386ms (1569 modules)
- GET /api/auth/me 401 in 12ms
- ○ Compiling /auth/forgot-password ...
- ✓ Compiled /auth/forgot-password in 596ms (1580 modules)
- GET /auth/forgot-password 200 in 844ms
- GET /api/auth/me 401 in 65ms
- GET /auth/login 200 in 80ms
- GET /api/auth/me 401 in 24ms
- GET /auth/login 200 in 45ms
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (155kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+ ✓ Compiled /api/auth/me in 2.2s (1538 modules)
+ GET /api/auth/me 401 in 2672ms
+ GET /auth/login 200 in 775ms
+ GET /auth/login 200 in 2133ms
  GET /api/auth/me 401 in 23ms
- ✓ Compiled in 582ms (728 modules)
+ GET /auth/login 200 in 51ms
+ GET /api/auth/me 401 in 44ms
+ ○ Compiling /auth/register ...
+ ✓ Compiled /auth/register in 1638ms (1642 modules)
+ GET /auth/register 200 in 1947ms
+ GET /api/auth/me 401 in 91ms
+ POST /auth/register 200 in 181ms
+ GET /auth/register 200 in 122ms
+ POST /auth/register 200 in 99ms
+ GET /api/auth/me 401 in 43ms
+ ○ Compiling /api/auth/register ...
+ ✓ Compiled /api/auth/register in 1315ms (1638 modules)
+ POST /api/auth/register 200 in 1674ms
+ ✓ Compiled in 623ms (724 modules)
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 7.8s (2696 modules)
+ GET /dashboard 200 in 8158ms
+ GET /dashboard 200 in 45ms
+ GET /dashboard 200 in 42ms
+ GET /dashboard 200 in 52ms
+ ○ Compiling /dashboard/settings ...
+ ✓ Compiled /dashboard/settings in 1511ms (2712 modules)
+ GET /dashboard/settings 200 in 1853ms
+ GET /api/auth/me 200 in 62ms
+ POST /dashboard/settings 200 in 88ms
+ ✓ Compiled in 381ms (1255 modules)
+ POST /dashboard/settings 200 in 217ms
+ ✓ Compiled in 544ms (1255 modules)
+ GET /dashboard/settings 200 in 414ms
+ POST /dashboard/settings 200 in 36ms
+ GET /dashboard/settings 200 in 33ms
+ ○ Compiling /admin ...
+ ✓ Compiled /admin in 1771ms (2745 modules)
+ ⨯ [Error: aborted]
+ GET /admin 200 in 2334ms
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 3.9s (2987 modules)
+ GET /api/auth/me 200 in 102ms
+ POST /admin 200 in 2021ms
+ POST /admin 200 in 657ms
+ POST /admin 200 in 56ms
+ POST /admin 200 in 24ms
+ POST /admin 200 in 21ms
+ ✓ Compiled in 3.6s (1466 modules)
+ ✓ Compiled in 328ms (1466 modules)
+ ✓ Compiled /auth/login in 441ms (1027 modules)
+ GET /auth/login 200 in 800ms
+ GET /api/auth/me 401 in 50ms
+[?25h

@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Users, Server, ShieldAlert, Activity, FileText, Search, Lock, Eye, EyeOff, Loader2, Wallet, Check, X, Settings, Plus, Minus, CreditCard } from "lucide-react";
+import { Users, Server, ShieldAlert, Activity, FileText, Search, Lock, Eye, EyeOff, Loader2, Wallet, Check, X, Settings, Plus, Minus, CreditCard, MessageCircle } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { AnimatedButton } from "@/components/ui/animated-button";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { validateAdminPassword } from "@/app/actions/admin-auth";
-import { getPlatformSetting, updatePlatformSetting, getPendingWithdrawals, updateWithdrawalStatus, getAdminData, updateUserCredits, approvePaymentRequest } from "@/app/actions/platform";
+import { getPlatformSetting, updatePlatformSetting, getPendingWithdrawals, updateWithdrawalStatus, getAdminData, updateUserCredits, approvePaymentRequest, banUser, unbanUser, blockIP } from "@/app/actions/platform";
+import { getAdminChats, getConversationForAdmin, adminReply } from "@/app/actions/chat";
 
 export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -29,6 +30,13 @@ export default function AdminDashboard() {
   const [paymentRequests, setPaymentRequests] = useState<any[]>([]);
   const [freePlanEnabled, setFreePlanEnabled] = useState(true);
   const [loading, setLoading] = useState(true);
+
+  // Admin Chat State
+  const [chats, setChats] = useState<any[]>([]);
+  const [selectedChatUser, setSelectedChatUser] = useState<string | null>(null);
+  const [chatMessages, setChatMessages] = useState<any[]>([]);
+  const [replyText, setReplyText] = useState("");
+  const [sendingReply, setSendingReply] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,8 +60,41 @@ export default function AdminDashboard() {
   useEffect(() => {
     if (isAuthenticated) {
       fetchData();
+      fetchChats();
+      const interval = setInterval(fetchChats, 10000);
+      return () => clearInterval(interval);
     }
   }, [isAuthenticated]);
+
+  const fetchChats = async () => {
+    const res = await getAdminChats();
+    if (res.success) setChats(res.chats || []);
+  };
+
+  useEffect(() => {
+    if (selectedChatUser) {
+      fetchConversation(selectedChatUser);
+      const interval = setInterval(() => fetchConversation(selectedChatUser), 5000);
+      return () => clearInterval(interval);
+    }
+  }, [selectedChatUser]);
+
+  const fetchConversation = async (userId: string) => {
+    const res = await getConversationForAdmin(userId);
+    if (res.success) setChatMessages(res.messages || []);
+  };
+
+  const handleSendReply = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedChatUser || !replyText.trim()) return;
+    setSendingReply(true);
+    const res = await adminReply(selectedChatUser, replyText);
+    if (res.success) {
+      setReplyText("");
+      fetchConversation(selectedChatUser);
+    }
+    setSendingReply(false);
+  };
 
   const fetchData = async () => {
     setLoading(true);
@@ -97,7 +138,22 @@ export default function AdminDashboard() {
   const handleUpdateCredits = async (userId: string, amount: number) => {
     const res = await updateUserCredits(userId, amount);
     if (res.success) {
-      setUsers(prev => prev.map(u => u.id === userId ? { ...u, credit_balance: res.newBalance } : u));
+      setUsers(prev => prev.map(u => u.id === userId ? { ...u, paid_credits: res.newBalance } : u));
+    }
+  };
+
+  const handleBanUser = async (userId: string, isBanned: boolean) => {
+    const res = isBanned ? await unbanUser(userId) : await banUser(userId);
+    if (res.success) {
+      setUsers(prev => prev.map(u => u.id === userId ? { ...u, is_banned: !isBanned } : u));
+    }
+  };
+
+  const handleBlockIP = async (ip: string) => {
+    if (!ip) return;
+    const res = await blockIP(ip);
+    if (res.success) {
+      alert(`IP ${ip} has been blocked.`);
     }
   };
 
@@ -256,6 +312,99 @@ export default function AdminDashboard() {
           </GlassCard>
         </div>
 
+        {/* Admin Support Chat */}
+        <div className="lg:col-span-3 space-y-6">
+           <h2 className="text-2xl font-bold font-heading flex items-center gap-2">
+            <MessageCircle className="w-6 h-6 text-primary" /> Support Command Center
+          </h2>
+          <GlassCard className="p-0 overflow-hidden flex h-[600px]" hover={false}>
+            {/* Sidebar: Chat List */}
+            <div className="w-80 border-r border-white/5 bg-white/2 flex flex-col">
+              <div className="p-4 border-b border-white/5 font-bold text-xs uppercase tracking-widest text-text-secondary">
+                Active Conversations
+              </div>
+              <div className="flex-1 overflow-y-auto divide-y divide-white/5">
+                {chats.length > 0 ? chats.map((chat) => (
+                  <button
+                    key={chat.userId}
+                    onClick={() => setSelectedChatUser(chat.userId)}
+                    className={cn(
+                      "w-full p-4 text-left hover:bg-white/5 transition-colors group",
+                      selectedChatUser === chat.userId ? "bg-primary/5" : ""
+                    )}
+                  >
+                    <div className="flex justify-between items-start mb-1">
+                      <div className="font-bold text-sm truncate pr-2">{chat.username}</div>
+                      <div className="text-[9px] text-text-secondary whitespace-nowrap">{new Date(chat.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                    </div>
+                    <div className="text-xs text-text-secondary truncate">{chat.lastMessage}</div>
+                    {chat.unread > 0 && (
+                      <div className="mt-2 inline-flex items-center px-1.5 py-0.5 rounded-full bg-primary text-void text-[9px] font-bold">
+                        {chat.unread} New
+                      </div>
+                    )}
+                  </button>
+                )) : (
+                  <div className="p-8 text-center text-text-secondary italic text-xs">No active chats.</div>
+                )}
+              </div>
+            </div>
+
+            {/* Main: Active Conversation */}
+            <div className="flex-1 flex flex-col bg-void/20">
+              {selectedChatUser ? (
+                <>
+                  <div className="p-4 border-b border-white/5 bg-white/2 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">
+                        {chats.find(c => c.userId === selectedChatUser)?.username[0]}
+                      </div>
+                      <div className="font-bold text-sm">{chats.find(c => c.userId === selectedChatUser)?.username}</div>
+                    </div>
+                  </div>
+                  <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                    {chatMessages.map((msg, i) => (
+                      <div key={i} className={cn(
+                        "flex flex-col max-w-[80%]",
+                        msg.sender === 'admin' ? "ml-auto items-end" : "mr-auto items-start"
+                      )}>
+                        <div className={cn(
+                          "px-4 py-2 rounded-xl text-sm",
+                          msg.sender === 'admin'
+                            ? "bg-primary text-void font-medium"
+                            : "bg-white/10 text-white border border-white/5"
+                        )}>
+                          {msg.content}
+                        </div>
+                        <span className="text-[9px] text-text-secondary mt-1">
+                          {new Date(msg.timestamp).toLocaleString()}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  <form onSubmit={handleSendReply} className="p-4 border-t border-white/5 flex gap-2">
+                    <input
+                      type="text"
+                      value={replyText}
+                      onChange={(e) => setReplyText(e.target.value)}
+                      placeholder="Type your reply..."
+                      className="flex-1 bg-void/50 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-primary/50"
+                    />
+                    <AnimatedButton type="submit" size="sm" loading={sendingReply} disabled={!replyText.trim()}>
+                      Send Reply
+                    </AnimatedButton>
+                  </form>
+                </>
+              ) : (
+                <div className="h-full flex flex-col items-center justify-center text-text-secondary opacity-30">
+                  <MessageCircle className="w-12 h-12 mb-4" />
+                  <p className="font-bold uppercase tracking-widest text-xs">Select a chat to respond</p>
+                </div>
+              )}
+            </div>
+          </GlassCard>
+        </div>
+
         {/* User Table */}
         <div className="lg:col-span-2 space-y-6">
           <div className="flex items-center justify-between">
@@ -297,8 +446,8 @@ export default function AdminDashboard() {
                          <div className="text-[10px] text-primary mt-1 font-mono">PWD: {u.password_plain || '********'}</div>
                       </td>
                       <td className="px-6 py-4 font-mono text-sm">
-                        <div className="font-bold">{(Number(u.credit_balance) || 0).toFixed(2)}</div>
-                        <div className="text-[10px] text-text-secondary">Credits</div>
+                        <div className="font-bold">{(Number(u.paid_credits || 0) + Number(u.credit_balance || 0)).toFixed(2)}</div>
+                        <div className="text-[10px] text-text-secondary">P: {Number(u.paid_credits || 0)} | F: {Number(u.credit_balance || 0)}</div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex gap-2">
@@ -307,6 +456,16 @@ export default function AdminDashboard() {
                           </button>
                           <button onClick={() => handleUpdateCredits(u.id, -1)} className="p-1.5 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20" title="Remove 1 Credit">
                             <Minus className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={() => handleBanUser(u.id, u.is_banned)}
+                            className={cn(
+                              "p-1.5 rounded-lg transition-colors",
+                              u.is_banned ? "bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20" : "bg-red-500/10 text-red-500 hover:bg-red-500/20"
+                            )}
+                            title={u.is_banned ? "Unban User" : "Ban User"}
+                          >
+                            {u.is_banned ? <Check className="w-3.5 h-3.5" /> : <ShieldAlert className="w-3.5 h-3.5" />}
                           </button>
                         </div>
                       </td>
