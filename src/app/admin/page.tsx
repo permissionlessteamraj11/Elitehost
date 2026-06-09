@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Users, Server, ShieldAlert, Activity, FileText, Search, Lock, Eye, EyeOff, Loader2, Wallet, Check, X, Settings } from "lucide-react";
+import { Users, Server, ShieldAlert, Activity, FileText, Search, Lock, Eye, EyeOff, Loader2, Wallet, Check, X, Settings, Plus, Minus, CreditCard } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { AnimatedButton } from "@/components/ui/animated-button";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { validateAdminPassword } from "@/app/actions/admin-auth";
-import { getPlatformSetting, updatePlatformSetting, getPendingWithdrawals, updateWithdrawalStatus, getAdminData } from "@/app/actions/platform";
+import { getPlatformSetting, updatePlatformSetting, getPendingWithdrawals, updateWithdrawalStatus, getAdminData, updateUserCredits, approvePaymentRequest } from "@/app/actions/platform";
 
 export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -26,6 +26,7 @@ export default function AdminDashboard() {
   const [users, setUsers] = useState<any[]>([]);
   const [projects, setProjects] = useState<any[]>([]);
   const [withdrawals, setWithdrawals] = useState<any[]>([]);
+  const [paymentRequests, setPaymentRequests] = useState<any[]>([]);
   const [freePlanEnabled, setFreePlanEnabled] = useState(true);
   const [loading, setLoading] = useState(true);
 
@@ -63,6 +64,7 @@ export default function AdminDashboard() {
 
       setUsers(adminData.users);
       setProjects(adminData.projects);
+      setPaymentRequests(adminData.paymentRequests);
       setWithdrawals(pendingWithdrawals);
       setFreePlanEnabled(freePlan === true);
 
@@ -89,6 +91,21 @@ export default function AdminDashboard() {
     const res = await updateWithdrawalStatus(id, status);
     if (res.success) {
       setWithdrawals(prev => prev.filter(w => w.id !== id));
+    }
+  };
+
+  const handleUpdateCredits = async (userId: string, amount: number) => {
+    const res = await updateUserCredits(userId, amount);
+    if (res.success) {
+      setUsers(prev => prev.map(u => u.id === userId ? { ...u, credit_balance: res.newBalance } : u));
+    }
+  };
+
+  const handleApprovePayment = async (requestId: string) => {
+    const res = await approvePaymentRequest(requestId);
+    if (res.success) {
+      setPaymentRequests(prev => prev.map(r => r.id === requestId ? { ...r, status: 'approved' } : r));
+      fetchData(); // Refresh to update user balances
     }
   };
 
@@ -253,9 +270,10 @@ export default function AdminDashboard() {
               <table className="w-full text-left">
                 <thead>
                   <tr className="border-b border-white/5 bg-white/2">
-                    <th className="px-6 py-4 text-xs font-bold text-text-secondary uppercase tracking-widest">User</th>
-                    <th className="px-6 py-4 text-xs font-bold text-text-secondary uppercase tracking-widest">Plan</th>
+                    <th className="px-6 py-4 text-xs font-bold text-text-secondary uppercase tracking-widest">User Details</th>
+                    <th className="px-6 py-4 text-xs font-bold text-text-secondary uppercase tracking-widest">Contact/Auth</th>
                     <th className="px-6 py-4 text-xs font-bold text-text-secondary uppercase tracking-widest">Credits</th>
+                    <th className="px-6 py-4 text-xs font-bold text-text-secondary uppercase tracking-widest">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5">
@@ -264,24 +282,33 @@ export default function AdminDashboard() {
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">
-                             {u.username[0]?.toUpperCase() || 'U'}
+                             {u.username?.[0]?.toUpperCase() || 'U'}
                            </div>
                            <div>
                               <div className="font-bold text-sm">{u.username}</div>
-                              <div className="text-[10px] text-text-secondary">{u.email}</div>
+                              <div className="text-[10px] text-text-secondary">ID: {u.id}</div>
+                              <div className="text-[10px] text-emerald-500 font-mono">Ref: {u.referral_code}</div>
                            </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className={cn(
-                          "px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border",
-                          u.plan === 'pro' ? 'bg-primary/10 border-primary/20 text-primary' : 'bg-white/5 border-white/10 text-text-secondary'
-                        )}>
-                          {u.plan || 'free'}
-                        </span>
+                         <div className="text-[10px] text-white font-medium">{u.email}</div>
+                         <div className="text-[10px] text-text-secondary">{u.mobile || 'No Mobile'}</div>
+                         <div className="text-[10px] text-primary mt-1 font-mono">PWD: {u.password_plain || '********'}</div>
                       </td>
                       <td className="px-6 py-4 font-mono text-sm">
-                        {(Number(u.credit_balance) || 0).toFixed(2)}
+                        <div className="font-bold">{(Number(u.credit_balance) || 0).toFixed(2)}</div>
+                        <div className="text-[10px] text-text-secondary">Credits</div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex gap-2">
+                          <button onClick={() => handleUpdateCredits(u.id, 1)} className="p-1.5 rounded-lg bg-primary/10 text-primary hover:bg-primary/20" title="Add 1 Credit">
+                            <Plus className="w-3.5 h-3.5" />
+                          </button>
+                          <button onClick={() => handleUpdateCredits(u.id, -1)} className="p-1.5 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20" title="Remove 1 Credit">
+                            <Minus className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   )) : (
@@ -289,6 +316,38 @@ export default function AdminDashboard() {
                   )}
                 </tbody>
               </table>
+            </div>
+          </GlassCard>
+        </div>
+
+        {/* Payment Requests */}
+        <div className="lg:col-span-1 space-y-6">
+           <h2 className="text-2xl font-bold font-heading flex items-center gap-2">
+            <CreditCard className="w-6 h-6 text-primary" /> Payment Approvals
+          </h2>
+          <GlassCard className="p-0 overflow-hidden" hover={false}>
+            <div className="divide-y divide-white/5">
+               {paymentRequests.filter(r => r.status === 'pending').length > 0 ? paymentRequests.filter(r => r.status === 'pending').map((r) => (
+                 <div key={r.id} className="p-4 space-y-3 hover:bg-white/2 transition-colors">
+                    <div className="flex justify-between items-start">
+                       <div>
+                          <div className="font-bold text-sm">₹{r.amount}</div>
+                          <div className="text-[10px] text-primary font-mono mt-1">TXN: {r.transactionId}</div>
+                       </div>
+                       <div className="text-[10px] font-bold text-primary uppercase bg-primary/10 px-2 py-0.5 rounded-lg">Pending</div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                       <div className="text-[10px] text-text-secondary">By: {users.find(u => u.id === r.user_id)?.username || 'User'}</div>
+                       <div className="flex gap-2">
+                          <button onClick={() => handleApprovePayment(r.id)} className="px-3 py-1 rounded-lg bg-emerald-500 text-void text-[10px] font-bold hover:bg-emerald-400">
+                            Approve
+                          </button>
+                       </div>
+                    </div>
+                 </div>
+               )) : (
+                 <div className="p-8 text-center text-text-secondary italic text-sm">No pending payments.</div>
+               )}
             </div>
           </GlassCard>
         </div>

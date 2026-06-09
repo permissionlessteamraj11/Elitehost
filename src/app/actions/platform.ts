@@ -53,12 +53,42 @@ export async function getAdminData() {
     const users = await db.users.read();
     const projects = await db.projects.read();
     const deployments = await db.deployments.read();
+    const paymentRequests = await (db as any).payment_requests?.read() || [];
 
     return {
         users,
         projects,
+        paymentRequests,
         userCount: users.length,
         projectCount: projects.length,
         deployCount: deployments.filter((d: any) => d.status === 'ready').length,
     };
+}
+
+export async function updateUserCredits(userId: string, amount: number) {
+    const user = await db.users.findOne((u: any) => u.id === userId);
+    if (!user) return { success: false, error: "User not found" };
+
+    const newBalance = (Number(user.credit_balance) || 0) + amount;
+    await db.users.update((u: any) => u.id === userId, { credit_balance: newBalance });
+    return { success: true, newBalance };
+}
+
+export async function approvePaymentRequest(requestId: string) {
+    const dbTyped = db as any;
+    const request = await dbTyped.payment_requests.findOne((r: any) => r.id === requestId);
+    if (!request) return { success: false, error: "Request not found" };
+
+    const user = await db.users.findOne((u: any) => u.id === request.user_id);
+    if (!user) return { success: false, error: "User not found" };
+
+    // Assuming 1 credit per ₹20 for simplicity, or just using request.credits if defined
+    const creditsToAdd = request.credits || Math.floor(request.amount / 20);
+
+    await db.users.update((u: any) => u.id === user.id, {
+        credit_balance: (Number(user.credit_balance) || 0) + creditsToAdd
+    });
+
+    await dbTyped.payment_requests.update((r: any) => r.id === requestId, { status: 'approved' });
+    return { success: true };
 }

@@ -24,14 +24,19 @@ import { cn } from "@/lib/utils";
 const tabs = [
   { id: "account", label: "Account", icon: User },
   { id: "security", label: "Security", icon: Lock },
-  { id: "api-keys", label: "API Keys", icon: Key },
   { id: "help", label: "Help & Support", icon: HelpCircle },
   { id: "notifications", label: "Notifications", icon: Bell },
 ];
 
+import { useAuthStore } from "@/hooks/use-auth";
+
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("account");
-  const [showKey, setShowKey] = useState(false);
+  const { user } = useAuthStore();
+  const [currentPwd, setCurrentPwd] = useState("");
+  const [newPwd, setNewPwd] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
   return (
     <div className="max-w-5xl mx-auto space-y-8 pb-20">
@@ -69,65 +74,53 @@ export default function SettingsPage() {
                      <label className="text-xs font-bold text-text-secondary uppercase tracking-widest">Username</label>
                      <input
                         type="text"
-                        defaultValue="elite_user"
-                        className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary/50"
+                        defaultValue={user?.username}
+                        disabled
+                        className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-white/20 opacity-50"
                      />
                   </div>
                   <div className="space-y-2">
                      <label className="text-xs font-bold text-text-secondary uppercase tracking-widest">Email Address</label>
                      <input
                         type="email"
-                        defaultValue="user@elitehosting.in"
+                        defaultValue={user?.email}
                         className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-white/20 opacity-50"
                         disabled
                      />
                   </div>
-                  <div className="md:col-span-2 space-y-2">
-                     <label className="text-xs font-bold text-text-secondary uppercase tracking-widest">Bio</label>
-                     <textarea
-                        className="w-full h-24 bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary/50"
-                        placeholder="Tell us about yourself..."
+                  <div className="space-y-2">
+                     <label className="text-xs font-bold text-text-secondary uppercase tracking-widest">Mobile Number</label>
+                     <input
+                        type="text"
+                        defaultValue={(user as any)?.mobile}
+                        disabled
+                        className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-white/20 opacity-50"
                      />
                   </div>
-               </div>
-
-               <div className="pt-4 border-t border-white/5 flex justify-end gap-3">
-                  <AnimatedButton variant="outline">Cancel</AnimatedButton>
-                  <AnimatedButton className="gap-2"><Save className="w-4 h-4" /> Save Changes</AnimatedButton>
-               </div>
-            </GlassCard>
-          )}
-
-          {activeTab === "api-keys" && (
-            <GlassCard className="p-8 space-y-8" hover={false}>
-               <div className="flex items-center justify-between">
-                  <div className="space-y-1">
-                     <h2 className="text-2xl font-bold font-heading">API Keys</h2>
-                     <p className="text-text-secondary text-sm">Manage your personal access tokens.</p>
-                  </div>
-                  <AnimatedButton size="sm">Create New Key</AnimatedButton>
-               </div>
-
-               <div className="space-y-4">
-                  <div className="p-4 rounded-xl bg-white/5 border border-white/5 flex items-center justify-between">
-                     <div className="space-y-1">
-                        <div className="text-sm font-bold">Production CLI</div>
-                        <div className="flex items-center gap-2 font-mono text-xs text-text-secondary">
-                           <span>{showKey ? "eh_live_9k2m1n8v7b6c5x4z3a2s1" : "eh_live_••••••••••••••••••••••"}</span>
-                           <button onClick={() => setShowKey(!showKey)} className="hover:text-white transition-colors">
-                              {showKey ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
-                           </button>
-                        </div>
-                     </div>
-                     <div className="flex items-center gap-2">
-                        <button className="p-2 hover:bg-white/10 rounded-lg transition-colors"><Copy className="w-4 h-4" /></button>
-                        <button className="p-2 hover:bg-red-400/10 text-red-400 rounded-lg transition-colors"><Trash2 className="w-4 h-4" /></button>
+                  <div className="space-y-2">
+                     <label className="text-xs font-bold text-text-secondary uppercase tracking-widest">Referral Code</label>
+                     <div className="relative">
+                        <input
+                           type="text"
+                           readOnly
+                           value={(user as any)?.referral_code || "GENERATE_CODE"}
+                           className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none font-mono text-primary"
+                        />
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText((user as any)?.referral_code || "");
+                            alert("Referral code copied!");
+                          }}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary hover:text-white"
+                        >
+                          <Copy className="w-4 h-4" />
+                        </button>
                      </div>
                   </div>
                </div>
 
                <div className="p-4 rounded-xl bg-primary/5 border border-primary/20 text-xs text-primary leading-relaxed">
-                  <strong>Security Tip:</strong> Never share your API keys or commit them to source control. Use environment variables instead.
+                  <strong>Referral System:</strong> Share your code with friends! When they sign up using your code, they get a <strong>10% discount</strong> on their first credit purchase.
                </div>
             </GlassCard>
           )}
@@ -137,10 +130,62 @@ export default function SettingsPage() {
                 <GlassCard className="p-8 space-y-6" hover={false}>
                    <h3 className="text-xl font-bold font-heading">Password</h3>
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2"><label className="text-xs font-bold text-text-secondary uppercase tracking-widest">Current Password</label><input type="password" title="current password" name="current_password"  className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary/50" /></div>
-                      <div className="space-y-2"><label className="text-xs font-bold text-text-secondary uppercase tracking-widest">New Password</label><input type="password" title="new password" name="new_password" className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary/50" /></div>
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-text-secondary uppercase tracking-widest">Current Password</label>
+                        <input
+                          type="password"
+                          value={currentPwd}
+                          onChange={(e) => setCurrentPwd(e.target.value)}
+                          className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary/50"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-text-secondary uppercase tracking-widest">New Password</label>
+                        <input
+                          type="password"
+                          value={newPwd}
+                          onChange={(e) => setNewPwd(e.target.value)}
+                          className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary/50"
+                        />
+                      </div>
                    </div>
-                   <AnimatedButton variant="secondary" size="sm">Update Password</AnimatedButton>
+
+                   {message && (
+                     <div className={cn("p-3 rounded-lg text-xs", message.type === 'success' ? "bg-emerald-500/10 text-emerald-500" : "bg-red-500/10 text-red-500")}>
+                        {message.text}
+                     </div>
+                   )}
+
+                   <AnimatedButton
+                    variant="secondary"
+                    size="sm"
+                    loading={loading}
+                    onClick={async () => {
+                      setLoading(true);
+                      setMessage(null);
+                      try {
+                        const res = await fetch("/api/auth/update-password", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ currentPwd, newPwd }),
+                        });
+                        const data = await res.json();
+                        if (res.ok) {
+                          setMessage({ type: 'success', text: 'Password updated successfully!' });
+                          setCurrentPwd("");
+                          setNewPwd("");
+                        } else {
+                          setMessage({ type: 'error', text: data.error || 'Failed to update password' });
+                        }
+                      } catch (err) {
+                        setMessage({ type: 'error', text: 'An unexpected error occurred' });
+                      } finally {
+                        setLoading(false);
+                      }
+                    }}
+                   >
+                     Update Password
+                   </AnimatedButton>
                 </GlassCard>
 
                 <GlassCard className="p-8 border-red-500/20" hover={false}>
@@ -169,8 +214,9 @@ export default function SettingsPage() {
                   <div className="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-3">
                     <Mail className="w-8 h-8 text-text-secondary" />
                     <h3 className="font-bold">Email Support</h3>
-                    <p className="text-xs text-text-secondary">support@elitehosting.in</p>
-                    <AnimatedButton variant="outline" size="sm" className="w-full mt-2">Send Email</AnimatedButton>
+                    <p className="text-xs text-text-secondary">zynochat.in@zynochat.in</p>
+                      <p className="text-[10px] text-primary">Call: 9931989952</p>
+                    <AnimatedButton variant="outline" size="sm" className="w-full mt-2" onClick={() => window.location.href='mailto:zynochat.in@zynochat.in'}>Send Email</AnimatedButton>
                   </div>
                 </div>
 

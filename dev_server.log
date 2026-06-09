@@ -1,33 +1,33 @@
-Already up to date
-Done in 620ms using pnpm v11.3.0
-$ next dev
+
+> elite-hosting@0.1.0 dev
+> next dev
+
    ▲ Next.js 15.1.7
    - Local:        http://localhost:3000
    - Network:      http://192.168.0.2:3000
 
  ✓ Starting...
- ✓ Ready in 1850ms
+ ✓ Ready in 1849ms
+ ○ Compiling /auth/register ...
+ ✓ Compiled /auth/register in 18.9s (1502 modules)
+ GET /auth/register 200 in 19875ms
+ POST /auth/register 200 in 141ms
  ○ Compiling /src/middleware ...
- ✓ Compiled /src/middleware in 1557ms (158 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (155kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+ ✓ Compiled /auth/login in 2.6s (1660 modules)
 [Upstash Redis] The 'url' property is missing or undefined in your Redis config.
 [Upstash Redis] The 'token' property is missing or undefined in your Redis config.
- ○ Compiling /dashboard/referrals ...
-<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (155kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
-<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (101kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
-<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (231kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
- ✓ Compiled /dashboard/referrals in 14.3s (1725 modules)
- GET /dashboard/referrals 200 in 15860ms
- ○ Compiling /admin ...
- ✓ Compiled /admin in 1326ms (1748 modules)
- GET /admin 200 in 1751ms
- POST /admin 200 in 131ms
- ○ Compiling /dashboard/credits ...
- ✓ Compiled /dashboard/credits in 592ms (1750 modules)
- GET /dashboard/credits 200 in 849ms
- POST /dashboard/credits 200 in 2291ms
- GET /admin 200 in 70ms
- POST /admin 200 in 16ms
- POST /admin 200 in 14ms
- GET /dashboard/referrals 200 in 76ms
- ✓ Compiled in 1988ms (830 modules)
- ✓ Compiled in 1133ms (1704 modules)
+ GET /auth/register 200 in 518ms
+ GET /auth/login 200 in 2835ms
+ ○ Compiling /api/auth/me ...
+ ✓ Compiled /api/auth/me in 1386ms (1569 modules)
+ GET /api/auth/me 401 in 12ms
+ ○ Compiling /auth/forgot-password ...
+ ✓ Compiled /auth/forgot-password in 596ms (1580 modules)
+ GET /auth/forgot-password 200 in 844ms
+ GET /api/auth/me 401 in 65ms
+ GET /auth/login 200 in 80ms
+ GET /api/auth/me 401 in 24ms
+ GET /auth/login 200 in 45ms
+ GET /api/auth/me 401 in 23ms
+ ✓ Compiled in 582ms (728 modules)

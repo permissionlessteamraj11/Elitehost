@@ -5,8 +5,8 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const { email, password } = await req.json();
-    const user = await db.users.findOne((u: any) => u.email === email);
+    const { identifier, password } = await req.json();
+    const user = await db.users.findOne((u: any) => u.email === identifier || u.mobile === identifier);
 
     if (!user) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
