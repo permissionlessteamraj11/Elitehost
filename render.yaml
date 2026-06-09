@@ -18,42 +18,4 @@ services:
 
     autoDeploy: true
 
-    envVars:
-      - key: NODE_VERSION
-        value: 22
-
-      - key: NEXT_TELEMETRY_DISABLED
-        value: 1
-
-      # Supabase
-      - key: NEXT_PUBLIC_SUPABASE_URL
-        sync: false
-
-      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
-        sync: false
-
-      - key: SUPABASE_SERVICE_ROLE_KEY
-        sync: false
-
-      # Redis
-      - key: REDIS_URL
-        sync: false
-
-      # Upstash
-      - key: UPSTASH_REDIS_REST_URL
-        sync: false
-
-      - key: UPSTASH_REDIS_REST_TOKEN
-        sync: false
-
-      # Security
-      - key: JWT_SECRET
-        generateValue: true
-
-      - key: ENCRYPTION_KEY
-        generateValue: true
-
-      # Production
-      - key: NODE_ENV
-        value: production
-
+    
