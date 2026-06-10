@@ -41,6 +41,7 @@ export function AnimatedButton({
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.95 }}
       disabled={disabled || loading}
+      aria-busy={loading}
       className={cn(
         "relative inline-flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none overflow-hidden",
         variants[variant],
@@ -50,11 +51,16 @@ export function AnimatedButton({
       )}
       {...props}
     >
-      {loading ? (
-        <Loader2 className="w-5 h-5 animate-spin" />
-      ) : (
-        children
-      )}
+      <span aria-live="polite" className="flex items-center justify-center gap-2">
+        {loading ? (
+          <>
+            <Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" />
+            <span className="sr-only">Loading...</span>
+          </>
+        ) : (
+          children
+        )}
+      </span>
 
       {/* Ripple Effect Container */}
       <span className="absolute inset-0 pointer-events-none bg-white/10 opacity-0 active:opacity-100 transition-opacity" />
