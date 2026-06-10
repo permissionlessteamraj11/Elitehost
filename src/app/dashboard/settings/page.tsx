@@ -155,8 +155,9 @@ export default function SettingsPage() {
 
                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                     <label className="text-xs font-bold text-text-secondary uppercase tracking-widest small-caps">Username</label>
+                     <label htmlFor="username" className="text-xs font-bold text-text-secondary uppercase tracking-widest small-caps">Username</label>
                      <input
+                        id="username"
                         type="text"
                         defaultValue={user?.username}
                         disabled
@@ -164,8 +165,9 @@ export default function SettingsPage() {
                      />
                   </div>
                   <div className="space-y-2">
-                     <label className="text-xs font-bold text-text-secondary uppercase tracking-widest">Email Address</label>
+                     <label htmlFor="email" className="text-xs font-bold text-text-secondary uppercase tracking-widest">Email Address</label>
                      <input
+                        id="email"
                         type="email"
                         defaultValue={user?.email}
                         className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-white/20 opacity-50"
@@ -173,8 +175,9 @@ export default function SettingsPage() {
                      />
                   </div>
                   <div className="space-y-2">
-                     <label className="text-xs font-bold text-text-secondary uppercase tracking-widest">Mobile Number</label>
+                     <label htmlFor="mobile" className="text-xs font-bold text-text-secondary uppercase tracking-widest">Mobile Number</label>
                      <input
+                        id="mobile"
                         type="text"
                         defaultValue={(user as any)?.mobile}
                         disabled
@@ -182,9 +185,10 @@ export default function SettingsPage() {
                      />
                   </div>
                   <div className="space-y-2">
-                     <label className="text-xs font-bold text-text-secondary uppercase tracking-widest">Referral Code</label>
+                     <label htmlFor="referral-code" className="text-xs font-bold text-text-secondary uppercase tracking-widest">Referral Code</label>
                      <div className="relative">
                         <input
+                           id="referral-code"
                            type="text"
                            readOnly
                            value={(user as any)?.referral_code || "GENERATE_CODE"}
@@ -195,6 +199,7 @@ export default function SettingsPage() {
                             navigator.clipboard.writeText((user as any)?.referral_code || "");
                             alert("Referral code copied!");
                           }}
+                          aria-label="Copy referral code"
                           className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary hover:text-white"
                         >
                           <Copy className="w-4 h-4" />
@@ -242,8 +247,9 @@ export default function SettingsPage() {
 
                 <form onSubmit={handleWithdraw} className="space-y-4 max-w-md">
                    <div className="space-y-2">
-                     <label className="text-xs font-bold text-text-secondary uppercase tracking-widest small-caps">Withdraw Amount</label>
+                     <label htmlFor="withdraw-amount" className="text-xs font-bold text-text-secondary uppercase tracking-widest small-caps">Withdraw Amount</label>
                      <input
+                       id="withdraw-amount"
                        type="number"
                        required
                        value={withdrawAmount}
@@ -253,8 +259,9 @@ export default function SettingsPage() {
                      />
                    </div>
                    <div className="space-y-2">
-                     <label className="text-xs font-bold text-text-secondary uppercase tracking-widest small-caps">UPI ID / Payment Details</label>
+                     <label htmlFor="upi-id" className="text-xs font-bold text-text-secondary uppercase tracking-widest small-caps">UPI ID / Payment Details</label>
                      <input
+                       id="upi-id"
                        type="text"
                        required
                        value={upiId}
@@ -290,8 +297,9 @@ export default function SettingsPage() {
                    <h3 className="text-xl font-bold font-heading small-caps">Password</h3>
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <label className="text-xs font-bold text-text-secondary uppercase tracking-widest small-caps">Current Password</label>
+                        <label htmlFor="current-password" className="text-xs font-bold text-text-secondary uppercase tracking-widest small-caps">Current Password</label>
                         <input
+                          id="current-password"
                           type="password"
                           value={currentPwd}
                           onChange={(e) => setCurrentPwd(e.target.value)}
@@ -299,8 +307,9 @@ export default function SettingsPage() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-xs font-bold text-text-secondary uppercase tracking-widest">New Password</label>
+                        <label htmlFor="new-password" className="text-xs font-bold text-text-secondary uppercase tracking-widest">New Password</label>
                         <input
+                          id="new-password"
                           type="password"
                           value={newPwd}
                           onChange={(e) => setNewPwd(e.target.value)}
@@ -408,10 +417,12 @@ export default function SettingsPage() {
 
                 <form onSubmit={handleSendMessage} className="p-4 bg-white/2 border-t border-white/5 flex gap-2">
                   <input
+                    id="chat-input"
                     type="text"
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                     placeholder="Type your message..."
+                    aria-label="Type your message"
                     className="flex-1 bg-void/50 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-primary/50"
                   />
                   <AnimatedButton type="submit" size="sm" loading={chatLoading} disabled={!newMessage.trim()}>
@@ -479,9 +490,14 @@ export default function SettingsPage() {
                       <div className="text-sm font-bold">{item.label}</div>
                       <div className="text-xs text-text-secondary">{item.desc}</div>
                     </div>
-                    <div className="w-10 h-5 bg-primary/20 rounded-full relative cursor-pointer border border-primary/30">
+                    <button
+                      role="switch"
+                      aria-checked="true"
+                      aria-label={`Toggle ${item.label}`}
+                      className="w-10 h-5 bg-primary/20 rounded-full relative cursor-pointer border border-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-all"
+                    >
                        <div className="absolute right-0.5 top-0.5 w-4 h-4 bg-primary rounded-full" />
-                    </div>
+                    </button>
                   </div>
                 ))}
               </div>
