@@ -32,7 +32,7 @@ export function MobileBottomNav() {
 
             if (item.center) {
               return (
-                <Link key={item.href} href={item.href} className="relative group">
+                <Link key={item.href} href={item.href} aria-label="Create new project" className="relative group">
                   <div className="w-12 h-12 rounded-2xl bg-primary text-background flex items-center justify-center shadow-[0_0_20px_rgba(99,102,241,0.4)] transition-transform active:scale-90">
                     <item.icon className="w-6 h-6" strokeWidth={2.5} />
                   </div>
