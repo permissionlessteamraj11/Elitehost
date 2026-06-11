@@ -23,6 +23,7 @@ export default function ReferralsPage() {
   const [upiId, setUpiId] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [withdrawSuccess, setWithdrawSuccess] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -65,7 +66,8 @@ export default function ReferralsPage() {
     if (res.success) {
         setWithdrawAmount("");
         setUpiId("");
-        alert("Withdrawal request submitted successfully!");
+        setWithdrawSuccess(true);
+        setTimeout(() => setWithdrawSuccess(false), 5000);
         fetchData();
     } else {
         setError(res.error || "Failed to submit request");
@@ -83,6 +85,7 @@ export default function ReferralsPage() {
         <div className="flex items-center gap-3 p-1 bg-white/5 border border-white/10 rounded-2xl">
            <div className="px-4 py-2 text-sm font-mono text-electric">{referralCode}</div>
            <button
+             aria-label="Copy referral link"
              onClick={copyToClipboard}
              className="p-2 bg-electric text-void rounded-xl hover:scale-105 active:scale-95 transition-all"
            >
@@ -178,6 +181,13 @@ export default function ReferralsPage() {
                  <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-bold uppercase flex items-center gap-2">
                    <AlertCircle className="w-3.5 h-3.5" />
                    {error}
+                 </div>
+               )}
+
+               {withdrawSuccess && (
+                 <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-[10px] font-bold uppercase flex items-center gap-2">
+                   <Check className="w-3.5 h-3.5" />
+                   Withdrawal request submitted successfully!
                  </div>
                )}
 

@@ -35,6 +35,7 @@ export function AppHeader() {
 
           <motion.button
             whileTap={{ scale: 0.9 }}
+            aria-label="Search"
             className="p-2 text-white/50 hover:text-white transition-colors"
           >
             <Search className="w-5 h-5" />
@@ -42,6 +43,7 @@ export function AppHeader() {
 
           <motion.button
             whileTap={{ scale: 0.9 }}
+            aria-label="Notifications"
             className="p-2 text-white/50 hover:text-white transition-colors relative"
           >
             <Bell className="w-5 h-5" />
