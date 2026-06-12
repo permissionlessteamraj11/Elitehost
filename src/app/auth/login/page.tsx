@@ -50,11 +50,11 @@ export default function LoginPage() {
       >
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 mb-6 group">
-            <div className="w-10 h-10 rounded-lg bg-[#00E5FF]/10 border border-[#00E5FF]/20 flex items-center justify-center group-hover:bg-[#00E5FF]/20 transition-colors">
-              <Zap className="w-6 h-6 text-[#00E5FF]" />
+            <div className="w-10 h-10 rounded-lg bg-[#FFFFFF]/10 border border-[#FFFFFF]/20 flex items-center justify-center group-hover:bg-[#FFFFFF]/20 transition-colors">
+              <Zap className="w-6 h-6 text-[#FFFFFF]" />
             </div>
             <span className="text-2xl font-bold tracking-tight">
-              Elite<span className="text-[#00E5FF]">Hosting</span>
+              Elite<span className="text-[#FFFFFF]">Hosting</span>
             </span>
           </Link>
           <h1 className="text-3xl font-bold mb-2">Welcome back.</h1>
@@ -73,7 +73,7 @@ export default function LoginPage() {
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
                   placeholder="Email or Mobile"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#00E5FF]/50 transition-all"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#FFFFFF]/50 transition-all"
                   disabled={loading}
                 />
               </div>
@@ -82,7 +82,7 @@ export default function LoginPage() {
             <div>
               <div className="flex items-center justify-between mb-1.5 ml-1">
                 <label className="text-sm font-medium text-gray-400">Password</label>
-                <Link href="/auth/forgot-password" title="Coming soon" className="text-xs text-[#00E5FF] hover:underline">
+                <Link href="/auth/forgot-password" title="Coming soon" className="text-xs text-[#FFFFFF] hover:underline">
                   Forgot?
                 </Link>
               </div>
@@ -94,7 +94,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#00E5FF]/50 transition-all"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#FFFFFF]/50 transition-all"
                   disabled={loading}
                 />
               </div>
@@ -109,7 +109,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all bg-[#00E5FF] text-black shadow-[0_0_20px_rgba(0,229,255,0.3)] ${
+              className={`w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all bg-[#FFFFFF] text-black shadow-[0_0_20px_rgba(0,229,255,0.3)] ${
                 loading ? "opacity-50 cursor-not-allowed" : "hover:scale-[1.02] active:scale-[0.98]"
               }`}
             >
@@ -127,7 +127,7 @@ export default function LoginPage() {
           <div className="mt-8 pt-6 border-t border-white/10 text-center">
             <p className="text-gray-500 text-sm">
               New to EliteHosting?{" "}
-              <Link href="/auth/register" className="text-white font-semibold hover:text-[#00E5FF] transition-colors">
+              <Link href="/auth/register" className="text-white font-semibold hover:text-[#FFFFFF] transition-colors">
                 Create free account
               </Link>
             </p>

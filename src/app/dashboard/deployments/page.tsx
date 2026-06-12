@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Layers, Rocket, ExternalLink, Clock, Trash2, Search, Filter } from "lucide-react";
+import { Layers, Rocket, ExternalLink, Clock, Trash2, Search, Filter, RotateCcw, StopCircle, MoreVertical } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { AnimatedButton } from "@/components/ui/animated-button";
 import Link from "next/link";
@@ -99,14 +99,22 @@ export default function DeploymentsPage() {
                    </div>
                 </div>
 
-                <div className="pt-4 flex gap-2">
-                  <Link href={`/dashboard/deployments/${deployment.id}`} className="flex-1">
-                    <AnimatedButton variant="outline" size="sm" className="w-full text-[10px] uppercase tracking-widest font-bold">
-                      View Logs
+                <div className="pt-4 flex flex-col gap-2">
+                  <div className="flex gap-2">
+                    <Link href={`/dashboard/deployments/${deployment.id}`} className="flex-1">
+                      <AnimatedButton variant="primary" size="sm" className="w-full text-[10px] uppercase tracking-widest font-black">
+                        Manage
+                      </AnimatedButton>
+                    </Link>
+                    <AnimatedButton variant="outline" size="sm" className="px-3 border-white/10 text-white hover:bg-white/5">
+                      <RotateCcw className="w-4 h-4" />
                     </AnimatedButton>
-                  </Link>
-                  <AnimatedButton variant="outline" size="sm" className="px-3 border-red-500/20 text-red-400 hover:bg-red-500/10">
-                    <Trash2 className="w-4 h-4" />
+                    <AnimatedButton variant="outline" size="sm" className="px-3 border-white/10 text-white hover:bg-white/5">
+                      <StopCircle className="w-4 h-4" />
+                    </AnimatedButton>
+                  </div>
+                  <AnimatedButton variant="ghost" size="sm" className="w-full text-[10px] uppercase tracking-widest font-bold text-red-500/50 hover:text-red-500 hover:bg-red-500/5">
+                    <Trash2 className="w-3.5 h-3.5 mr-2" /> Delete Deployment
                   </AnimatedButton>
                 </div>
               </GlassCard>

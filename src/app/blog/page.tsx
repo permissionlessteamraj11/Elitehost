@@ -12,7 +12,7 @@ export default function BlogPage() {
     <div className="min-h-screen bg-[#020108] text-white">
       {/* Hero Section */}
       <section className="relative py-20 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(99,102,241,0.1),transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1),transparent_50%)]" />
         <div className="container mx-auto px-4 relative z-10 text-center space-y-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

@@ -28,10 +28,16 @@ export function AppHeader() {
 
         <div className="flex items-center gap-2 sm:gap-4">
           {/* Credit Display */}
-          <div className="flex items-center gap-1.5 px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg sm:rounded-xl bg-primary/10 border border-primary/20 text-primary">
-            <Wallet className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-            <span className="text-[10px] sm:text-xs font-bold font-mono">{profile?.credit_balance?.toFixed(2) || "2.00"} CR</span>
-          </div>
+          <Link href="/dashboard/credits">
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex items-center gap-1.5 px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg sm:rounded-xl bg-primary/10 border border-primary/20 text-primary cursor-pointer transition-colors hover:bg-primary/20"
+            >
+              <Wallet className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+              <span className="text-[10px] sm:text-xs font-bold font-mono">{profile?.credit_balance?.toFixed(2) || "2.00"} CR</span>
+            </motion.div>
+          </Link>
 
           <motion.button
             whileTap={{ scale: 0.9 }}

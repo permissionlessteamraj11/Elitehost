@@ -14,20 +14,20 @@
   --font-size-3xl: 1.75rem;
   --font-size-4xl: 2.15rem;
 
-  --color-primary: #00E5FF;
-  --color-accent: #7C3AED;
-  --color-background: #0B0F19;
-  --color-card: #111827;
+  --color-primary: #FFFFFF;
+  --color-accent: #A3A3A3;
+  --color-background: #000000;
+  --color-card: #0A0A0A;
   --color-text: #F9FAFB;
-  --color-text-secondary: #9CA3AF;
+  --color-text-secondary: #737373;
 
-  --color-electric: #00E5FF;
-  --color-electric-soft: rgba(0, 229, 255, 0.1);
-  --color-neon-purple: #7C3AED;
-  --color-void: #0B0F19;
-  --color-midnight: #111827;
+  --color-electric: #FFFFFF;
+  --color-electric-soft: rgba(255, 255, 255, 0.05);
+  --color-neon-purple: #525252;
+  --color-void: #000000;
+  --color-midnight: #0A0A0A;
 
-  --color-surface-1: rgba(255, 255, 255, 0.03);
+  --color-surface-1: rgba(255, 255, 255, 0.02);
   --color-surface-2: rgba(255, 255, 255, 0.05);
   --color-surface-3: rgba(255, 255, 255, 0.1);
 
@@ -46,8 +46,8 @@
   }
 
   @keyframes glow-pulse {
-    0%, 100% { filter: drop-shadow(0 0 5px var(--color-primary)); }
-    50% { filter: drop-shadow(0 0 15px var(--color-primary)); }
+    0%, 100% { filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.2)); }
+    50% { filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.4)); }
   }
 
   @keyframes scanline {
@@ -62,7 +62,7 @@
 }
 
 :root {
-  --background: #0B0F19;
+  --background: #000000;
   --foreground: #F9FAFB;
 }
 
@@ -97,12 +97,12 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   .neon-border {
-    box-shadow: 0 0 10px rgba(0, 229, 255, 0.1), inset 0 0 5px rgba(0, 229, 255, 0.05);
-    border: 1px solid rgba(0, 229, 255, 0.2);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.05), inset 0 0 5px rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .text-glow {
-    text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
   }
 
   .shimmer-bg {

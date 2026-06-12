@@ -17,7 +17,7 @@ const creditPlans = [
     price: 99,
     description: "Perfect for testing small projects.",
     features: ["5 Deployment Credits", "Community Support", "Standard Nodes"],
-    color: "from-blue-500 to-cyan-400",
+    color: "from-neutral-400 to-neutral-300",
   },
   {
     id: "pro",
@@ -27,7 +27,7 @@ const creditPlans = [
     description: "Most popular for growing apps.",
     features: ["10 Deployment Credits", "Priority Support", "High-Performance Nodes", "Advanced Analytics"],
     popular: true,
-    color: "from-indigo-600 to-purple-500",
+    color: "from-neutral-500 to-neutral-600",
   },
   {
     id: "enterprise",
@@ -186,7 +186,7 @@ export default function CreditsPage() {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-lg bg-[#0B0F19] border border-white/10 rounded-[32px] p-8 shadow-2xl overflow-hidden"
+              className="relative w-full max-w-lg bg-[#000000] border border-white/10 rounded-[32px] p-8 shadow-2xl overflow-hidden"
             >
                <button onClick={() => setSelectedPlan(null)} className="absolute top-6 right-6 text-text-secondary hover:text-white">
                   <X className="w-6 h-6" />

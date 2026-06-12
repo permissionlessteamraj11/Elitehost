@@ -14,7 +14,7 @@ export function Topbar() {
           <input
             type="text"
             placeholder="Search projects..."
-            className="w-full bg-white/5 border border-white/10 rounded-lg py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-[#00E5FF]/50 transition-colors"
+            className="w-full bg-white/5 border border-white/10 rounded-lg py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-[#FFFFFF]/50 transition-colors"
           />
         </div>
       </div>
@@ -26,15 +26,15 @@ export function Topbar() {
 
         <button className="text-gray-400 hover:text-white transition-colors relative">
           <Bell className="w-5 h-5" />
-          <span className="absolute top-0 right-0 w-2 h-2 bg-[#00E5FF] rounded-full border-2 border-[#020108]" />
+          <span className="absolute top-0 right-0 w-2 h-2 bg-[#FFFFFF] rounded-full border-2 border-[#020108]" />
         </button>
 
         <div className="flex items-center gap-3">
           <div className="text-right hidden sm:block">
             <div className="text-sm font-medium text-white">{profile?.username || "Developer"}</div>
-            <div className="text-xs text-[#00E5FF] font-mono">₹{profile?.credit_balance || "0.00"} Credits</div>
+            <div className="text-xs text-[#FFFFFF] font-mono">₹{profile?.credit_balance || "0.00"} Credits</div>
           </div>
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#00E5FF] to-[#7C3AED] flex items-center justify-center border border-white/20">
+          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#FFFFFF] to-[#A3A3A3] flex items-center justify-center border border-white/20">
             <User className="w-5 h-5 text-white" />
           </div>
         </div>
