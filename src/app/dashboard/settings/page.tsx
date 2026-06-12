@@ -20,7 +20,9 @@ import {
   ArrowUpRight,
   TrendingUp,
   Clock,
-  AlertCircle
+  AlertCircle,
+  Maximize2,
+  Minimize2
 } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { AnimatedButton } from "@/components/ui/animated-button";
@@ -62,6 +64,7 @@ export default function SettingsPage() {
   const [chatMessages, setChatMessages] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
+  const [isChatMaximized, setIsChatMaximized] = useState(false);
 
   useEffect(() => {
     if (activeTab === "wallet") {
@@ -357,19 +360,31 @@ export default function SettingsPage() {
 
           {activeTab === "help" && (
             <div className="space-y-6">
-              <GlassCard className="p-0 overflow-hidden flex flex-col h-[600px]" hover={false}>
-                <div className="p-6 border-b border-white/5 bg-white/2 flex items-center justify-between">
+              <GlassCard
+                className={cn(
+                  "p-0 overflow-hidden flex flex-col transition-all duration-500",
+                  isChatMaximized ? "fixed inset-4 z-[100] h-[calc(100vh-32px)]" : "h-[600px]"
+                )}
+                hover={false}
+              >
+                <div className="p-6 border-b border-white/10 bg-white/5 flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                      <MessageCircle className="w-5 h-5 text-primary" />
+                    <div className="w-10 h-10 rounded-sm bg-white/10 flex items-center justify-center">
+                      <MessageCircle className="w-5 h-5 text-white" />
                     </div>
                     <div>
                       <h2 className="text-lg font-bold font-heading small-caps">Elite Support Chat</h2>
-                      <p className="text-[10px] text-emerald-500 font-bold uppercase tracking-widest">Online • Typical reply &lt; 2h</p>
+                      <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Online • Typical reply &lt; 2h</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-4">
                      <div className="text-[10px] text-text-secondary font-bold uppercase tracking-widest hidden sm:block">ID: #{user?.id?.substring(0,8)}</div>
+                     <button
+                        onClick={() => setIsChatMaximized(!isChatMaximized)}
+                        className="p-2 hover:bg-white/10 rounded-sm transition-colors text-white"
+                     >
+                        {isChatMaximized ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                     </button>
                   </div>
                 </div>
 

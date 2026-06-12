@@ -12,7 +12,7 @@ export function AppHeader() {
 
   return (
     <header className="sticky top-0 z-40 w-full px-4 pt-4 pb-2 lg:px-8 lg:pt-6">
-      <div className="max-w-7xl mx-auto flex items-center justify-between glass-morphism rounded-[24px] p-2 pr-3 pl-4 border border-white/10 shadow-[0_4px_24px_rgba(0,0,0,0.2)]">
+      <div className="max-w-7xl mx-auto flex items-center justify-between glass-morphism rounded-sm p-2 pr-3 pl-4 border border-white/10 shadow-[0_4px_24px_rgba(0,0,0,0.2)]">
         <div className="flex items-center gap-3">
           <Link href="/dashboard" className="flex items-center gap-2 group">
             <div className="relative w-6 h-6 sm:w-8 sm:h-8">
@@ -28,10 +28,16 @@ export function AppHeader() {
 
         <div className="flex items-center gap-2 sm:gap-4">
           {/* Credit Display */}
-          <div className="flex items-center gap-1.5 px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg sm:rounded-xl bg-primary/10 border border-primary/20 text-primary">
-            <Wallet className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-            <span className="text-[10px] sm:text-xs font-bold font-mono">{profile?.credit_balance?.toFixed(2) || "2.00"} CR</span>
-          </div>
+          <Link href="/dashboard/credits">
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex items-center gap-1.5 px-2 py-1 sm:px-3 sm:py-1.5 rounded-sm bg-white/10 border border-white/20 text-white cursor-pointer"
+            >
+              <Wallet className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+              <span className="text-[10px] sm:text-xs font-bold font-mono">{profile?.credit_balance?.toFixed(2) || "2.00"} CR</span>
+            </motion.div>
+          </Link>
 
           <motion.button
             whileTap={{ scale: 0.9 }}
@@ -51,10 +57,10 @@ export function AppHeader() {
           <Link href="/dashboard/settings" className="flex items-center gap-2 sm:gap-3 ml-1 sm:ml-2 group">
             <div className="text-right hidden md:block">
               <div className="text-xs font-bold text-white uppercase tracking-wider small-caps">{profile?.username || "Developer"}</div>
-              <div className="text-[10px] text-primary font-mono font-bold tracking-tight small-caps">VIP STATUS</div>
+              <div className="text-[10px] text-white font-mono font-bold tracking-tight small-caps">VIP STATUS</div>
             </div>
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-br from-primary to-accent p-[1px]">
-              <div className="w-full h-full rounded-[7px] sm:rounded-[11px] bg-void flex items-center justify-center overflow-hidden">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-sm bg-white p-[1px]">
+              <div className="w-full h-full rounded-sm bg-void flex items-center justify-center overflow-hidden">
                  {profile?.avatar_url ? (
                    <Image src={profile.avatar_url} alt="Profile" width={40} height={40} className="object-cover" />
                  ) : (

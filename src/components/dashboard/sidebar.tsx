@@ -28,13 +28,13 @@ export function Sidebar() {
   const { signOut } = useAuthStore();
 
   return (
-    <aside className="w-64 h-screen bg-black/40 backdrop-blur-xl border-r border-white/5 flex flex-col fixed left-0 top-0 z-50">
+    <aside className="w-64 h-screen bg-black/40 backdrop-blur-xl border-r border-white/10 flex flex-col fixed left-0 top-0 z-50">
       <div className="p-6">
         <Link href="/" className="flex items-center gap-3 group">
           <div className="relative w-8 h-8">
             <Image src="/logo.png" alt="EliteHosting Logo" fill className="object-contain" />
           </div>
-          <span className="font-bold text-xl tracking-tight font-heading">EliteHosting</span>
+          <span className="font-bold text-xl tracking-tighter font-heading uppercase">EliteHosting</span>
         </Link>
       </div>
 
@@ -46,33 +46,33 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 px-4 py-3 rounded-xl transition-all group",
+                "flex items-center gap-3 px-4 py-3 rounded-sm transition-all group font-bold text-[10px] uppercase tracking-widest",
                 isActive
-                  ? "bg-primary/10 text-primary border border-primary/20"
-                  : "text-text-secondary hover:text-white hover:bg-white/5"
+                  ? "bg-white text-black border border-white"
+                  : "text-zinc-500 hover:text-white hover:bg-white/5"
               )}
             >
-              <item.icon className={cn("w-5 h-5", isActive ? "text-primary" : "group-hover:text-white")} />
-              <span className="font-medium">{item.label}</span>
+              <item.icon className={cn("w-4 h-4", isActive ? "text-black" : "group-hover:text-white")} />
+              <span>{item.label}</span>
             </Link>
           );
         })}
       </nav>
 
-      <div className="p-4 border-t border-white/5 space-y-1">
+      <div className="p-4 border-t border-white/10 space-y-1">
         <Link
-          href="/dashboard/settings?tab=help"
-          className="flex items-center gap-3 px-4 py-3 text-text-secondary hover:text-white hover:bg-white/5 rounded-xl transition-all"
+          href="/dashboard/settings"
+          className="flex items-center gap-3 px-4 py-3 text-zinc-500 hover:text-white hover:bg-white/5 rounded-sm transition-all font-bold text-[10px] uppercase tracking-widest"
         >
-          <HelpCircle className="w-5 h-5" />
-          <span className="font-medium">Help & Support</span>
+          <HelpCircle className="w-4 h-4" />
+          <span>Support</span>
         </Link>
         <button
           onClick={() => signOut()}
-          className="flex items-center gap-3 px-4 py-3 w-full text-left text-text-secondary hover:text-red-400 hover:bg-red-400/5 rounded-xl transition-all"
+          className="flex items-center gap-3 px-4 py-3 w-full text-left text-zinc-500 hover:text-white hover:bg-white/5 rounded-sm transition-all font-bold text-[10px] uppercase tracking-widest"
         >
-          <LogOut className="w-5 h-5" />
-          <span className="font-medium">Logout</span>
+          <LogOut className="w-4 h-4" />
+          <span>Logout</span>
         </button>
       </div>
     </aside>

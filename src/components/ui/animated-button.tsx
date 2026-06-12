@@ -1,63 +1,64 @@
 "use client";
 
-import { motion, HTMLMotionProps } from "framer-motion";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 
-interface AnimatedButtonProps extends Omit<HTMLMotionProps<"button">, "children"> {
-  children?: React.ReactNode;
-  variant?: "primary" | "secondary" | "outline" | "ghost";
-  size?: "sm" | "md" | "lg" | "icon";
+interface AnimatedButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
   loading?: boolean;
-  glow?: boolean;
+  children: React.ReactNode;
 }
 
 export function AnimatedButton({
-  children,
-  className,
-  variant = "primary",
-  size = "md",
+  variant = 'primary',
+  size = 'md',
   loading = false,
-  glow = true,
+  className,
+  children,
   disabled,
   ...props
 }: AnimatedButtonProps) {
   const variants = {
-    primary: "bg-electric text-void font-bold shadow-[0_0_20px_rgba(0,229,255,0.3)]",
-    secondary: "bg-surface-3 text-white font-semibold",
-    outline: "border border-electric/30 text-electric hover:bg-electric/5",
-    ghost: "text-gray-400 hover:text-white hover:bg-white/5",
+    primary: "bg-white text-black hover:bg-zinc-200 border border-white",
+    secondary: "bg-zinc-900 text-white hover:bg-zinc-800 border border-zinc-800",
+    outline: "bg-transparent text-white border border-white/20 hover:bg-white/5",
+    ghost: "bg-transparent text-white hover:bg-white/5 border border-transparent",
   };
 
   const sizes = {
-    sm: "px-4 py-1.5 text-xs rounded-lg",
-    md: "px-6 py-2.5 text-sm rounded-xl",
-    lg: "px-8 py-4 text-base rounded-2xl",
-    icon: "p-3 rounded-xl",
+    sm: "px-4 py-1.5 text-xs font-bold uppercase tracking-widest",
+    md: "px-6 py-2.5 text-sm font-bold uppercase tracking-widest",
+    lg: "px-8 py-3.5 text-base font-bold uppercase tracking-widest",
   };
+
+  const { onAnimationStart: _, ...restProps } = props as any;
 
   return (
     <motion.button
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.95 }}
+      whileHover={!disabled && !loading ? { scale: 1.02 } : {}}
+      whileTap={!disabled && !loading ? { scale: 0.98 } : {}}
       disabled={disabled || loading}
+      aria-busy={loading}
+      aria-live="polite"
       className={cn(
-        "relative inline-flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none overflow-hidden",
+        "relative inline-flex items-center justify-center rounded-sm transition-all duration-200 focus-ring",
         variants[variant],
         sizes[size],
-        glow && variant === "primary" && "animate-glow-pulse",
+        (disabled || loading) && "opacity-50 cursor-not-allowed grayscale",
         className
       )}
-      {...props}
+      {...restProps}
     >
-      {loading ? (
-        <Loader2 className="w-5 h-5 animate-spin" />
-      ) : (
-        children
+      {loading && (
+        <>
+          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+          <span className="sr-only">Loading...</span>
+        </>
       )}
-
-      {/* Ripple Effect Container */}
-      <span className="absolute inset-0 pointer-events-none bg-white/10 opacity-0 active:opacity-100 transition-opacity" />
+      <span className={cn("flex items-center gap-2", loading && "opacity-0")}>{children}</span>
+      {loading && <span className="absolute inset-0 flex items-center justify-center">Processing</span>}
     </motion.button>
   );
 }

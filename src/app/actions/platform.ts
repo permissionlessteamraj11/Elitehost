@@ -66,13 +66,18 @@ export async function getAdminData() {
     };
 }
 
-export async function updateUserCredits(userId: string, amount: number) {
+export async function updateUserCredits(userId: string, amount: number, expiresAt?: string) {
     const user = await db.users.findOne((u: any) => u.id === userId);
     if (!user) return { success: false, error: "User not found" };
 
     // Admin added credits are considered paid credits
     const newBalance = (Number(user.paid_credits) || 0) + amount;
-    await db.users.update((u: any) => u.id === userId, { paid_credits: newBalance });
+    const updateData: any = { paid_credits: newBalance };
+    if (expiresAt) {
+        updateData.credits_expiry = expiresAt;
+    }
+
+    await db.users.update((u: any) => u.id === userId, updateData);
     return { success: true, newBalance };
 }
 
