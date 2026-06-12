@@ -98,13 +98,13 @@ export function AIStudio() {
           <div className="space-y-6">
             <div className="space-y-3">
               <label className="text-sm font-bold text-text-secondary uppercase tracking-widest flex items-center gap-2">
-                <Sparkles className="w-3.5 h-3.5 text-primary" /> System Objective
+                <Sparkles className="w-3.5 h-3.5 text-white" /> System Objective
               </label>
               <textarea
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder="Describe the complete project architecture and requirements..."
-                className="w-full h-40 bg-void/50 border border-white/5 rounded-2xl p-4 text-sm focus:outline-none focus:ring-1 focus:ring-primary/30 transition-all placeholder:text-white/10 font-mono"
+                className="w-full h-40 bg-void/50 border border-white/5 rounded-sm p-4 text-sm focus:outline-none focus:ring-1 focus:ring-primary/30 transition-all placeholder:text-white/10 font-mono"
               />
             </div>
 
@@ -118,9 +118,9 @@ export function AIStudio() {
                     key={model.id}
                     onClick={() => setSelectedModel(model.id)}
                     className={cn(
-                      "w-full text-left p-3 rounded-xl border transition-all",
+                      "w-full text-left p-3 rounded-sm border transition-all",
                       selectedModel === model.id
-                        ? "bg-primary/10 border-primary/30 ring-1 ring-primary/20"
+                        ? "bg-white/10 border-white/30 ring-1 ring-primary/20"
                         : "bg-white/5 border-transparent hover:border-white/10"
                     )}
                   >
@@ -141,13 +141,13 @@ export function AIStudio() {
                     key={fw.id}
                     onClick={() => setSelectedFramework(fw.id)}
                     className={cn(
-                      "flex items-center gap-2 p-3 rounded-xl border text-sm transition-all",
+                      "flex items-center gap-2 p-3 rounded-sm border text-sm transition-all",
                       selectedFramework === fw.id
-                        ? "bg-primary/10 border-primary/30"
+                        ? "bg-white/10 border-white/30"
                         : "bg-white/5 border-transparent hover:border-white/10"
                     )}
                   >
-                    <fw.icon className="w-4 h-4 text-primary" />
+                    <fw.icon className="w-4 h-4 text-white" />
                     {fw.label}
                   </button>
                 ))}
@@ -161,7 +161,7 @@ export function AIStudio() {
             >
               {isGenerating ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-void border-t-transparent rounded-full animate-spin" />
+                  <div className="w-4 h-4 border-2 border-void border-t-transparent rounded-sm animate-spin" />
                   Generating Elite Code...
                 </>
               ) : (
@@ -193,9 +193,9 @@ export function AIStudio() {
                       key={file.name}
                       onClick={() => { setSelectedFile(file); setShowPreview(false); setDiagnosis(null); }}
                       className={cn(
-                        "w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all",
+                        "w-full flex items-center gap-2 px-3 py-2 rounded-sm text-sm transition-all",
                         selectedFile?.name === file.name && !showPreview
-                          ? "bg-primary/10 text-primary"
+                          ? "bg-white/10 text-white"
                           : "text-text-secondary hover:text-white hover:bg-white/5"
                       )}
                     >
@@ -214,7 +214,7 @@ export function AIStudio() {
               {/* Tabs / Header */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between px-6 py-3 border-b border-white/5 bg-white/5 gap-3">
                 <div className="flex items-center gap-2">
-                   <FileText className="w-4 h-4 text-primary" />
+                   <FileText className="w-4 h-4 text-white" />
                    <span className="text-sm font-bold">{selectedFile?.name || "No file selected"}</span>
                 </div>
 
@@ -222,17 +222,17 @@ export function AIStudio() {
                   <button
                     onClick={handleDiagnose}
                     disabled={!selectedFile || isDiagnosing}
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold bg-white/5 text-text-secondary hover:text-white transition-all whitespace-nowrap"
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-sm text-xs font-bold bg-white/5 text-text-secondary hover:text-white transition-all whitespace-nowrap"
                   >
-                    {isDiagnosing ? <div className="w-3 h-3 border border-white/20 border-t-white rounded-full animate-spin" /> : <AlertCircle className="w-3.5 h-3.5" />}
+                    {isDiagnosing ? <div className="w-3 h-3 border border-white/20 border-t-white rounded-sm animate-spin" /> : <AlertCircle className="w-3.5 h-3.5" />}
                     Detect Errors
                   </button>
                   <button
                     onClick={() => setShowPreview(!showPreview)}
                     className={cn(
-                      "px-3 py-1.5 rounded-lg text-xs font-bold transition-all border whitespace-nowrap",
+                      "px-3 py-1.5 rounded-sm text-xs font-bold transition-all border whitespace-nowrap",
                       showPreview
-                        ? "bg-primary/20 border-primary/30 text-primary"
+                        ? "bg-white/20 border-white/30 text-white"
                         : "bg-white/5 border-transparent text-text-secondary hover:text-white"
                     )}
                   >
@@ -255,8 +255,8 @@ export function AIStudio() {
                       className="absolute inset-0 bg-[#000] flex items-center justify-center p-8 text-center"
                     >
                       <div className="space-y-4">
-                        <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto border border-primary/20">
-                          <Globe className="w-8 h-8 text-primary" />
+                        <div className="w-16 h-16 rounded-sm bg-white/10 flex items-center justify-center mx-auto border border-white/20">
+                          <Globe className="w-8 h-8 text-white" />
                         </div>
                         <h3 className="text-xl font-bold font-heading text-white">Live Preview Ready</h3>
                         <p className="text-text-secondary max-w-xs mx-auto text-sm">
@@ -309,18 +309,18 @@ export function AIStudio() {
                             className="absolute bottom-6 right-6 max-w-sm"
                           >
                             <GlassCard className={cn(
-                              "p-4 border-l-4",
-                              diagnosis.status === 'clean' ? "border-green-500 bg-green-500/10" : "border-yellow-500 bg-yellow-500/10"
+                              "p-4 border-l-4 rounded-sm",
+                              diagnosis.status === 'clean' ? "border-white bg-white/5" : "border-white/20 bg-white/5"
                             )}>
                               <div className="flex items-start gap-3">
-                                {diagnosis.status === 'clean' ? <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" /> : <AlertCircle className="w-5 h-5 text-yellow-500 flex-shrink-0" />}
+                                {diagnosis.status === 'clean' ? <CheckCircle2 className="w-5 h-5 text-white flex-shrink-0" /> : <AlertCircle className="w-5 h-5 text-neutral-400 flex-shrink-0" />}
                                 <div>
                                   <div className="text-sm font-bold">{diagnosis.message}</div>
                                   {diagnosis.details && (
                                     <ul className="mt-2 space-y-1">
                                       {diagnosis.details.map((d: string, i: number) => (
                                         <li key={i} className="text-xs text-text-secondary flex items-center gap-1.5">
-                                          <div className="w-1 h-1 rounded-full bg-yellow-500" /> {d}
+                                          <div className="w-1 h-1 rounded-sm bg-white" /> {d}
                                         </li>
                                       ))}
                                     </ul>
@@ -349,7 +349,7 @@ export function AIStudio() {
             {logs.map((log, i) => (
               <div key={i} className={cn(
                 log.startsWith('[Error]') ? "text-red-400" :
-                log.startsWith('[AI]') ? "text-primary" : "text-white/40"
+                log.startsWith('[AI]') ? "text-white" : "text-white/40"
               )}>
                 {log}
               </div>

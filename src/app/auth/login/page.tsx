@@ -40,7 +40,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#020108] px-4">
+    <div className="min-h-screen flex items-center justify-center bg-black px-4">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,229,255,0.05),transparent_50%)]" />
 
       <motion.div
@@ -50,18 +50,18 @@ export default function LoginPage() {
       >
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 mb-6 group">
-            <div className="w-10 h-10 rounded-lg bg-[#00E5FF]/10 border border-[#00E5FF]/20 flex items-center justify-center group-hover:bg-[#00E5FF]/20 transition-colors">
-              <Zap className="w-6 h-6 text-[#00E5FF]" />
+            <div className="w-10 h-10 rounded-sm bg-white/10 border border-white/20 flex items-center justify-center group-hover:bg-white/20 transition-colors">
+              <Zap className="w-6 h-6 text-white" />
             </div>
             <span className="text-2xl font-bold tracking-tight">
-              Elite<span className="text-[#00E5FF]">Hosting</span>
+              Elite<span className="text-white">Hosting</span>
             </span>
           </Link>
           <h1 className="text-3xl font-bold mb-2">Welcome back.</h1>
           <p className="text-gray-400">Sign in to your dashboard and ship today.</p>
         </div>
 
-        <div className="p-8 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl">
+        <div className="p-8 rounded-sm border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl">
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-400 mb-1.5 ml-1">Email or Mobile Number</label>
@@ -73,7 +73,7 @@ export default function LoginPage() {
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
                   placeholder="Email or Mobile"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#00E5FF]/50 transition-all"
+                  className="w-full bg-white/5 border border-white/10 rounded-sm py-3 pl-10 pr-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
                   disabled={loading}
                 />
               </div>
@@ -82,7 +82,7 @@ export default function LoginPage() {
             <div>
               <div className="flex items-center justify-between mb-1.5 ml-1">
                 <label className="text-sm font-medium text-gray-400">Password</label>
-                <Link href="/auth/forgot-password" title="Coming soon" className="text-xs text-[#00E5FF] hover:underline">
+                <Link href="/auth/forgot-password" title="Coming soon" className="text-xs text-white hover:underline">
                   Forgot?
                 </Link>
               </div>
@@ -94,14 +94,14 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#00E5FF]/50 transition-all"
+                  className="w-full bg-white/5 border border-white/10 rounded-sm py-3 pl-10 pr-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
                   disabled={loading}
                 />
               </div>
             </div>
 
             {error && (
-              <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-500 text-sm">
+              <div className="p-3 rounded-sm bg-red-500/10 border border-red-500/20 text-red-500 text-sm">
                 {error}
               </div>
             )}
@@ -109,7 +109,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all bg-[#00E5FF] text-black shadow-[0_0_20px_rgba(0,229,255,0.3)] ${
+              className={`w-full py-3 rounded-sm font-bold flex items-center justify-center gap-2 transition-all bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.2)] ${
                 loading ? "opacity-50 cursor-not-allowed" : "hover:scale-[1.02] active:scale-[0.98]"
               }`}
             >
@@ -127,7 +127,7 @@ export default function LoginPage() {
           <div className="mt-8 pt-6 border-t border-white/10 text-center">
             <p className="text-gray-500 text-sm">
               New to EliteHosting?{" "}
-              <Link href="/auth/register" className="text-white font-semibold hover:text-[#00E5FF] transition-colors">
+              <Link href="/auth/register" className="text-white font-semibold hover:text-white transition-colors">
                 Create free account
               </Link>
             </p>

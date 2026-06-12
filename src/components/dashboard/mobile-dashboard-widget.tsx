@@ -17,17 +17,17 @@ export function MobileDashboardWidget({
   value,
   icon: Icon,
   trend,
-  color = "text-electric",
+  color = "text-white",
   className,
 }: MobileDashboardWidgetProps) {
   return (
     <GlassCard className={cn("p-5", className)}>
       <div className="flex justify-between items-start mb-3">
-        <div className="p-2.5 rounded-xl bg-white/5 border border-white/5">
+        <div className="p-2.5 rounded-sm bg-white/5 border border-white/5">
           <Icon className={cn("w-5 h-5", color)} />
         </div>
         {trend && (
-          <span className="text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full uppercase">
+          <span className="text-[10px] font-bold text-white bg-white/10 px-2 py-0.5 rounded-sm uppercase">
             {trend}
           </span>
         )}
@@ -39,8 +39,8 @@ export function MobileDashboardWidget({
 
       {/* Decorative background element */}
       <div className={cn(
-        "absolute -bottom-2 -right-2 w-16 h-16 blur-2xl opacity-10 rounded-full",
-        color.includes("electric") ? "bg-electric" : "bg-white"
+        "absolute -bottom-2 -right-2 w-16 h-16 blur-2xl opacity-10 rounded-sm",
+        color.includes("electric") ? "bg-white" : "bg-white"
       )} />
     </GlassCard>
   );

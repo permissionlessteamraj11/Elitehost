@@ -28,8 +28,8 @@ export function ResourceCharts() {
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-sm font-bold uppercase tracking-widest text-white/50">CPU Usage (%)</h3>
           <div className="flex items-center gap-2">
-             <div className="w-2 h-2 rounded-full bg-electric shadow-[0_0_8px_#00E5FF]" />
-             <span className="text-[10px] font-bold text-electric">LIVE</span>
+             <div className="w-2 h-2 rounded-full bg-white shadow-[0_0_8px_#00E5FF]" />
+             <span className="text-[10px] font-bold text-white">LIVE</span>
           </div>
         </div>
         <div className="h-64">

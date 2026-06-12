@@ -25,7 +25,7 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
         <div className="absolute inset-0 bg-gradient-to-t from-[#020108] via-transparent to-transparent" />
         <div className="absolute top-8 left-8">
            <Link href="/blog">
-              <button className="p-3 bg-void/50 backdrop-blur-xl border border-white/10 rounded-2xl hover:bg-white/10 transition-all">
+              <button className="p-3 bg-void/50 backdrop-blur-xl border border-white/10 rounded-sm hover:bg-white/10 transition-all">
                 <ArrowLeft className="w-5 h-5" />
               </button>
            </Link>
@@ -36,8 +36,8 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
         <div className="max-w-4xl mx-auto space-y-12">
           <GlassCard className="p-8 md:p-12 space-y-8" hover={false}>
             <div className="space-y-6">
-               <div className="flex flex-wrap items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-electric">
-                 <span className="px-3 py-1 bg-electric/10 border border-electric/20 rounded-full">{post.category}</span>
+               <div className="flex flex-wrap items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-white">
+                 <span className="px-3 py-1 bg-white/10 border border-electric/20 rounded-full">{post.category}</span>
                  <div className="flex items-center gap-1 text-white/40"><Calendar className="w-3 h-3" /> {post.date}</div>
                  <div className="flex items-center gap-1 text-white/40"><Clock className="w-3 h-3" /> 8 min read</div>
                </div>
@@ -55,7 +55,7 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
                     <div className="text-xs text-white/40">Expert Contributor, EliteHosting</div>
                   </div>
                   <div className="ml-auto flex gap-2">
-                    <button className="p-2 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition-all">
+                    <button className="p-2 bg-white/5 rounded-sm border border-white/10 hover:bg-white/10 transition-all">
                       <Share2 className="w-4 h-4" />
                     </button>
                   </div>
@@ -66,9 +66,9 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
               className="prose prose-invert prose-electric max-w-none
               prose-headings:font-bold prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-6
               prose-p:text-white/60 prose-p:leading-relaxed prose-p:mb-6
-              prose-blockquote:border-l-4 prose-blockquote:border-electric prose-blockquote:bg-electric/5 prose-blockquote:p-6 prose-blockquote:rounded-r-2xl prose-blockquote:italic
-              prose-code:bg-white/5 prose-code:p-1 prose-code:rounded prose-code:text-electric
-              prose-pre:bg-void prose-pre:border prose-pre:border-white/10 prose-pre:p-6 prose-pre:rounded-2xl"
+              prose-blockquote:border-l-4 prose-blockquote:border-electric prose-blockquote:bg-white/5 prose-blockquote:p-6 prose-blockquote:rounded-r-2xl prose-blockquote:italic
+              prose-code:bg-white/5 prose-code:p-1 prose-code:rounded prose-code:text-white
+              prose-pre:bg-void prose-pre:border prose-pre:border-white/10 prose-pre:p-6 prose-pre:rounded-sm"
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
 
@@ -77,7 +77,7 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
                  <Tag className="w-3 h-3" /> Tags:
                </span>
                {["Performance", "Cloud", "India"].map(tag => (
-                 <span key={tag} className="px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-[10px] text-white/60 hover:text-white transition-colors cursor-pointer">#{tag}</span>
+                 <span key={tag} className="px-3 py-1 bg-white/5 border border-white/10 rounded-sm text-[10px] text-white/60 hover:text-white transition-colors cursor-pointer">#{tag}</span>
                ))}
             </div>
           </GlassCard>
@@ -88,7 +88,7 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
                <h3 className="text-xl font-bold">Enjoyed this article?</h3>
                <p className="text-sm text-white/40">Join 5,000+ elite developers receiving our weekly technical newsletter.</p>
                <div className="flex gap-2">
-                 <input type="email" placeholder="email@example.com" className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-electric/50" />
+                 <input type="email" placeholder="email@example.com" className="flex-1 bg-white/5 border border-white/10 rounded-sm px-4 py-3 text-sm focus:outline-none focus:border-electric/50" />
                  <AnimatedButton size="sm">Subscribe</AnimatedButton>
                </div>
             </GlassCard>

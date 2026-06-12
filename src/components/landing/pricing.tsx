@@ -58,7 +58,7 @@ export function Pricing() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1 }}
               viewport={{ once: true }}
-              className={`p-8 rounded-2xl border ${
+              className={`p-8 rounded-sm border ${
                 tier.popular ? "border-[#00E5FF] bg-[#00E5FF]/5 relative" : "border-white/10 bg-white/5"
               }`}
             >
@@ -84,7 +84,7 @@ export function Pricing() {
 
               <Link
                 href="/auth/register"
-                className={`block w-full py-3 rounded-lg text-center font-bold transition-all ${
+                className={`block w-full py-3 rounded-sm text-center font-bold transition-all ${
                   tier.popular
                     ? "bg-[#00E5FF] text-black hover:bg-[#00E5FF]/90"
                     : "bg-white/10 text-white hover:bg-white/20"

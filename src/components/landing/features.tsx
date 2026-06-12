@@ -55,9 +55,9 @@ export function Features() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1 }}
               viewport={{ once: true }}
-              className="p-8 rounded-2xl border border-white/10 bg-white/5 hover:border-[#00E5FF]/50 transition-colors group"
+              className="p-8 rounded-sm border border-white/10 bg-white/5 hover:border-[#00E5FF]/50 transition-colors group"
             >
-              <div className="mb-4 p-3 rounded-lg bg-white/5 w-fit group-hover:scale-110 transition-transform">
+              <div className="mb-4 p-3 rounded-sm bg-white/5 w-fit group-hover:scale-110 transition-transform">
                 {feature.icon}
               </div>
               <h3 className="text-xl font-bold mb-2">{feature.title}</h3>

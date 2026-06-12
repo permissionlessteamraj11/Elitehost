@@ -52,7 +52,7 @@ export default function DeploymentsPage() {
                 placeholder="Search deployments..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-primary/50 w-full md:w-64"
+                className="bg-white/5 border border-white/10 rounded-sm pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-white/50 w-full md:w-64"
               />
            </div>
            <Link href="/dashboard/new">
@@ -66,7 +66,7 @@ export default function DeploymentsPage() {
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-48 rounded-2xl bg-white/5 animate-pulse border border-white/10" />
+            <div key={i} className="h-48 rounded-sm bg-white/5 animate-pulse border border-white/10" />
           ))}
         </div>
       ) : filteredDeployments.length > 0 ? (
@@ -80,7 +80,7 @@ export default function DeploymentsPage() {
               <GlassCard className="p-6 space-y-4 group">
                 <div className="flex justify-between items-start">
                   <div className="space-y-1">
-                    <h3 className="font-bold text-lg group-hover:text-primary transition-colors">{deployment.name || 'Unnamed Project'}</h3>
+                    <h3 className="font-bold text-lg group-hover:text-white transition-colors">{deployment.name || 'Unnamed Project'}</h3>
                     <div className="text-[10px] font-mono text-text-secondary truncate max-w-[150px] uppercase tracking-widest">
                       ID: {deployment.id}
                     </div>

@@ -68,14 +68,14 @@ export default function ProfilePage() {
         <div className="space-y-6">
            <GlassCard className="p-6 space-y-6" hover={false}>
              <h3 className="text-lg font-bold font-space-grotesk flex items-center gap-2">
-               <ShieldCheck className="w-5 h-5 text-electric" /> Credentials
+               <ShieldCheck className="w-5 h-5 text-white" /> Credentials
              </h3>
              <div className="space-y-4">
-                <div className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5">
+                <div className="flex items-center justify-between p-3 rounded-sm bg-white/5 border border-white/5">
                    <div className="text-sm">Verified Developer</div>
                    <CheckCircle className="w-4 h-4 text-success" />
                 </div>
-                <div className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5">
+                <div className="flex items-center justify-between p-3 rounded-sm bg-white/5 border border-white/5">
                    <div className="text-sm">Early Adopter</div>
                    <Award className="w-4 h-4 text-warning" />
                 </div>
@@ -85,11 +85,11 @@ export default function ProfilePage() {
            <GlassCard className="p-6 space-y-4" hover={false}>
              <h3 className="text-lg font-bold font-space-grotesk">Global Stats</h3>
              <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 rounded-xl bg-white/5 text-center">
+                <div className="p-4 rounded-sm bg-white/5 text-center">
                    <div className="text-2xl font-bold">128</div>
                    <div className="text-[10px] text-text-secondary uppercase">Deployments</div>
                 </div>
-                <div className="p-4 rounded-xl bg-white/5 text-center">
+                <div className="p-4 rounded-sm bg-white/5 text-center">
                    <div className="text-2xl font-bold">14</div>
                    <div className="text-[10px] text-text-secondary uppercase">Active Projects</div>
                 </div>
@@ -108,8 +108,8 @@ export default function ProfilePage() {
             {publicProjects.map((project, idx) => (
               <GlassCard key={idx} className="p-6 space-y-4 group">
                 <div className="flex items-center justify-between">
-                   <div className="w-10 h-10 rounded-xl bg-electric/10 flex items-center justify-center border border-electric/20">
-                      <Layers className="w-5 h-5 text-electric" />
+                   <div className="w-10 h-10 rounded-sm bg-white/10 flex items-center justify-center border border-electric/20">
+                      <Layers className="w-5 h-5 text-white" />
                    </div>
                    <StatusChip status={project.status} label="online" />
                 </div>
@@ -119,7 +119,7 @@ export default function ProfilePage() {
                 </div>
                 <div className="pt-2 flex items-center justify-between text-xs font-mono text-text-secondary">
                    <span>{project.url}</span>
-                   <ExternalLink className="w-3 h-3 group-hover:text-electric transition-colors" />
+                   <ExternalLink className="w-3 h-3 group-hover:text-white transition-colors" />
                 </div>
               </GlassCard>
             ))}

@@ -54,7 +54,7 @@ export function TerminalLogs({ logs }: TerminalLogsProps) {
   }, [logs]);
 
   return (
-    <div className="rounded-xl border border-white/5 bg-black/40 p-4">
+    <div className="rounded-sm border border-white/5 bg-black/40 p-4">
       <div ref={terminalRef} className="h-96 w-full" />
     </div>
   );

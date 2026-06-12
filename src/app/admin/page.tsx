@@ -18,10 +18,10 @@ export default function AdminDashboard() {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   const [stats, setStats] = useState([
-    { label: "Total Users", value: "0", icon: Users, color: "text-primary" },
-    { label: "Total Projects", value: "0", icon: Server, color: "text-emerald-500" },
-    { label: "Active Deployments", value: "0", icon: Activity, color: "text-accent" },
-    { label: "Mumbai Node", value: "Online", icon: ShieldAlert, color: "text-emerald-500" },
+    { label: "Total Users", value: "0", icon: Users, color: "text-white" },
+    { label: "Total Projects", value: "0", icon: Server, color: "text-white" },
+    { label: "Active Deployments", value: "0", icon: Activity, color: "text-white" },
+    { label: "Mumbai Node", value: "Online", icon: ShieldAlert, color: "text-white" },
   ]);
 
   const [users, setUsers] = useState<any[]>([]);
@@ -110,10 +110,10 @@ export default function AdminDashboard() {
       setFreePlanEnabled(freePlan === true);
 
       setStats([
-        { label: "Total Users", value: adminData.userCount.toString(), icon: Users, color: "text-primary" },
-        { label: "Total Projects", value: adminData.projectCount.toString(), icon: Server, color: "text-emerald-500" },
-        { label: "Active Deployments", value: adminData.deployCount.toString(), icon: Activity, color: "text-accent" },
-        { label: "Mumbai Node", value: "Online", icon: ShieldAlert, color: "text-emerald-500" },
+        { label: "Total Users", value: adminData.userCount.toString(), icon: Users, color: "text-white" },
+        { label: "Total Projects", value: adminData.projectCount.toString(), icon: Server, color: "text-white" },
+        { label: "Active Deployments", value: adminData.deployCount.toString(), icon: Activity, color: "text-white" },
+        { label: "Mumbai Node", value: "Online", icon: ShieldAlert, color: "text-white" },
       ]);
     } catch (error) {
       console.error("Error fetching admin data:", error);
@@ -136,9 +136,14 @@ export default function AdminDashboard() {
   };
 
   const handleUpdateCredits = async (userId: string, amount: number) => {
-    const res = await updateUserCredits(userId, amount);
+    let expiresAt = undefined;
+    if (amount > 0) {
+      const dateStr = prompt("Enter expiry date (YYYY-MM-DD) or leave blank for no change:");
+      if (dateStr) expiresAt = new Date(dateStr).toISOString();
+    }
+    const res = await updateUserCredits(userId, amount, expiresAt);
     if (res.success) {
-      setUsers(prev => prev.map(u => u.id === userId ? { ...u, paid_credits: res.newBalance } : u));
+      setUsers(prev => prev.map(u => u.id === userId ? { ...u, paid_credits: res.newBalance, credits_expiry: expiresAt || u.credits_expiry } : u));
     }
   };
 
@@ -186,8 +191,8 @@ export default function AdminDashboard() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className={cn(
-                    "w-full bg-void/50 border rounded-xl px-4 py-3 text-sm focus:outline-none transition-all",
-                    authError ? "border-red-500" : "border-white/10 focus:border-primary/50"
+                    "w-full bg-void/50 border rounded-sm px-4 py-3 text-sm focus:outline-none transition-all",
+                    authError ? "border-red-500" : "border-white/10 focus:border-white/50"
                   )}
                   placeholder="••••••••••••"
                 />
@@ -222,7 +227,7 @@ export default function AdminDashboard() {
           <AnimatedButton variant="outline" size="sm" onClick={fetchData} className="gap-2">
             <Activity className="w-4 h-4" /> Refresh Data
           </AnimatedButton>
-          <button className="px-6 py-2 bg-red-600/10 border border-red-600/20 text-red-500 font-bold rounded-xl hover:bg-red-600/20 transition-all text-sm uppercase tracking-widest">
+          <button className="px-6 py-2 bg-red-600/10 border border-red-600/20 text-red-500 font-bold rounded-sm hover:bg-red-600/20 transition-all text-sm uppercase tracking-widest">
             Emergency Lockdown
           </button>
         </div>
@@ -232,7 +237,7 @@ export default function AdminDashboard() {
         {stats.map((s, idx) => (
           <GlassCard key={idx} className="p-6" hover={false}>
             <div className="flex items-center justify-between mb-4">
-              <div className={`p-2 rounded-xl bg-white/5 ${s.color}`}>
+              <div className={`p-2 rounded-sm bg-white/5 ${s.color}`}>
                 <s.icon className="w-5 h-5" />
               </div>
               <span className="text-[10px] font-bold text-text-secondary tracking-widest uppercase">Live</span>
@@ -247,10 +252,10 @@ export default function AdminDashboard() {
         {/* Platform Settings */}
         <div className="lg:col-span-1 space-y-6">
           <h2 className="text-2xl font-bold font-heading flex items-center gap-2">
-            <Settings className="w-6 h-6 text-primary" /> Platform Settings
+            <Settings className="w-6 h-6 text-white" /> Platform Settings
           </h2>
           <GlassCard className="p-6 space-y-6" hover={false}>
-            <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10">
+            <div className="flex items-center justify-between p-4 rounded-sm bg-white/5 border border-white/10">
               <div>
                 <div className="font-bold">Free Plan Status</div>
                 <div className="text-[10px] text-text-secondary uppercase tracking-widest mt-1">
@@ -261,7 +266,7 @@ export default function AdminDashboard() {
                 onClick={handleToggleFreePlan}
                 className={cn(
                   "relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none",
-                  freePlanEnabled ? "bg-emerald-500" : "bg-white/10"
+                  freePlanEnabled ? "bg-white" : "bg-white/10"
                 )}
               >
                 <span className={cn(
@@ -271,8 +276,8 @@ export default function AdminDashboard() {
               </button>
             </div>
 
-            <div className="p-4 rounded-xl bg-primary/5 border border-primary/10">
-               <div className="text-xs text-primary font-bold uppercase tracking-widest mb-1">Security Status</div>
+            <div className="p-4 rounded-sm bg-white/5 border border-white/10">
+               <div className="text-xs text-white font-bold uppercase tracking-widest mb-1">Security Status</div>
                <div className="text-lg font-bold">SQL Injection Guard Active</div>
                <div className="text-[10px] text-text-secondary mt-1">Real-time threat monitoring is enabled.</div>
             </div>
@@ -280,7 +285,7 @@ export default function AdminDashboard() {
 
           {/* Withdrawals */}
           <h2 className="text-2xl font-bold font-heading flex items-center gap-2 mt-10">
-            <Wallet className="w-6 h-6 text-accent" /> Withdrawal Requests
+            <Wallet className="w-6 h-6 text-white" /> Withdrawal Requests
           </h2>
           <GlassCard className="p-0 overflow-hidden" hover={false}>
             <div className="divide-y divide-white/5">
@@ -291,15 +296,15 @@ export default function AdminDashboard() {
                           <div className="font-bold text-sm">₹{w.amount}</div>
                           <div className="text-[10px] text-text-secondary font-mono mt-1">{w.upi_id}</div>
                        </div>
-                       <div className="text-[10px] font-bold text-primary uppercase bg-primary/10 px-2 py-0.5 rounded-lg">Pending</div>
+                       <div className="text-[10px] font-bold text-white uppercase bg-white/10 px-2 py-0.5 rounded-sm">Pending</div>
                     </div>
                     <div className="flex items-center justify-between">
                        <div className="text-[10px] text-text-secondary">By: {w.users?.username || 'Unknown'}</div>
                        <div className="flex gap-2">
-                          <button onClick={() => handleWithdrawal(w.id, 'approved')} className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-500 hover:bg-emerald-500/30">
+                          <button onClick={() => handleWithdrawal(w.id, 'approved')} className="p-1.5 rounded-sm bg-white/20 text-white hover:bg-white/30">
                             <Check className="w-3.5 h-3.5" />
                           </button>
-                          <button onClick={() => handleWithdrawal(w.id, 'rejected')} className="p-1.5 rounded-lg bg-red-500/20 text-red-500 hover:bg-red-500/30">
+                          <button onClick={() => handleWithdrawal(w.id, 'rejected')} className="p-1.5 rounded-sm bg-red-500/20 text-red-500 hover:bg-red-500/30">
                             <X className="w-3.5 h-3.5" />
                           </button>
                        </div>
@@ -315,7 +320,7 @@ export default function AdminDashboard() {
         {/* Admin Support Chat */}
         <div className="lg:col-span-3 space-y-6">
            <h2 className="text-2xl font-bold font-heading flex items-center gap-2">
-            <MessageCircle className="w-6 h-6 text-primary" /> Support Command Center
+            <MessageCircle className="w-6 h-6 text-white" /> Support Command Center
           </h2>
           <GlassCard className="p-0 overflow-hidden flex h-[600px]" hover={false}>
             {/* Sidebar: Chat List */}
@@ -330,7 +335,7 @@ export default function AdminDashboard() {
                     onClick={() => setSelectedChatUser(chat.userId)}
                     className={cn(
                       "w-full p-4 text-left hover:bg-white/5 transition-colors group",
-                      selectedChatUser === chat.userId ? "bg-primary/5" : ""
+                      selectedChatUser === chat.userId ? "bg-white/5" : ""
                     )}
                   >
                     <div className="flex justify-between items-start mb-1">
@@ -339,7 +344,7 @@ export default function AdminDashboard() {
                     </div>
                     <div className="text-xs text-text-secondary truncate">{chat.lastMessage}</div>
                     {chat.unread > 0 && (
-                      <div className="mt-2 inline-flex items-center px-1.5 py-0.5 rounded-full bg-primary text-void text-[9px] font-bold">
+                      <div className="mt-2 inline-flex items-center px-1.5 py-0.5 rounded-sm bg-white text-black text-[9px] font-bold">
                         {chat.unread} New
                       </div>
                     )}
@@ -356,7 +361,7 @@ export default function AdminDashboard() {
                 <>
                   <div className="p-4 border-b border-white/5 bg-white/2 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">
+                      <div className="w-8 h-8 rounded-sm bg-white/10 flex items-center justify-center text-white font-bold text-xs">
                         {chats.find(c => c.userId === selectedChatUser)?.username[0]}
                       </div>
                       <div className="font-bold text-sm">{chats.find(c => c.userId === selectedChatUser)?.username}</div>
@@ -369,9 +374,9 @@ export default function AdminDashboard() {
                         msg.sender === 'admin' ? "ml-auto items-end" : "mr-auto items-start"
                       )}>
                         <div className={cn(
-                          "px-4 py-2 rounded-xl text-sm",
+                          "px-4 py-2 rounded-sm text-sm",
                           msg.sender === 'admin'
-                            ? "bg-primary text-void font-medium"
+                            ? "bg-white text-void font-medium"
                             : "bg-white/10 text-white border border-white/5"
                         )}>
                           {msg.content}
@@ -388,7 +393,7 @@ export default function AdminDashboard() {
                       value={replyText}
                       onChange={(e) => setReplyText(e.target.value)}
                       placeholder="Type your reply..."
-                      className="flex-1 bg-void/50 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-primary/50"
+                      className="flex-1 bg-void/50 border border-white/10 rounded-sm px-4 py-2 text-sm focus:outline-none focus:border-white/50"
                     />
                     <AnimatedButton type="submit" size="sm" loading={sendingReply} disabled={!replyText.trim()}>
                       Send Reply
@@ -411,7 +416,7 @@ export default function AdminDashboard() {
             <h2 className="text-2xl font-bold font-heading">User Directory</h2>
             <div className="relative max-w-xs w-full">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary" />
-              <input type="text" placeholder="Search users..." className="w-full bg-void/50 border border-white/5 rounded-xl pl-10 pr-4 py-2 text-xs focus:outline-none focus:border-primary/50" />
+              <input type="text" placeholder="Search users..." className="w-full bg-void/50 border border-white/5 rounded-sm pl-10 pr-4 py-2 text-xs focus:outline-none focus:border-white/50" />
             </div>
           </div>
           <GlassCard className="overflow-hidden" hover={false}>
@@ -430,42 +435,52 @@ export default function AdminDashboard() {
                     <tr key={u.id} className="hover:bg-white/2 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                           <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">
+                           <div className="w-8 h-8 rounded-sm bg-white/10 flex items-center justify-center text-white font-bold text-xs">
                              {u.username?.[0]?.toUpperCase() || 'U'}
                            </div>
                            <div>
                               <div className="font-bold text-sm">{u.username}</div>
                               <div className="text-[10px] text-text-secondary">ID: {u.id}</div>
-                              <div className="text-[10px] text-emerald-500 font-mono">Ref: {u.referral_code}</div>
+                              <div className="text-[10px] text-neutral-400 font-mono">Ref: {u.referral_code}</div>
                            </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
                          <div className="text-[10px] text-white font-medium">{u.email}</div>
                          <div className="text-[10px] text-text-secondary">{u.mobile || 'No Mobile'}</div>
-                         <div className="text-[10px] text-primary mt-1 font-mono">PWD: {u.password_plain || '********'}</div>
+                         <div className="text-[10px] text-white mt-1 font-mono">PWD: {u.password_plain || '********'}</div>
                       </td>
                       <td className="px-6 py-4 font-mono text-sm">
                         <div className="font-bold">{(Number(u.paid_credits || 0) + Number(u.credit_balance || 0)).toFixed(2)}</div>
-                        <div className="text-[10px] text-text-secondary">P: {Number(u.paid_credits || 0)} | F: {Number(u.credit_balance || 0)}</div>
+                        <div className="text-[9px] text-text-secondary">Expires: {u.credits_expiry ? new Date(u.credits_expiry).toLocaleDateString() : 'Never'}</div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex gap-2">
-                          <button onClick={() => handleUpdateCredits(u.id, 1)} className="p-1.5 rounded-lg bg-primary/10 text-primary hover:bg-primary/20" title="Add 1 Credit">
+                          <button onClick={() => handleUpdateCredits(u.id, 1)} className="p-1.5 rounded-sm bg-white/10 text-white hover:bg-white/20" title="Add 1 Credit">
                             <Plus className="w-3.5 h-3.5" />
                           </button>
-                          <button onClick={() => handleUpdateCredits(u.id, -1)} className="p-1.5 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20" title="Remove 1 Credit">
+                          <button onClick={() => handleUpdateCredits(u.id, -1)} className="p-1.5 rounded-sm bg-white/5 text-white/50 hover:bg-white/10" title="Remove 1 Credit">
                             <Minus className="w-3.5 h-3.5" />
                           </button>
                           <button
                             onClick={() => handleBanUser(u.id, u.is_banned)}
                             className={cn(
-                              "p-1.5 rounded-lg transition-colors",
-                              u.is_banned ? "bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20" : "bg-red-500/10 text-red-500 hover:bg-red-500/20"
+                              "p-1.5 rounded-sm transition-colors",
+                              u.is_banned ? "bg-white text-black" : "bg-red-500/20 text-red-500 hover:bg-red-500/30"
                             )}
                             title={u.is_banned ? "Unban User" : "Ban User"}
                           >
                             {u.is_banned ? <Check className="w-3.5 h-3.5" /> : <ShieldAlert className="w-3.5 h-3.5" />}
+                          </button>
+                          <button
+                            onClick={() => {
+                              const ip = prompt("Enter IP to block:", u.last_ip || "");
+                              if (ip) handleBlockIP(ip);
+                            }}
+                            className="p-1.5 rounded-sm bg-white/5 text-white/50 hover:bg-white/20"
+                            title="Block IP"
+                          >
+                            <Lock className="w-3.5 h-3.5" />
                           </button>
                         </div>
                       </td>
@@ -482,7 +497,7 @@ export default function AdminDashboard() {
         {/* Payment Requests */}
         <div className="lg:col-span-1 space-y-6">
            <h2 className="text-2xl font-bold font-heading flex items-center gap-2">
-            <CreditCard className="w-6 h-6 text-primary" /> Payment Approvals
+            <CreditCard className="w-6 h-6 text-white" /> Payment Approvals
           </h2>
           <GlassCard className="p-0 overflow-hidden" hover={false}>
             <div className="divide-y divide-white/5">
@@ -491,14 +506,14 @@ export default function AdminDashboard() {
                     <div className="flex justify-between items-start">
                        <div>
                           <div className="font-bold text-sm">₹{r.amount}</div>
-                          <div className="text-[10px] text-primary font-mono mt-1">TXN: {r.transactionId}</div>
+                          <div className="text-[10px] text-white font-mono mt-1">TXN: {r.transactionId}</div>
                        </div>
-                       <div className="text-[10px] font-bold text-primary uppercase bg-primary/10 px-2 py-0.5 rounded-lg">Pending</div>
+                       <div className="text-[10px] font-bold text-white uppercase bg-white/10 px-2 py-0.5 rounded-sm">Pending</div>
                     </div>
                     <div className="flex items-center justify-between">
                        <div className="text-[10px] text-text-secondary">By: {users.find(u => u.id === r.user_id)?.username || 'User'}</div>
                        <div className="flex gap-2">
-                          <button onClick={() => handleApprovePayment(r.id)} className="px-3 py-1 rounded-lg bg-emerald-500 text-void text-[10px] font-bold hover:bg-emerald-400">
+                          <button onClick={() => handleApprovePayment(r.id)} className="px-3 py-1 rounded-sm bg-white text-black text-[10px] font-bold hover:bg-neutral-200">
                             Approve
                           </button>
                        </div>
@@ -540,9 +555,9 @@ export default function AdminDashboard() {
                       <td className="px-6 py-4">
                         <span className={cn(
                           "flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest",
-                          p.status === 'ready' ? 'text-emerald-500' : 'text-primary'
+                          p.status === 'ready' ? 'text-white' : 'text-neutral-400'
                         )}>
-                          <div className={cn("w-1.5 h-1.5 rounded-full", p.status === 'ready' ? 'bg-emerald-500 animate-pulse' : 'bg-primary')} />
+                          <div className={cn("w-1.5 h-1.5 rounded-full", p.status === 'ready' ? 'bg-white animate-pulse' : 'bg-neutral-600')} />
                           {p.status}
                         </span>
                       </td>

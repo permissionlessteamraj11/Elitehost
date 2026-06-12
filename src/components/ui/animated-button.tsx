@@ -23,17 +23,17 @@ export function AnimatedButton({
   ...props
 }: AnimatedButtonProps) {
   const variants = {
-    primary: "bg-electric text-void font-bold shadow-[0_0_20px_rgba(0,229,255,0.3)]",
+    primary: "bg-white text-black font-bold shadow-[0_0_20px_rgba(255,255,255,0.2)]",
     secondary: "bg-surface-3 text-white font-semibold",
-    outline: "border border-electric/30 text-electric hover:bg-electric/5",
+    outline: "border border-white/30 text-white hover:bg-white/5",
     ghost: "text-gray-400 hover:text-white hover:bg-white/5",
   };
 
   const sizes = {
-    sm: "px-4 py-1.5 text-xs rounded-lg",
-    md: "px-6 py-2.5 text-sm rounded-xl",
-    lg: "px-8 py-4 text-base rounded-2xl",
-    icon: "p-3 rounded-xl",
+    sm: "px-4 py-1.5 text-xs rounded-sm",
+    md: "px-6 py-2.5 text-sm rounded-sm",
+    lg: "px-8 py-4 text-base rounded-sm",
+    icon: "p-3 rounded-sm",
   };
 
   return (

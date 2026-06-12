@@ -94,7 +94,7 @@ export default function CreditsPage() {
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-electric/10 border border-electric/20 text-electric text-[10px] font-bold uppercase tracking-widest"
+          className="inline-flex items-center gap-2 px-3 py-1 rounded-sm bg-white/10 border border-white/20 text-white text-[10px] font-bold uppercase tracking-widest"
         >
           <Zap className="w-3 h-3 fill-current" />
           Power up your deployments
@@ -114,12 +114,12 @@ export default function CreditsPage() {
             transition={{ delay: idx * 0.1 }}
           >
             <GlassCard
-              className={`p-8 h-full flex flex-col relative overflow-hidden group ${plan.popular ? 'border-electric/30 ring-1 ring-electric/20' : ''}`}
+              className={`p-8 h-full flex flex-col relative overflow-hidden group ${plan.popular ? 'border-white/30 ring-1 ring-white/20' : ''}`}
               glow={plan.popular}
             >
               {plan.popular && (
                 <div className="absolute top-0 right-0 p-3">
-                  <div className="bg-electric text-void text-[10px] font-bold px-3 py-1 rounded-full flex items-center gap-1 shadow-lg">
+                  <div className="bg-white text-black text-[10px] font-bold px-3 py-1 rounded-sm flex items-center gap-1 shadow-lg">
                     <Star className="w-3 h-3 fill-current" />
                     MOST POPULAR
                   </div>
@@ -140,8 +140,8 @@ export default function CreditsPage() {
                 <div className="space-y-4 pt-4 border-t border-white/5">
                   {plan.features.map((feature, i) => (
                     <div key={i} className="flex items-center gap-3">
-                      <div className="w-5 h-5 rounded-full bg-electric/10 flex items-center justify-center border border-electric/20">
-                        <Check className="w-3 h-3 text-electric" />
+                      <div className="w-5 h-5 rounded-sm bg-white/10 flex items-center justify-center border border-white/20">
+                        <Check className="w-3 h-3 text-white" />
                       </div>
                       <span className="text-sm text-white/60">{feature}</span>
                     </div>
@@ -152,12 +152,12 @@ export default function CreditsPage() {
               <div className="mt-8">
                 <div className="space-y-2">
                   {(user as any)?.referred_by && (
-                    <div className="text-[10px] text-emerald-500 font-bold uppercase tracking-widest text-center">
+                    <div className="text-[10px] text-white font-bold uppercase tracking-widest text-center">
                        10% Referral Discount Applied: ₹{Math.floor(plan.price * 0.9)}
                     </div>
                   )}
                   <AnimatedButton
-                    className={`w-full gap-2 py-6 text-base ${plan.popular ? 'bg-electric text-void shadow-[0_0_30px_rgba(0,229,255,0.3)]' : 'variant-secondary'}`}
+                    className={`w-full gap-2 py-6 text-base ${plan.popular ? 'bg-white text-black shadow-[0_0_30px_rgba(255,255,255,0.3)]' : 'variant-secondary'}`}
                     loading={loading === plan.id}
                     onClick={() => handlePurchase(plan)}
                   >
@@ -198,12 +198,12 @@ export default function CreditsPage() {
                     <p className="text-text-secondary text-sm">Scan the QR code to pay <strong>₹{(user as any)?.referred_by ? Math.floor(selectedPlan.price * 0.9) : selectedPlan.price}</strong></p>
                   </div>
 
-                  <div className="relative w-64 h-64 mx-auto rounded-2xl border border-white/10 p-2 bg-white/5 overflow-hidden group">
+                  <div className="relative w-64 h-64 mx-auto rounded-sm border border-white/10 p-2 bg-white/5 overflow-hidden group">
                      <Image src="/payment.jpg" alt="Payment QR" fill className="object-cover" />
                   </div>
 
                   <div className="space-y-4">
-                    <div className="p-4 rounded-xl bg-primary/5 border border-primary/20 text-xs text-primary leading-relaxed">
+                    <div className="p-4 rounded-sm bg-white/5 border border-white/20 text-xs text-white leading-relaxed">
                        After payment, please enter your <strong>Transaction ID</strong> below. Our team will verify and add credits to your account.
                     </div>
 
@@ -214,7 +214,7 @@ export default function CreditsPage() {
                         value={transactionId}
                         onChange={(e) => setTransactionId(e.target.value)}
                         placeholder="UTR / Transaction Number"
-                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary/50 font-mono"
+                        className="w-full bg-white/5 border border-white/10 rounded-sm px-4 py-3 text-sm focus:outline-none focus:border-white/50 font-mono"
                        />
                     </div>
 

@@ -9,10 +9,10 @@ import { AnimatedButton } from "@/components/ui/animated-button";
 import Link from "next/link";
 
 const stats = [
-  { label: "Active Engines", value: "Active", icon: Zap, color: "text-primary", trend: "Stable" },
+  { label: "Active Engines", value: "Active", icon: Zap, color: "text-white", trend: "Stable" },
   { label: "Projects", value: "Ready", icon: Box, color: "text-white" },
-  { label: "Node Latency", value: "24ms", icon: Activity, color: "text-accent", trend: "Low" },
-  { label: "Mumbai Datacenter", value: "Connected", icon: Rocket, color: "text-emerald-500" },
+  { label: "Node Latency", value: "24ms", icon: Activity, color: "text-white", trend: "Low" },
+  { label: "Mumbai Datacenter", value: "Connected", icon: Rocket, color: "text-white" },
 ];
 
 const container = {
@@ -73,12 +73,12 @@ export default function DashboardPage() {
       <motion.div variants={item}>
         <GlassCard className="p-8 text-center relative overflow-hidden group" glow>
           {/* Background Decoration */}
-          <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-electric opacity-5 blur-[100px] rounded-full group-hover:opacity-10 transition-opacity" />
+          <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-white opacity-5 blur-[100px] rounded-full group-hover:opacity-10 transition-opacity" />
           <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-64 h-64 bg-neon-purple opacity-5 blur-[100px] rounded-full group-hover:opacity-10 transition-opacity" />
 
           <div className="relative z-10 max-w-lg mx-auto">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/5 border border-white/10 mb-6 group-hover:scale-110 transition-transform duration-500">
-              <Rocket className="w-8 h-8 text-electric" />
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-sm bg-white/5 border border-white/10 mb-6 group-hover:scale-110 transition-transform duration-500">
+              <Rocket className="w-8 h-8 text-white" />
             </div>
             <h2 className="text-2xl font-bold mb-3 font-poppins">Ready to scale?</h2>
             <p className="text-white/50 mb-8 leading-relaxed">

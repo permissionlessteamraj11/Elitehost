@@ -17,7 +17,7 @@ export default function BlogPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-electric/10 border border-electric/20 text-electric text-[10px] font-bold uppercase tracking-widest"
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-electric/20 text-white text-[10px] font-bold uppercase tracking-widest"
           >
             <BookOpen className="w-3 h-3" />
             Elite Insights
@@ -37,12 +37,12 @@ export default function BlogPage() {
             <input
               type="text"
               placeholder="Search articles..."
-              className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-6 py-4 focus:outline-none focus:border-electric/50 transition-all"
+              className="w-full bg-white/5 border border-white/10 rounded-sm pl-12 pr-6 py-4 focus:outline-none focus:border-electric/50 transition-all"
             />
           </div>
           <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
             {["All", "Announcements", "Tutorials", "Features", "Engineering"].map((cat) => (
-              <button key={cat} className="px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-sm font-medium hover:bg-white/10 transition-all whitespace-nowrap">
+              <button key={cat} className="px-6 py-4 bg-white/5 border border-white/10 rounded-sm text-sm font-medium hover:bg-white/10 transition-all whitespace-nowrap">
                 {cat}
               </button>
             ))}
@@ -67,7 +67,7 @@ export default function BlogPage() {
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />
                     <div className="absolute top-4 left-4">
-                      <span className="px-3 py-1 bg-void/80 backdrop-blur-md border border-white/10 rounded-full text-[10px] font-bold uppercase tracking-widest text-electric">
+                      <span className="px-3 py-1 bg-void/80 backdrop-blur-md border border-white/10 rounded-full text-[10px] font-bold uppercase tracking-widest text-white">
                         {post.category}
                       </span>
                     </div>
@@ -77,9 +77,9 @@ export default function BlogPage() {
                        <div className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {post.date}</div>
                        <div className="flex items-center gap-1"><User className="w-3 h-3" /> {post.author}</div>
                     </div>
-                    <h3 className="text-xl font-bold group-hover:text-electric transition-colors">{post.title}</h3>
+                    <h3 className="text-xl font-bold group-hover:text-white transition-colors">{post.title}</h3>
                     <p className="text-sm text-white/40 line-clamp-3 flex-1">{post.excerpt}</p>
-                    <div className="pt-4 flex items-center text-electric text-xs font-bold uppercase tracking-widest gap-2">
+                    <div className="pt-4 flex items-center text-white text-xs font-bold uppercase tracking-widest gap-2">
                       Read Article <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </div>
                   </div>

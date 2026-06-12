@@ -16,7 +16,7 @@ export default function ForgotPasswordPage() {
       >
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 mb-6 group">
-            <div className="w-10 h-10 rounded-lg bg-[#00E5FF]/10 border border-[#00E5FF]/20 flex items-center justify-center group-hover:bg-[#00E5FF]/20 transition-colors">
+            <div className="w-10 h-10 rounded-sm bg-[#00E5FF]/10 border border-[#00E5FF]/20 flex items-center justify-center group-hover:bg-[#00E5FF]/20 transition-colors">
               <Zap className="w-6 h-6 text-[#00E5FF]" />
             </div>
             <span className="text-2xl font-bold tracking-tight">
@@ -27,9 +27,9 @@ export default function ForgotPasswordPage() {
           <p className="text-gray-400">Please contact our support team to reset your password.</p>
         </div>
 
-        <div className="p-8 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl text-center space-y-6">
-          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto border border-primary/20">
-            <Mail className="w-8 h-8 text-primary" />
+        <div className="p-8 rounded-sm border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl text-center space-y-6">
+          <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center mx-auto border border-white/20">
+            <Mail className="w-8 h-8 text-white" />
           </div>
 
           <div className="space-y-2">
@@ -41,7 +41,7 @@ export default function ForgotPasswordPage() {
 
           <a
             href="mailto:zynochat.in@zynochat.in"
-            className="block w-full py-4 bg-primary text-void font-bold rounded-xl hover:bg-primary/90 transition-all shadow-[0_0_20px_rgba(0,229,255,0.3)]"
+            className="block w-full py-4 bg-white text-void font-bold rounded-sm hover:bg-white/90 transition-all shadow-[0_0_20px_rgba(0,229,255,0.3)]"
           >
             Email: zynochat.in@zynochat.in
           </a>
