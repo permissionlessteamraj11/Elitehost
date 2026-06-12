@@ -1,36 +1,36 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Zap, Shield, Cpu, Cloud, Terminal, RefreshCw } from "lucide-react";
+import { Zap, Shield, Cpu, Cloud, Terminal, RefreshCw, Smartphone, Globe, Lock } from "lucide-react";
 
 const features = [
   {
-    icon: <Zap className="w-6 h-6 text-[#00E5FF]" />,
-    title: "Instant Deployments",
+    icon: "⚡",
+    title: "Instant Deploy",
     description: "Push to GitHub and your application is live in seconds with our optimized build engine."
   },
   {
-    icon: <Shield className="w-6 h-6 text-[#7C3AED]" />,
-    title: "Enterprise Security",
+    icon: "🛡️",
+    title: "Elite Security",
     description: "Advanced DDoS protection, SSL certificates, and secure environment variable management."
   },
   {
-    icon: <Cpu className="w-6 h-6 text-[#10B981]" />,
-    title: "Mumbai Servers",
+    icon: "🇮🇳",
+    title: "Mumbai Edge",
     description: "Ultra-low latency for users in India and Southeast Asia with our edge datacenter."
   },
   {
-    icon: <Cloud className="w-6 h-6 text-[#00E5FF]" />,
-    title: "Auto-Scaling",
-    description: "Handle traffic spikes effortlessly with our intelligent resource allocation system."
+    icon: "📱",
+    title: "Mobile First",
+    description: "Fully optimized dashboard for managing your deployments on the go from any device."
   },
   {
-    icon: <Terminal className="w-6 h-6 text-[#7C3AED]" />,
+    icon: "💻",
     title: "Advanced CLI",
     description: "Control your entire infrastructure from the terminal with our powerful CLI tool."
   },
   {
-    icon: <RefreshCw className="w-6 h-6 text-[#10B981]" />,
+    icon: "🔄",
     title: "Zero Downtime",
     description: "Roll out updates seamlessly with blue-green deployments and instant rollbacks."
   }
@@ -38,30 +38,44 @@ const features = [
 
 export function Features() {
   return (
-    <section className="py-24 relative overflow-hidden">
+    <section className="py-24 relative overflow-hidden bg-black">
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-bold mb-4">Elite Performance.</h2>
-          <p className="text-gray-400 max-w-2xl mx-auto">
-            Everything you need to build, scale, and manage your applications with confidence.
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="inline-block px-3 py-1 mb-4 text-[10px] font-bold tracking-widest text-zinc-500 uppercase border border-white/10 rounded-sm small-caps"
+          >
+            Core Capabilities 💎
+          </motion.div>
+          <h2 className="text-3xl md:text-6xl font-bold mb-4 tracking-tighter">Elite Performance.</h2>
+          <p className="text-zinc-500 max-w-2xl mx-auto text-sm md:text-base leading-relaxed">
+            Everything you need to build, scale, and manage your applications
+            with confidence on our premium infrastructure.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature, idx) => (
             <motion.div
               key={idx}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.1 }}
+              transition={{ delay: idx * 0.05 }}
               viewport={{ once: true }}
-              className="p-8 rounded-2xl border border-white/10 bg-white/5 hover:border-[#00E5FF]/50 transition-colors group"
+              className="p-8 rounded-sm border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] hover:border-white/20 transition-all group relative overflow-hidden"
             >
-              <div className="mb-4 p-3 rounded-lg bg-white/5 w-fit group-hover:scale-110 transition-transform">
-                {feature.icon}
+              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                 <div className="text-4xl grayscale select-none">{feature.icon}</div>
               </div>
-              <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
-              <p className="text-gray-400">{feature.description}</p>
+
+              <div className="mb-6 flex items-center justify-center w-10 h-10 rounded-sm bg-white/5 border border-white/10 group-hover:border-white/30 transition-colors">
+                <span className="text-xl">{feature.icon}</span>
+              </div>
+
+              <h3 className="text-lg font-bold mb-2 tracking-tight">{feature.title}</h3>
+              <p className="text-zinc-500 text-sm leading-relaxed">{feature.description}</p>
             </motion.div>
           ))}
         </div>

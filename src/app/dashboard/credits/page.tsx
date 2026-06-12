@@ -1,12 +1,12 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Zap, Shield, CreditCard, ArrowRight, Check, Star, Sparkles, QrCode, Copy, Loader2, X } from "lucide-react";
+import Image from "next/image";
+import { Zap, Shield, CreditCard, ArrowRight, Check, Star, Sparkles, QrCode, Copy, Loader2, X, User, Phone, ArrowLeft } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { AnimatedButton } from "@/components/ui/animated-button";
 import { useState, useEffect } from "react";
 import { getPlatformSetting } from "@/app/actions/platform";
-import Image from "next/image";
 import { useAuthStore } from "@/hooks/use-auth";
 
 const creditPlans = [
@@ -17,7 +17,7 @@ const creditPlans = [
     price: 99,
     description: "Perfect for testing small projects.",
     features: ["5 Deployment Credits", "Community Support", "Standard Nodes"],
-    color: "from-blue-500 to-cyan-400",
+    color: "from-zinc-500 to-zinc-400",
   },
   {
     id: "pro",
@@ -27,7 +27,7 @@ const creditPlans = [
     description: "Most popular for growing apps.",
     features: ["10 Deployment Credits", "Priority Support", "High-Performance Nodes", "Advanced Analytics"],
     popular: true,
-    color: "from-indigo-600 to-purple-500",
+    color: "from-zinc-300 to-zinc-100",
   },
   {
     id: "enterprise",
@@ -36,15 +36,20 @@ const creditPlans = [
     price: 399,
     description: "For elite developers shipping fast.",
     features: ["25 Deployment Credits", "24/7 Dedicated Support", "Custom Node Regions", "Early Access Features"],
-    color: "from-amber-500 to-orange-400",
+    color: "from-zinc-400 to-zinc-200",
   },
 ];
 
 export default function CreditsPage() {
-  const [loading, setLoading] = useState<string | null>(null);
   const [freePlanEnabled, setFreePlanEnabled] = useState(true);
   const [selectedPlan, setSelectedPlan] = useState<any>(null);
+  const [purchaseStep, setPurchaseStep] = useState(1);
+
+  // Form State
+  const [customerName, setCustomerName] = useState("");
+  const [customerContact, setCustomerContact] = useState("");
   const [transactionId, setTransactionId] = useState("");
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const { user } = useAuthStore();
@@ -57,6 +62,16 @@ export default function CreditsPage() {
 
   const handlePurchase = (plan: any) => {
     setSelectedPlan(plan);
+    setPurchaseStep(1);
+  };
+
+  const closeModal = () => {
+    if (isSubmitting) return;
+    setSelectedPlan(null);
+    setPurchaseStep(1);
+    setCustomerName("");
+    setCustomerContact("");
+    setTransactionId("");
   };
 
   const submitPayment = async () => {
@@ -70,15 +85,16 @@ export default function CreditsPage() {
                 planId: selectedPlan.id,
                 amount: (user as any)?.referred_by ? selectedPlan.price * 0.9 : selectedPlan.price,
                 transactionId,
-                credits: selectedPlan.credits
+                credits: selectedPlan.credits,
+                customerName,
+                customerContact
             }),
         });
         if (res.ok) {
             setShowSuccess(true);
             setTimeout(() => {
-                setSelectedPlan(null);
+                closeModal();
                 setShowSuccess(false);
-                setTransactionId("");
             }, 3000);
         }
     } catch (e) {
@@ -94,14 +110,14 @@ export default function CreditsPage() {
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-electric/10 border border-electric/20 text-electric text-[10px] font-bold uppercase tracking-widest"
+          className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white text-[10px] font-bold uppercase tracking-widest"
         >
           <Zap className="w-3 h-3 fill-current" />
-          Power up your deployments
+          Power up your deployments ⚡
         </motion.div>
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight">Deployment Credits</h1>
-        <p className="text-white/40">
-          Scale your infrastructure with ease. Credits are spent based on deployment type: 1 for ZIP/File, 2 for GitHub.
+        <h1 className="text-4xl md:text-5xl font-bold tracking-tighter">Deployment Credits</h1>
+        <p className="text-zinc-500 text-sm">
+          Scale your infrastructure with ease. 1 credit = 1 month of hosting. Premium performance guaranteed. 💎
         </p>
       </div>
 
@@ -114,12 +130,12 @@ export default function CreditsPage() {
             transition={{ delay: idx * 0.1 }}
           >
             <GlassCard
-              className={`p-8 h-full flex flex-col relative overflow-hidden group ${plan.popular ? 'border-electric/30 ring-1 ring-electric/20' : ''}`}
+              className={`p-8 h-full flex flex-col relative overflow-hidden group ${plan.popular ? 'border-white/40 ring-1 ring-white/10' : ''}`}
               glow={plan.popular}
             >
               {plan.popular && (
                 <div className="absolute top-0 right-0 p-3">
-                  <div className="bg-electric text-void text-[10px] font-bold px-3 py-1 rounded-full flex items-center gap-1 shadow-lg">
+                  <div className="bg-white text-black text-[10px] font-bold px-3 py-1 rounded-sm flex items-center gap-1 shadow-lg small-caps">
                     <Star className="w-3 h-3 fill-current" />
                     MOST POPULAR
                   </div>
@@ -128,22 +144,22 @@ export default function CreditsPage() {
 
               <div className="space-y-6 flex-1">
                 <div>
-                  <h3 className="text-xl font-bold mb-1">{plan.name}</h3>
-                  <p className="text-xs text-white/40">{plan.description}</p>
+                  <h3 className="text-xl font-bold mb-1 tracking-tight">{plan.name}</h3>
+                  <p className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">{plan.description}</p>
                 </div>
 
                 <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-bold">₹{plan.price}</span>
-                  <span className="text-white/40 text-sm">/ {plan.credits} credits</span>
+                  <span className="text-4xl font-bold tracking-tighter">₹{plan.price}</span>
+                  <span className="text-zinc-500 text-xs ml-1">/ {plan.credits} credits</span>
                 </div>
 
                 <div className="space-y-4 pt-4 border-t border-white/5">
                   {plan.features.map((feature, i) => (
                     <div key={i} className="flex items-center gap-3">
-                      <div className="w-5 h-5 rounded-full bg-electric/10 flex items-center justify-center border border-electric/20">
-                        <Check className="w-3 h-3 text-electric" />
+                      <div className="w-5 h-5 rounded-sm bg-white/5 flex items-center justify-center border border-white/10">
+                        <Check className="w-3 h-3 text-white" />
                       </div>
-                      <span className="text-sm text-white/60">{feature}</span>
+                      <span className="text-xs font-medium text-zinc-400">{feature}</span>
                     </div>
                   ))}
                 </div>
@@ -152,16 +168,15 @@ export default function CreditsPage() {
               <div className="mt-8">
                 <div className="space-y-2">
                   {(user as any)?.referred_by && (
-                    <div className="text-[10px] text-emerald-500 font-bold uppercase tracking-widest text-center">
-                       10% Referral Discount Applied: ₹{Math.floor(plan.price * 0.9)}
+                    <div className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest text-center">
+                       10% Referral Discount: ₹{Math.floor(plan.price * 0.9)}
                     </div>
                   )}
                   <AnimatedButton
-                    className={`w-full gap-2 py-6 text-base ${plan.popular ? 'bg-electric text-void shadow-[0_0_30px_rgba(0,229,255,0.3)]' : 'variant-secondary'}`}
-                    loading={loading === plan.id}
+                    className={`w-full gap-2 py-4 text-xs ${plan.popular ? 'bg-white text-black' : 'variant-secondary'}`}
                     onClick={() => handlePurchase(plan)}
                   >
-                    Purchase Now <ArrowRight className="w-4 h-4" />
+                    Purchase Now <ArrowRight className="w-3.5 h-3.5" />
                   </AnimatedButton>
                 </div>
               </div>
@@ -179,55 +194,140 @@ export default function CreditsPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setSelectedPlan(null)}
-              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+              onClick={closeModal}
+              className="absolute inset-0 bg-black/90 backdrop-blur-md"
             />
             <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-lg bg-[#0B0F19] border border-white/10 rounded-[32px] p-8 shadow-2xl overflow-hidden"
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-md bg-black border border-white/10 rounded-sm p-8 shadow-2xl overflow-hidden"
             >
-               <button onClick={() => setSelectedPlan(null)} className="absolute top-6 right-6 text-text-secondary hover:text-white">
-                  <X className="w-6 h-6" />
+               <button onClick={closeModal} className="absolute top-6 right-6 text-zinc-500 hover:text-white transition-colors">
+                  <X className="w-5 h-5" />
                </button>
 
                <div className="text-center space-y-6">
                   <div className="space-y-2">
-                    <h2 className="text-2xl font-bold font-heading">Secure Payment</h2>
-                    <p className="text-text-secondary text-sm">Scan the QR code to pay <strong>₹{(user as any)?.referred_by ? Math.floor(selectedPlan.price * 0.9) : selectedPlan.price}</strong></p>
+                    <div className="flex items-center justify-center gap-1 mb-2">
+                       {[1, 2, 3].map((step) => (
+                         <div key={step} className={`h-1 w-8 rounded-full transition-colors ${purchaseStep >= step ? 'bg-white' : 'bg-white/10'}`} />
+                       ))}
+                    </div>
+                    <h2 className="text-xl font-bold tracking-tight">
+                      {purchaseStep === 1 && "Confirm Details"}
+                      {purchaseStep === 2 && "Scan & Pay"}
+                      {purchaseStep === 3 && "Verification"}
+                    </h2>
+                    <p className="text-zinc-500 text-xs">Step {purchaseStep} of 3</p>
                   </div>
 
-                  <div className="relative w-64 h-64 mx-auto rounded-2xl border border-white/10 p-2 bg-white/5 overflow-hidden group">
-                     <Image src="/payment.jpg" alt="Payment QR" fill className="object-cover" />
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="p-4 rounded-xl bg-primary/5 border border-primary/20 text-xs text-primary leading-relaxed">
-                       After payment, please enter your <strong>Transaction ID</strong> below. Our team will verify and add credits to your account.
-                    </div>
-
-                    <div className="space-y-2 text-left">
-                       <label className="text-[10px] font-bold text-text-secondary uppercase tracking-widest ml-1">Transaction ID</label>
-                       <input
-                        type="text"
-                        value={transactionId}
-                        onChange={(e) => setTransactionId(e.target.value)}
-                        placeholder="UTR / Transaction Number"
-                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary/50 font-mono"
-                       />
-                    </div>
-
-                    <AnimatedButton
-                      className="w-full py-4 text-base gap-2"
-                      onClick={submitPayment}
-                      loading={isSubmitting}
-                      disabled={!transactionId || isSubmitting}
+                  {purchaseStep === 1 && (
+                    <motion.div
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="space-y-4 text-left"
                     >
-                       {showSuccess ? <Check className="w-5 h-5" /> : <Shield className="w-5 h-5" />}
-                       {showSuccess ? "Request Submitted!" : "Submit for Approval"}
-                    </AnimatedButton>
-                  </div>
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest ml-1">Full Name</label>
+                         <div className="relative">
+                            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
+                            <input
+                              type="text"
+                              value={customerName}
+                              onChange={(e) => setCustomerName(e.target.value)}
+                              placeholder="Enter your name"
+                              className="w-full bg-white/5 border border-white/10 rounded-sm pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-white/30 transition-all"
+                            />
+                         </div>
+                      </div>
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest ml-1">WhatsApp / Phone</label>
+                         <div className="relative">
+                            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
+                            <input
+                              type="text"
+                              value={customerContact}
+                              onChange={(e) => setCustomerContact(e.target.value)}
+                              placeholder="Enter contact details"
+                              className="w-full bg-white/5 border border-white/10 rounded-sm pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-white/30 transition-all"
+                            />
+                         </div>
+                      </div>
+                      <AnimatedButton
+                        className="w-full py-4 text-xs gap-2 mt-4"
+                        onClick={() => setPurchaseStep(2)}
+                        disabled={!customerName || !customerContact}
+                      >
+                         Next Step <ArrowRight className="w-3.5 h-3.5" />
+                      </AnimatedButton>
+                    </motion.div>
+                  )}
+
+                  {purchaseStep === 2 && (
+                    <motion.div
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="space-y-6"
+                    >
+                      <div className="relative w-56 h-56 mx-auto rounded-sm border border-white/10 p-2 bg-white overflow-hidden group">
+                         <Image src="/payment.jpg" alt="Payment QR" fill className="object-contain" />
+                      </div>
+                      <div className="space-y-2">
+                         <p className="text-xs text-zinc-400">Total Amount to Pay</p>
+                         <div className="text-3xl font-bold tracking-tighter">₹{(user as any)?.referred_by ? Math.floor(selectedPlan.price * 0.9) : selectedPlan.price}</div>
+                      </div>
+                      <div className="flex gap-3">
+                         <button onClick={() => setPurchaseStep(1)} className="flex-1 py-3 border border-white/10 rounded-sm text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 transition-all flex items-center justify-center gap-2">
+                            <ArrowLeft className="w-3 h-3" /> Back
+                         </button>
+                         <AnimatedButton
+                           className="flex-[2] py-3 text-xs gap-2"
+                           onClick={() => setPurchaseStep(3)}
+                         >
+                            I have paid <ArrowRight className="w-3.5 h-3.5" />
+                         </AnimatedButton>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {purchaseStep === 3 && (
+                    <motion.div
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="space-y-6 text-left"
+                    >
+                      <div className="p-4 rounded-sm bg-white/5 border border-white/10 text-[10px] text-zinc-400 leading-relaxed uppercase tracking-wider font-bold">
+                         Please enter your 12-digit UTR or Transaction ID below for verification. 🛡️
+                      </div>
+
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest ml-1">Transaction ID</label>
+                         <input
+                          type="text"
+                          value={transactionId}
+                          onChange={(e) => setTransactionId(e.target.value)}
+                          placeholder="UTR / Transaction Number"
+                          className="w-full bg-white/5 border border-white/10 rounded-sm px-4 py-3 text-sm focus:outline-none focus:border-white/30 font-mono"
+                         />
+                      </div>
+
+                      <div className="flex gap-3">
+                         <button onClick={() => setPurchaseStep(2)} className="flex-1 py-3 border border-white/10 rounded-sm text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 transition-all flex items-center justify-center gap-2">
+                            <ArrowLeft className="w-3 h-3" /> Back
+                         </button>
+                         <AnimatedButton
+                           className="flex-[2] py-4 text-xs gap-2"
+                           onClick={submitPayment}
+                           loading={isSubmitting}
+                           disabled={!transactionId || isSubmitting}
+                         >
+                            {showSuccess ? <Check className="w-4 h-4" /> : <Shield className="w-4 h-4" />}
+                            {showSuccess ? "Submitted!" : "Verify Payment"}
+                         </AnimatedButton>
+                      </div>
+                    </motion.div>
+                  )}
                </div>
             </motion.div>
           </div>
