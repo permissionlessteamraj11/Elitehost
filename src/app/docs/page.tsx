@@ -7,12 +7,12 @@ import { Zap, Book, Rocket, Shield, Terminal, ArrowLeft } from "lucide-react";
 const sections = [
   {
     title: "Quick Start",
-    icon: <Rocket className="w-5 h-5 text-[#00E5FF]" />,
+    icon: <Rocket className="w-5 h-5 text-[#FFFFFF]" />,
     description: "Get your first application live in under 5 minutes.",
   },
   {
     title: "Frameworks",
-    icon: <Zap className="w-5 h-5 text-[#7C3AED]" />,
+    icon: <Zap className="w-5 h-5 text-[#A3A3A3]" />,
     description: "Deploy Next.js, Python, Static sites, and more.",
   },
   {
@@ -35,7 +35,7 @@ export default function DocsPage() {
       <nav className="border-b border-white/5 bg-black/50 backdrop-blur-xl sticky top-0 z-50">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 group">
-            <Zap className="w-6 h-6 text-[#00E5FF]" />
+            <Zap className="w-6 h-6 text-[#FFFFFF]" />
             <span className="font-bold">EliteHosting Docs</span>
           </Link>
           <Link
@@ -56,16 +56,16 @@ export default function DocsPage() {
         >
           <div className="flex items-center gap-3 mb-6">
             <div className="p-2 rounded-lg bg-white/5 border border-white/10">
-              <Book className="w-6 h-6 text-[#00E5FF]" />
+              <Book className="w-6 h-6 text-[#FFFFFF]" />
             </div>
-            <span className="text-sm font-medium tracking-wider text-[#00E5FF] uppercase">
+            <span className="text-sm font-medium tracking-wider text-[#FFFFFF] uppercase">
               Documentation
             </span>
           </div>
 
           <h1 className="text-4xl md:text-6xl font-bold mb-6">
             How can we help <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00E5FF] to-[#7C3AED]">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFFFFF] to-[#A3A3A3]">
               you build today?
             </span>
           </h1>
@@ -82,7 +82,7 @@ export default function DocsPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.1 }}
-                className="p-6 rounded-2xl border border-white/10 bg-white/5 hover:border-[#00E5FF]/50 transition-all group cursor-pointer"
+                className="p-6 rounded-2xl border border-white/10 bg-white/5 hover:border-[#FFFFFF]/50 transition-all group cursor-pointer"
               >
                 <div className="mb-4 p-2 rounded-lg bg-white/5 w-fit group-hover:scale-110 transition-transform">
                   {section.icon}
@@ -95,14 +95,14 @@ export default function DocsPage() {
             ))}
           </div>
 
-          <div className="mt-20 p-8 rounded-3xl border border-[#00E5FF]/20 bg-[#00E5FF]/5 flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="mt-20 p-8 rounded-3xl border border-[#FFFFFF]/20 bg-[#FFFFFF]/5 flex flex-col md:flex-row items-center justify-between gap-8">
             <div>
               <h2 className="text-2xl font-bold mb-2">Ready to ship?</h2>
               <p className="text-gray-400">Join thousands of developers on Mumbai's fastest cloud.</p>
             </div>
             <Link
               href="/auth/register"
-              className="px-8 py-3 bg-[#00E5FF] text-black font-bold rounded-xl hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(0,229,255,0.3)]"
+              className="px-8 py-3 bg-[#FFFFFF] text-black font-bold rounded-xl hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(0,229,255,0.3)]"
             >
               Start Deploying Free
             </Link>

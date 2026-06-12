@@ -58,7 +58,7 @@ export function DeployOptionCard({
       {isActive && (
         <motion.div
           layoutId="activeDot"
-          className="absolute top-4 right-4 w-2 h-2 rounded-full bg-electric shadow-[0_0_8px_#00E5FF]"
+          className="absolute top-4 right-4 w-2 h-2 rounded-full bg-electric shadow-[0_0_8px_#FFFFFF]"
         />
       )}
     </GlassCard>

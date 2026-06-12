@@ -167,7 +167,7 @@ export default function AdminDashboard() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-[#0B0F19] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#000000] flex items-center justify-center p-4">
         <GlassCard className="max-w-md w-full p-8 space-y-6" hover={false}>
           <div className="text-center space-y-2">
             <div className="relative w-12 h-12 mx-auto mb-4">
@@ -212,7 +212,7 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="p-8 space-y-10 bg-[#0B0F19] min-h-screen text-[#F9FAFB]">
+    <div className="p-8 space-y-10 bg-[#000000] min-h-screen text-[#F9FAFB]">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <h1 className="text-4xl font-bold tracking-tight mb-2 font-heading">Admin Command Center</h1>

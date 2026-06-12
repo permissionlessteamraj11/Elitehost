@@ -93,9 +93,9 @@ export default function ReferralsPage() {
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: "Total Refers", value: stats.totalRefers, icon: Users, color: "text-blue-500" },
+          { label: "Total Refers", value: stats.totalRefers, icon: Users, color: "text-neutral-400" },
           { label: "Active Refers", value: stats.activeRefers, icon: TrendingUp, color: "text-emerald-500" },
-          { label: "Total Earnings", value: `₹${stats.totalEarnings.toFixed(2)}`, icon: Gift, color: "text-purple-500" },
+          { label: "Total Earnings", value: `₹${stats.totalEarnings.toFixed(2)}`, icon: Gift, color: "text-neutral-600" },
           { label: "Wallet Balance", value: `₹${stats.walletBalance.toFixed(2)}`, icon: Wallet, color: "text-electric" },
         ].map((stat, idx) => (
           <GlassCard key={idx} className="p-6" hover={false}>

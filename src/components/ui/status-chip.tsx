@@ -11,7 +11,7 @@ export function StatusChip({ status, label, className }: StatusChipProps) {
     success: "bg-[#10B981]/10 text-[#10B981] border-[#10B981]/20",
     error: "bg-[#EF4444]/10 text-[#EF4444] border-[#EF4444]/20",
     pending: "bg-[#F59E0B]/10 text-[#F59E0B] border-[#F59E0B]/20",
-    info: "bg-[#00E5FF]/10 text-[#00E5FF] border-[#00E5FF]/20",
+    info: "bg-[#FFFFFF]/10 text-[#FFFFFF] border-[#FFFFFF]/20",
   };
 
   return (

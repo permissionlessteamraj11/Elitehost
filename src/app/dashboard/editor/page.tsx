@@ -8,7 +8,7 @@ export default function EditorPage() {
 export default function App() {
   return (
     <div className="flex items-center justify-center min-h-screen">
-      <h1 className="text-4xl font-bold text-[#00E5FF]">
+      <h1 className="text-4xl font-bold text-[#FFFFFF]">
         Elite Hosting v14.0
       </h1>
     </div>
@@ -27,7 +27,7 @@ export default function App() {
           <button className="px-4 py-2 border border-white/10 rounded-lg hover:bg-white/5 transition-colors">
             Cancel
           </button>
-          <button className="px-6 py-2 bg-[#00E5FF] text-black font-bold rounded-lg hover:bg-[#00E5FF]/90 transition-colors">
+          <button className="px-6 py-2 bg-[#FFFFFF] text-black font-bold rounded-lg hover:bg-[#FFFFFF]/90 transition-colors">
             Save & Deploy
           </button>
         </div>

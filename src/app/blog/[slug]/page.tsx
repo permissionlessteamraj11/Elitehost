@@ -45,7 +45,7 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
                  {post.title}
                </h1>
                <div className="flex items-center gap-4 pt-4 border-t border-white/5">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-electric to-purple-500 p-[2px]">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-electric to-neutral-600 p-[2px]">
                     <div className="w-full h-full rounded-full bg-void flex items-center justify-center font-bold text-sm">
                       {post.author[0]}
                     </div>

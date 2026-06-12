@@ -39,7 +39,7 @@ export function FileManager() {
           {item.type === "folder" ? (
             <>
               {isExpanded ? <ChevronDown className="w-4 h-4 text-gray-500" /> : <ChevronRight className="w-4 h-4 text-gray-500" />}
-              <Folder className="w-4 h-4 text-[#00E5FF]" />
+              <Folder className="w-4 h-4 text-[#FFFFFF]" />
             </>
           ) : (
             <>

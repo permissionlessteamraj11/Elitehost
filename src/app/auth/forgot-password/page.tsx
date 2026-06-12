@@ -16,11 +16,11 @@ export default function ForgotPasswordPage() {
       >
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 mb-6 group">
-            <div className="w-10 h-10 rounded-lg bg-[#00E5FF]/10 border border-[#00E5FF]/20 flex items-center justify-center group-hover:bg-[#00E5FF]/20 transition-colors">
-              <Zap className="w-6 h-6 text-[#00E5FF]" />
+            <div className="w-10 h-10 rounded-lg bg-[#FFFFFF]/10 border border-[#FFFFFF]/20 flex items-center justify-center group-hover:bg-[#FFFFFF]/20 transition-colors">
+              <Zap className="w-6 h-6 text-[#FFFFFF]" />
             </div>
             <span className="text-2xl font-bold tracking-tight">
-              Elite<span className="text-[#00E5FF]">Hosting</span>
+              Elite<span className="text-[#FFFFFF]">Hosting</span>
             </span>
           </Link>
           <h1 className="text-3xl font-bold mb-2">Reset Password</h1>

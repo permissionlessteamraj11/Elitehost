@@ -16,7 +16,9 @@ import {
   FolderTree,
   FileText,
   AlertCircle,
-  CheckCircle2
+  CheckCircle2,
+  Copy,
+  Check
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Editor from "@monaco-editor/react";
@@ -49,6 +51,7 @@ export function AIStudio() {
   const [showPreview, setShowPreview] = useState(false);
   const [diagnosis, setDiagnosis] = useState<any>(null);
   const [logs, setLogs] = useState<string[]>(["[System] AI Studio Initialized. Waiting for prompt..."]);
+  const [copied, setCopied] = useState(false);
 
   const addLog = (msg: string) => setLogs(prev => [...prev, msg]);
 
@@ -90,6 +93,13 @@ export function AIStudio() {
     }, 1000);
   };
 
+  const handleCopy = () => {
+    if (!selectedFile) return;
+    navigator.clipboard.writeText(selectedFile.content);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-full items-stretch">
       {/* Sidebar / Controls */}
@@ -118,14 +128,14 @@ export function AIStudio() {
                     key={model.id}
                     onClick={() => setSelectedModel(model.id)}
                     className={cn(
-                      "w-full text-left p-3 rounded-xl border transition-all",
+                      "w-full text-left p-3 rounded-xl border-2 transition-all",
                       selectedModel === model.id
-                        ? "bg-primary/10 border-primary/30 ring-1 ring-primary/20"
-                        : "bg-white/5 border-transparent hover:border-white/10"
+                        ? "bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.3)]"
+                        : "bg-transparent border-white/10 text-white hover:border-white/30"
                     )}
                   >
                     <div className="font-bold text-sm">{model.label}</div>
-                    <div className="text-[10px] text-text-secondary">{model.description}</div>
+                    <div className={cn("text-[10px]", selectedModel === model.id ? "text-black/60" : "text-text-secondary")}>{model.description}</div>
                   </button>
                 ))}
               </div>
@@ -141,13 +151,13 @@ export function AIStudio() {
                     key={fw.id}
                     onClick={() => setSelectedFramework(fw.id)}
                     className={cn(
-                      "flex items-center gap-2 p-3 rounded-xl border text-sm transition-all",
+                      "flex items-center gap-2 p-3 rounded-xl border-2 text-sm transition-all font-bold",
                       selectedFramework === fw.id
-                        ? "bg-primary/10 border-primary/30"
-                        : "bg-white/5 border-transparent hover:border-white/10"
+                        ? "bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.3)]"
+                        : "bg-transparent border-white/10 text-white hover:border-white/30"
                     )}
                   >
-                    <fw.icon className="w-4 h-4 text-primary" />
+                    <fw.icon className={cn("w-4 h-4", selectedFramework === fw.id ? "text-black" : "text-white/40")} />
                     {fw.label}
                   </button>
                 ))}
@@ -228,11 +238,19 @@ export function AIStudio() {
                     Detect Errors
                   </button>
                   <button
+                    onClick={handleCopy}
+                    disabled={!selectedFile}
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold bg-white/5 text-text-secondary hover:text-white transition-all whitespace-nowrap"
+                  >
+                    {copied ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
+                    {copied ? "Copied" : "Copy"}
+                  </button>
+                  <button
                     onClick={() => setShowPreview(!showPreview)}
                     className={cn(
                       "px-3 py-1.5 rounded-lg text-xs font-bold transition-all border whitespace-nowrap",
                       showPreview
-                        ? "bg-primary/20 border-primary/30 text-primary"
+                        ? "bg-white/10 border-white/20 text-white"
                         : "bg-white/5 border-transparent text-text-secondary hover:text-white"
                     )}
                   >
@@ -291,6 +309,9 @@ export function AIStudio() {
                             fontSize: 14,
                             minimap: { enabled: false },
                             padding: { top: 20 },
+                            lineNumbers: "on",
+                            scrollBeyondLastLine: false,
+                            automaticLayout: true,
                           }}
                         />
                       ) : (
@@ -309,8 +330,8 @@ export function AIStudio() {
                             className="absolute bottom-6 right-6 max-w-sm"
                           >
                             <GlassCard className={cn(
-                              "p-4 border-l-4",
-                              diagnosis.status === 'clean' ? "border-green-500 bg-green-500/10" : "border-yellow-500 bg-yellow-500/10"
+                              "p-4 border-l-4 backdrop-blur-2xl",
+                              diagnosis.status === 'clean' ? "border-white bg-white/10" : "border-neutral-500 bg-neutral-500/10"
                             )}>
                               <div className="flex items-start gap-3">
                                 {diagnosis.status === 'clean' ? <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" /> : <AlertCircle className="w-5 h-5 text-yellow-500 flex-shrink-0" />}

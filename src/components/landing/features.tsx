@@ -5,12 +5,12 @@ import { Zap, Shield, Cpu, Cloud, Terminal, RefreshCw } from "lucide-react";
 
 const features = [
   {
-    icon: <Zap className="w-6 h-6 text-[#00E5FF]" />,
+    icon: <Zap className="w-6 h-6 text-[#FFFFFF]" />,
     title: "Instant Deployments",
     description: "Push to GitHub and your application is live in seconds with our optimized build engine."
   },
   {
-    icon: <Shield className="w-6 h-6 text-[#7C3AED]" />,
+    icon: <Shield className="w-6 h-6 text-[#A3A3A3]" />,
     title: "Enterprise Security",
     description: "Advanced DDoS protection, SSL certificates, and secure environment variable management."
   },
@@ -20,12 +20,12 @@ const features = [
     description: "Ultra-low latency for users in India and Southeast Asia with our edge datacenter."
   },
   {
-    icon: <Cloud className="w-6 h-6 text-[#00E5FF]" />,
+    icon: <Cloud className="w-6 h-6 text-[#FFFFFF]" />,
     title: "Auto-Scaling",
     description: "Handle traffic spikes effortlessly with our intelligent resource allocation system."
   },
   {
-    icon: <Terminal className="w-6 h-6 text-[#7C3AED]" />,
+    icon: <Terminal className="w-6 h-6 text-[#A3A3A3]" />,
     title: "Advanced CLI",
     description: "Control your entire infrastructure from the terminal with our powerful CLI tool."
   },
@@ -55,7 +55,7 @@ export function Features() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1 }}
               viewport={{ once: true }}
-              className="p-8 rounded-2xl border border-white/10 bg-white/5 hover:border-[#00E5FF]/50 transition-colors group"
+              className="p-8 rounded-2xl border border-white/10 bg-white/5 hover:border-[#FFFFFF]/50 transition-colors group"
             >
               <div className="mb-4 p-3 rounded-lg bg-white/5 w-fit group-hover:scale-110 transition-transform">
                 {feature.icon}

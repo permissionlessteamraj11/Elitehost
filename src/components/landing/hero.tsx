@@ -15,12 +15,12 @@ export function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <span className="inline-block px-4 py-1.5 mb-6 text-sm font-medium tracking-wider text-[#00E5FF] uppercase bg-[#00E5FF]/10 border border-[#00E5FF]/20 rounded-full">
+          <span className="inline-block px-4 py-1.5 mb-6 text-sm font-medium tracking-wider text-[#FFFFFF] uppercase bg-[#FFFFFF]/10 border border-[#FFFFFF]/20 rounded-full">
             EliteHost v14.0 — Ultra Advanced
           </span>
           <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight">
             Deploy your code <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00E5FF] to-[#7C3AED]">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFFFFF] to-[#A3A3A3]">
               in seconds.
             </span>
           </h1>
@@ -32,7 +32,7 @@ export function Hero() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/auth/register"
-              className="px-8 py-4 bg-[#00E5FF] text-black font-bold rounded-lg hover:bg-[#00E5FF]/90 transition-colors"
+              className="px-8 py-4 bg-[#FFFFFF] text-black font-bold rounded-lg hover:bg-[#FFFFFF]/90 transition-colors"
             >
               Start Deploying Free
             </Link>
@@ -50,7 +50,7 @@ export function Hero() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.3, duration: 0.5 }}
-          className="mt-20 mx-auto max-w-4xl rounded-xl border border-white/10 bg-black/50 backdrop-blur-xl overflow-hidden shadow-2xl shadow-[#00E5FF]/10"
+          className="mt-20 mx-auto max-w-4xl rounded-xl border border-white/10 bg-black/50 backdrop-blur-xl overflow-hidden shadow-2xl shadow-[#FFFFFF]/10"
         >
           <div className="flex items-center gap-2 px-4 py-3 bg-white/5 border-bottom border-white/10">
             <div className="flex gap-1.5">
@@ -62,17 +62,17 @@ export function Hero() {
           </div>
           <div className="p-6 text-left font-mono text-sm md:text-base leading-relaxed">
             <div className="flex gap-4">
-              <span className="text-[#00E5FF]">$</span>
+              <span className="text-[#FFFFFF]">$</span>
               <span className="text-white">git push elite-hosting main</span>
             </div>
             <div className="mt-2 text-gray-500">Enumerating objects: 24, done.</div>
             <div className="text-gray-500">Counting objects: 100% (24/24), done.</div>
-            <div className="text-[#7C3AED] mt-2">🚀 INITIALIZING ELITE ENGINE v14.0...</div>
-            <div className="text-[#00E5FF]">📡 CONNECTION: ap-south-1 (Mumbai) [SECURE]</div>
+            <div className="text-[#A3A3A3] mt-2">🚀 INITIALIZING ELITE ENGINE v14.0...</div>
+            <div className="text-[#FFFFFF]">📡 CONNECTION: ap-south-1 (Mumbai) [SECURE]</div>
             <div className="text-[#10B981]">✅ DETECTED: Next.js Enterprise Environment</div>
             <div className="text-gray-400 mt-2">📦 INSTALLING 482 DEPENDENCIES...</div>
             <div className="text-[#10B981]">✓ BUILD SUCCESSFUL [2.4s]</div>
-            <div className="text-[#00E5FF]">✅ DEPLOYMENT LIVE: https://elite-hosting.app</div>
+            <div className="text-[#FFFFFF]">✅ DEPLOYMENT LIVE: https://elite-hosting.app</div>
           </div>
         </motion.div>
       </div>

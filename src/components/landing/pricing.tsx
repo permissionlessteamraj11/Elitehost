@@ -59,11 +59,11 @@ export function Pricing() {
               transition={{ delay: idx * 0.1 }}
               viewport={{ once: true }}
               className={`p-8 rounded-2xl border ${
-                tier.popular ? "border-[#00E5FF] bg-[#00E5FF]/5 relative" : "border-white/10 bg-white/5"
+                tier.popular ? "border-[#FFFFFF] bg-[#FFFFFF]/5 relative" : "border-white/10 bg-white/5"
               }`}
             >
               {tier.popular && (
-                <span className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#00E5FF] text-black text-xs font-bold px-3 py-1 rounded-full">
+                <span className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#FFFFFF] text-black text-xs font-bold px-3 py-1 rounded-full">
                   MOST POPULAR
                 </span>
               )}
@@ -76,7 +76,7 @@ export function Pricing() {
               <ul className="space-y-4 mb-8">
                 {tier.features.map((feature, fIdx) => (
                   <li key={fIdx} className="flex items-center gap-3 text-sm text-gray-300">
-                    <Check className="w-4 h-4 text-[#00E5FF]" />
+                    <Check className="w-4 h-4 text-[#FFFFFF]" />
                     {feature}
                   </li>
                 ))}
@@ -86,7 +86,7 @@ export function Pricing() {
                 href="/auth/register"
                 className={`block w-full py-3 rounded-lg text-center font-bold transition-all ${
                   tier.popular
-                    ? "bg-[#00E5FF] text-black hover:bg-[#00E5FF]/90"
+                    ? "bg-[#FFFFFF] text-black hover:bg-[#FFFFFF]/90"
                     : "bg-white/10 text-white hover:bg-white/20"
                 }`}
               >
