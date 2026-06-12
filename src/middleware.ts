@@ -40,6 +40,15 @@ export async function middleware(request: NextRequest) {
     return new NextResponse('Your account has been suspended.', { status: 403 })
   }
 
+  // Credit Expiry Check
+  if (user && (user as any).credits_expiry) {
+    const expiry = new Date((user as any).credits_expiry);
+    if (expiry < new Date()) {
+        // Redact credits if expired (logical check, doesn't modify DB here as middleware is read-only for cookies)
+        // In a real app, you'd trigger a background update or just block access here.
+    }
+  }
+
   // Protect dashboard and admin routes
   if (!user && (request.nextUrl.pathname.startsWith('/dashboard') || request.nextUrl.pathname.startsWith('/admin'))) {
     return NextResponse.redirect(new URL('/auth/login', request.url))

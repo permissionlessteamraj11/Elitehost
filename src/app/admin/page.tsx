@@ -30,6 +30,8 @@ export default function AdminDashboard() {
   const [paymentRequests, setPaymentRequests] = useState<any[]>([]);
   const [freePlanEnabled, setFreePlanEnabled] = useState(true);
   const [loading, setLoading] = useState(true);
+  const [creditAmount, setCreditAmount] = useState(1);
+  const [creditExpiry, setCreditExpiry] = useState("");
 
   // Admin Chat State
   const [chats, setChats] = useState<any[]>([]);
@@ -135,10 +137,12 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleUpdateCredits = async (userId: string, amount: number) => {
-    const res = await updateUserCredits(userId, amount);
+  const handleUpdateCredits = async (userId: string) => {
+    const res = await updateUserCredits(userId, creditAmount, creditExpiry);
     if (res.success) {
       setUsers(prev => prev.map(u => u.id === userId ? { ...u, paid_credits: res.newBalance } : u));
+      setCreditAmount(1);
+      setCreditExpiry("");
     }
   };
 
@@ -450,23 +454,42 @@ export default function AdminDashboard() {
                         <div className="text-[10px] text-text-secondary">P: {Number(u.paid_credits || 0)} | F: {Number(u.credit_balance || 0)}</div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="flex gap-2">
-                          <button onClick={() => handleUpdateCredits(u.id, 1)} className="p-1.5 rounded-lg bg-primary/10 text-primary hover:bg-primary/20" title="Add 1 Credit">
-                            <Plus className="w-3.5 h-3.5" />
-                          </button>
-                          <button onClick={() => handleUpdateCredits(u.id, -1)} className="p-1.5 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20" title="Remove 1 Credit">
-                            <Minus className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            onClick={() => handleBanUser(u.id, u.is_banned)}
-                            className={cn(
-                              "p-1.5 rounded-lg transition-colors",
-                              u.is_banned ? "bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20" : "bg-red-500/10 text-red-500 hover:bg-red-500/20"
-                            )}
-                            title={u.is_banned ? "Unban User" : "Ban User"}
-                          >
-                            {u.is_banned ? <Check className="w-3.5 h-3.5" /> : <ShieldAlert className="w-3.5 h-3.5" />}
-                          </button>
+                        <div className="flex flex-col gap-3">
+                          <div className="flex gap-2">
+                            <input
+                              type="number"
+                              value={creditAmount}
+                              onChange={(e) => setCreditAmount(Number(e.target.value))}
+                              className="w-12 bg-white/5 border border-white/10 rounded-sm px-1 py-1 text-[10px] focus:outline-none"
+                            />
+                            <input
+                              type="date"
+                              value={creditExpiry}
+                              onChange={(e) => setCreditExpiry(e.target.value)}
+                              className="w-24 bg-white/5 border border-white/10 rounded-sm px-1 py-1 text-[8px] focus:outline-none"
+                            />
+                            <button onClick={() => handleUpdateCredits(u.id)} className="p-1.5 rounded-sm bg-white text-black hover:bg-zinc-200" title="Update Credits">
+                              <Plus className="w-3 h-3" />
+                            </button>
+                          </div>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleBanUser(u.id, u.is_banned)}
+                              className={cn(
+                                "flex-1 py-1 rounded-sm text-[10px] font-bold uppercase tracking-widest transition-all",
+                                u.is_banned ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20" : "bg-red-500/10 text-red-500 border border-red-500/20"
+                              )}
+                            >
+                              {u.is_banned ? "Unban" : "Ban Account"}
+                            </button>
+                            <button
+                              onClick={() => handleBlockIP(u.last_ip || '')}
+                              className="flex-1 py-1 rounded-sm text-[10px] font-bold uppercase tracking-widest bg-zinc-900 text-zinc-500 border border-zinc-800 hover:text-white"
+                              title="Ban Device IP"
+                            >
+                              Ban Device
+                            </button>
+                          </div>
                         </div>
                       </td>
                     </tr>
