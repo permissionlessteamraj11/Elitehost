@@ -41,5 +41,6 @@ export async function getUser() {
   const session: any = await getSession();
   if (!session) return null;
   const user = await db.users.findOne((u: any) => u.id === session.userId);
+  if (user?.is_banned) return null;
   return user;
 }

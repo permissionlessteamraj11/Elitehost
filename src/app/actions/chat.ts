@@ -30,21 +30,28 @@ export async function getAdminChats() {
   if (!admin || admin.role !== "admin") return { success: false, error: "Unauthorized" };
 
   const allMessages = await db.messages.read();
+  // Filter only valid messages and unique userIds
   const userIds = Array.from(new Set(allMessages.map((m: any) => m.user_id)));
 
   const users = await db.users.read();
-  const chats = userIds.map(userId => {
-    const userMessages = allMessages.filter((m: any) => m.user_id === userId);
-    const lastMessage = userMessages[userMessages.length - 1];
-    const user = users.find((u: any) => u.id === userId);
-    return {
-      userId,
-      username: user?.username || "Unknown User",
-      lastMessage: lastMessage.content,
-      timestamp: lastMessage.timestamp,
-      unread: userMessages.filter((m: any) => m.sender === "user" && !m.read).length
-    };
-  }).sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  const chats = userIds
+    .map(userId => {
+      const userMessages = allMessages.filter((m: any) => m.user_id === userId);
+      if (userMessages.length === 0) return null;
+
+      const lastMessage = userMessages[userMessages.length - 1];
+      const user = users.find((u: any) => u.id === userId);
+
+      return {
+        userId,
+        username: user?.username || "Unknown User",
+        lastMessage: lastMessage.content,
+        timestamp: lastMessage.timestamp,
+        unread: userMessages.filter((m: any) => m.sender === "user" && !m.read).length
+      };
+    })
+    .filter(chat => chat !== null)
+    .sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
   return { success: true, chats };
 }

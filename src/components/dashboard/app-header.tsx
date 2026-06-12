@@ -1,14 +1,29 @@
 "use client";
 
-import { Bell, Search, User, Zap, Wallet } from "lucide-react";
+import { Bell, Search, User, Zap, Wallet, X } from "lucide-react";
 import { useAuthStore } from "@/hooks/use-auth";
 import { NodeStatusBadge } from "@/components/ui/node-status-badge";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
+import { useState, useEffect } from "react";
+import { getBroadcasts } from "@/app/actions/broadcast";
 
 export function AppHeader() {
   const { profile } = useAuthStore();
+  const [broadcasts, setBroadcasts] = useState<any[]>([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+
+  useEffect(() => {
+    fetchBroadcasts();
+  }, []);
+
+  const fetchBroadcasts = async () => {
+    const res = await getBroadcasts();
+    if (res.success) {
+      setBroadcasts(res.broadcasts || []);
+    }
+  };
 
   return (
     <header className="sticky top-0 z-40 w-full px-4 pt-4 pb-2 lg:px-8 lg:pt-6">
@@ -46,13 +61,46 @@ export function AppHeader() {
             <Search className="w-5 h-5" />
           </motion.button>
 
-          <motion.button
-            whileTap={{ scale: 0.9 }}
-            className="p-2 text-white/50 hover:text-white transition-colors relative"
-          >
-            <Bell className="w-5 h-5" />
-            <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full border-2 border-void shadow-[0_0_8px_#6366F1]" />
-          </motion.button>
+          <div className="relative">
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              onClick={() => setShowNotifications(!showNotifications)}
+              className="p-2 text-white/50 hover:text-white transition-colors relative"
+              aria-label="Notifications"
+            >
+              <Bell className="w-5 h-5" />
+              {broadcasts.length > 0 && (
+                <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full border-2 border-void shadow-[0_0_8px_#6366F1]" />
+              )}
+            </motion.button>
+
+            <AnimatePresence>
+              {showNotifications && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  className="absolute right-0 mt-2 w-80 bg-zinc-900 border border-white/10 rounded-sm shadow-2xl z-50 overflow-hidden"
+                >
+                  <div className="p-4 border-b border-white/5 flex items-center justify-between bg-white/5">
+                    <h3 className="text-xs font-bold uppercase tracking-widest text-white">Notifications</h3>
+                    <button onClick={() => setShowNotifications(false)}><X className="w-3 h-3 text-text-secondary" /></button>
+                  </div>
+                  <div className="max-h-96 overflow-y-auto divide-y divide-white/5">
+                    {broadcasts.length > 0 ? broadcasts.map((b) => (
+                      <div key={b.id} className="p-4 hover:bg-white/5 transition-colors space-y-1">
+                        <div className="text-[11px] font-bold text-primary uppercase tracking-wider">{b.title}</div>
+                        <p className="text-xs text-zinc-400 leading-relaxed">{b.message}</p>
+                        <div className="text-[9px] text-zinc-600 font-mono mt-2">{new Date(b.timestamp).toLocaleString()}</div>
+                      </div>
+                    )) : (
+                      <div className="p-8 text-center text-xs text-zinc-500 italic">No notifications yet.</div>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
 
           <Link href="/dashboard/settings" className="flex items-center gap-2 sm:gap-3 ml-1 sm:ml-2 group">
             <div className="text-right hidden md:block">

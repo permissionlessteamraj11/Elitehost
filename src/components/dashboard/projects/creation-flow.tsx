@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { GitBranch, Upload, Code, FileJson, AlertCircle } from "lucide-react";
+import { GitBranch, Upload, Code, FileJson, AlertCircle, Zap } from "lucide-react";
 import { DeployOptionCard } from "./deploy-option-card";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/hooks/use-auth";
@@ -24,23 +24,25 @@ export function ProjectCreationFlow() {
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="p-6 bg-white/5 border border-white/10 rounded-sm flex flex-col md:flex-row items-center justify-between gap-6"
+          className="p-6 bg-primary/5 border border-primary/20 rounded-sm flex flex-col md:flex-row items-center justify-between gap-6"
         >
           <div className="flex items-center gap-4 text-center md:text-left">
-            <div className="p-3 bg-white/10 rounded-sm">
-              <AlertCircle className="w-6 h-6 text-white" />
+            <div className="p-3 bg-primary/10 rounded-sm">
+              <Zap className="w-6 h-6 text-primary animate-pulse" />
             </div>
             <div>
-              <h3 className="font-bold text-white uppercase tracking-widest text-sm">Insufficient Credits</h3>
-              <p className="text-zinc-500 text-xs mt-1">You need at least 1 credit to initiate a deployment.</p>
+              <h3 className="font-bold text-white uppercase tracking-widest text-sm">3-Hour Free Trial Available</h3>
+              <p className="text-zinc-500 text-xs mt-1">You have 0 credits. You can deploy one project for 3 hours as a trial.</p>
             </div>
           </div>
-          <button
-            onClick={() => router.push('/dashboard/credits')}
-            className="w-full md:w-auto px-6 py-2.5 bg-white text-black font-bold text-[10px] uppercase tracking-[0.2em] rounded-sm hover:bg-zinc-200 transition-all"
-          >
-            Buy Credits
-          </button>
+          <div className="flex gap-3 w-full md:w-auto">
+            <button
+              onClick={() => router.push('/dashboard/credits')}
+              className="flex-1 md:flex-none px-6 py-2.5 border border-white/10 text-white font-bold text-[10px] uppercase tracking-widest rounded-sm hover:bg-white/5 transition-all"
+            >
+              Buy Credits
+            </button>
+          </div>
         </motion.div>
       )}
 
@@ -68,11 +70,7 @@ export function ProjectCreationFlow() {
               description={m.description}
               isActive={false}
               onClick={() => {
-                if (!hasCredits) {
-                  router.push('/dashboard/credits');
-                } else {
-                  router.push(m.href);
-                }
+                router.push(m.href);
               }}
             />
           </motion.div>
