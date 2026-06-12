@@ -42,7 +42,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0B0F19",
+  themeColor: "#000000",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -60,7 +60,7 @@ export default function RootLayout({
         <link href="https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap" rel="stylesheet" />
       </head>
       <body
-        className={`${inter.variable} antialiased bg-[#0B0F19] text-[#F9FAFB] selection:bg-[#6366F1]/30 selection:text-[#6366F1] font-sans`}
+        className={`${inter.variable} antialiased bg-black text-white selection:bg-white/10 selection:text-white font-sans`}
       >
         <AuthProvider>{children}</AuthProvider>
       </body>

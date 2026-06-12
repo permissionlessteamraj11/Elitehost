@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db/json-db';
 import { getUser } from '@/lib/auth-service';
+import { scanForMaliciousCode } from '@/lib/security';
 
 export async function GET() {
   try {
@@ -20,6 +21,12 @@ export async function POST(request: Request) {
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const payload = await request.json();
+
+    // Security Scan
+    const securityCheck = scanForMaliciousCode(payload);
+    if (!securityCheck.isSafe) {
+      return NextResponse.json({ error: securityCheck.reason }, { status: 403 });
+    }
 
     let expiresAt;
     let isFree = false;

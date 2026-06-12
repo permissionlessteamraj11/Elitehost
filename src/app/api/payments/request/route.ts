@@ -15,7 +15,10 @@ export async function POST(req: Request) {
       amount: payload.amount,
       transactionId: payload.transactionId,
       credits: payload.credits,
+      customerName: payload.customerName || user.username,
+      customerContact: payload.customerContact || user.mobile || user.email,
       status: 'pending',
+      created_at: new Date().toISOString()
     });
 
     return NextResponse.json({ success: true, requestId: request.id });

@@ -513,13 +513,18 @@ export default function AdminDashboard() {
                  <div key={r.id} className="p-4 space-y-3 hover:bg-white/2 transition-colors">
                     <div className="flex justify-between items-start">
                        <div>
-                          <div className="font-bold text-sm">₹{r.amount}</div>
-                          <div className="text-[10px] text-primary font-mono mt-1">TXN: {r.transactionId}</div>
+                          <div className="font-bold text-sm text-white">₹{r.amount}</div>
+                          <div className="text-[10px] text-primary font-mono mt-1 tracking-tighter">TXN: {r.transactionId}</div>
                        </div>
-                       <div className="text-[10px] font-bold text-primary uppercase bg-primary/10 px-2 py-0.5 rounded-lg">Pending</div>
+                       <div className="text-[10px] font-bold text-primary uppercase bg-primary/10 px-2 py-0.5 rounded-sm">Pending</div>
+                    </div>
+                    <div className="p-2 rounded-sm bg-white/5 border border-white/5 space-y-1">
+                        <div className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Customer Details</div>
+                        <div className="text-[11px] font-bold text-white">{r.customerName || 'N/A'}</div>
+                        <div className="text-[10px] text-zinc-400 font-mono">{r.customerContact || 'N/A'}</div>
                     </div>
                     <div className="flex items-center justify-between">
-                       <div className="text-[10px] text-text-secondary">By: {users.find(u => u.id === r.user_id)?.username || 'User'}</div>
+                       <div className="text-[10px] text-text-secondary">User: {users.find(u => u.id === r.user_id)?.username || 'User'}</div>
                        <div className="flex gap-2">
                           <button onClick={() => handleApprovePayment(r.id)} className="px-3 py-1 rounded-lg bg-emerald-500 text-void text-[10px] font-bold hover:bg-emerald-400">
                             Approve
