@@ -14,7 +14,7 @@ export function Topbar() {
           <input
             type="text"
             placeholder="Search projects..."
-            className="w-full bg-white/5 border border-white/10 rounded-lg py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-[#00E5FF]/50 transition-colors"
+            className="w-full bg-white/5 border border-white/10 rounded-sm py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-[#00E5FF]/50 transition-colors"
           />
         </div>
       </div>

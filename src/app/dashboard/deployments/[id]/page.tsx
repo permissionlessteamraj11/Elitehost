@@ -56,7 +56,7 @@ export default function DeploymentDetailPage({ params }: { params: Promise<{ id:
         </div>
         <div className="space-y-6">
           <h2 className="text-xl font-bold">Deployment Info</h2>
-          <div className="p-6 rounded-xl border border-white/5 bg-white/5 space-y-4">
+          <div className="p-6 rounded-sm border border-white/5 bg-white/5 space-y-4">
             <div>
               <div className="text-xs text-gray-500 uppercase font-bold tracking-wider">Framework</div>
               <div className="text-white font-medium">Next.js 15</div>

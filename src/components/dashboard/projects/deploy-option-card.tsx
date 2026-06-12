@@ -26,7 +26,7 @@ export function DeployOptionCard({
       className={cn(
         "p-6 cursor-pointer transition-all duration-300",
         isActive
-          ? "neon-border bg-electric/5 ring-1 ring-electric/30"
+          ? "neon-border bg-white/5 ring-1 ring-electric/30"
           : "hover:bg-white/5 border-white/5"
       )}
       onClick={onClick}
@@ -34,9 +34,9 @@ export function DeployOptionCard({
     >
       <div className="flex items-start gap-4">
         <div className={cn(
-          "p-3 rounded-2xl transition-all duration-300",
+          "p-3 rounded-sm transition-all duration-300",
           isActive
-            ? "bg-electric text-void shadow-[0_0_15px_rgba(0,229,255,0.4)]"
+            ? "bg-white text-void shadow-[0_0_15px_rgba(0,229,255,0.4)]"
             : "bg-white/5 text-white/40 group-hover:text-white"
         )}>
           <Icon className="w-6 h-6" />
@@ -44,7 +44,7 @@ export function DeployOptionCard({
         <div>
           <h3 className={cn(
             "text-lg font-bold font-poppins transition-colors",
-            isActive ? "text-electric" : "text-white"
+            isActive ? "text-white" : "text-white"
           )}>
             {label}
           </h3>
@@ -58,7 +58,7 @@ export function DeployOptionCard({
       {isActive && (
         <motion.div
           layoutId="activeDot"
-          className="absolute top-4 right-4 w-2 h-2 rounded-full bg-electric shadow-[0_0_8px_#00E5FF]"
+          className="absolute top-4 right-4 w-2 h-2 rounded-full bg-white shadow-[0_0_8px_#00E5FF]"
         />
       )}
     </GlassCard>

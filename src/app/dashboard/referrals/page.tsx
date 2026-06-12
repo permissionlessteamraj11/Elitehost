@@ -80,11 +80,11 @@ export default function ReferralsPage() {
           <h1 className="text-4xl font-bold tracking-tight">Referral Program</h1>
           <p className="text-white/40 mt-1">Invite friends and earn 30% commission on every purchase.</p>
         </div>
-        <div className="flex items-center gap-3 p-1 bg-white/5 border border-white/10 rounded-2xl">
-           <div className="px-4 py-2 text-sm font-mono text-electric">{referralCode}</div>
+        <div className="flex items-center gap-3 p-1 bg-white/5 border border-white/10 rounded-sm">
+           <div className="px-4 py-2 text-sm font-mono text-white">{referralCode}</div>
            <button
              onClick={copyToClipboard}
-             className="p-2 bg-electric text-void rounded-xl hover:scale-105 active:scale-95 transition-all"
+             className="p-2 bg-white text-black rounded-sm hover:scale-105 active:scale-95 transition-all"
            >
              {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
            </button>
@@ -93,13 +93,13 @@ export default function ReferralsPage() {
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: "Total Refers", value: stats.totalRefers, icon: Users, color: "text-blue-500" },
-          { label: "Active Refers", value: stats.activeRefers, icon: TrendingUp, color: "text-emerald-500" },
-          { label: "Total Earnings", value: `₹${stats.totalEarnings.toFixed(2)}`, icon: Gift, color: "text-purple-500" },
-          { label: "Wallet Balance", value: `₹${stats.walletBalance.toFixed(2)}`, icon: Wallet, color: "text-electric" },
+          { label: "Total Refers", value: stats.totalRefers, icon: Users, color: "text-white" },
+          { label: "Active Refers", value: stats.activeRefers, icon: TrendingUp, color: "text-white" },
+          { label: "Total Earnings", value: `₹${stats.totalEarnings.toFixed(2)}`, icon: Gift, color: "text-white" },
+          { label: "Wallet Balance", value: `₹${stats.walletBalance.toFixed(2)}`, icon: Wallet, color: "text-white" },
         ].map((stat, idx) => (
           <GlassCard key={idx} className="p-6" hover={false}>
-            <div className={`p-2 w-fit rounded-lg bg-white/5 ${stat.color} mb-4`}>
+            <div className={`p-2 w-fit rounded-sm bg-white/5 ${stat.color} mb-4`}>
               <stat.icon className="w-5 h-5" />
             </div>
             <div className="text-2xl font-bold font-mono">{stat.value}</div>
@@ -126,7 +126,7 @@ export default function ReferralsPage() {
                     <tr key={i} className="hover:bg-white/2 transition-colors">
                        <td className="px-6 py-4 text-sm font-medium">{ref.referred?.username || 'Unknown'}</td>
                        <td className="px-6 py-4 text-sm text-white/40">{new Date(ref.created_at).toLocaleDateString()}</td>
-                       <td className={`px-6 py-4 font-mono text-sm ${ref.status === 'completed' ? 'text-emerald-500' : 'text-amber-500'}`}>
+                       <td className={`px-6 py-4 font-mono text-sm ${ref.status === 'completed' ? 'text-white' : 'text-neutral-400'}`}>
                         ₹{Number(ref.amount || 0).toFixed(2)}
                        </td>
                     </tr>
@@ -146,8 +146,8 @@ export default function ReferralsPage() {
         <div className="space-y-6">
           <h2 className="text-xl font-bold">Withdraw Funds</h2>
           <GlassCard className="p-6 space-y-6" hover={false} glow>
-            <div className="p-4 rounded-xl bg-electric/10 border border-electric/20">
-               <div className="text-xs text-electric font-bold uppercase tracking-widest mb-1">Available for Withdrawal</div>
+            <div className="p-4 rounded-sm bg-white/5 border border-white/10">
+               <div className="text-xs text-white font-bold uppercase tracking-widest mb-1">Available for Withdrawal</div>
                <div className="text-3xl font-bold font-mono">₹{stats.walletBalance.toFixed(2)}</div>
             </div>
 
@@ -160,7 +160,7 @@ export default function ReferralsPage() {
                    value={withdrawAmount}
                    onChange={(e) => setWithdrawAmount(e.target.value)}
                    placeholder="₹500 minimum"
-                   className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-electric/50"
+                   className="w-full bg-void/50 border border-white/10 rounded-sm px-4 py-3 text-sm focus:outline-none focus:border-white/50"
                  />
                </div>
                <div className="space-y-2">
@@ -171,11 +171,11 @@ export default function ReferralsPage() {
                    value={upiId}
                    onChange={(e) => setUpiId(e.target.value)}
                    placeholder="user@upi"
-                   className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-electric/50"
+                   className="w-full bg-void/50 border border-white/10 rounded-sm px-4 py-3 text-sm focus:outline-none focus:border-white/50"
                  />
                </div>
                {error && (
-                 <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-bold uppercase flex items-center gap-2">
+                 <div className="p-3 rounded-sm bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-bold uppercase flex items-center gap-2">
                    <AlertCircle className="w-3.5 h-3.5" />
                    {error}
                  </div>

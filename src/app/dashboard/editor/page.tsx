@@ -24,10 +24,10 @@ export default function App() {
           <p className="text-gray-400">Edit project files in real-time.</p>
         </div>
         <div className="flex gap-3">
-          <button className="px-4 py-2 border border-white/10 rounded-lg hover:bg-white/5 transition-colors">
+          <button className="px-4 py-2 border border-white/10 rounded-sm hover:bg-white/5 transition-colors">
             Cancel
           </button>
-          <button className="px-6 py-2 bg-[#00E5FF] text-black font-bold rounded-lg hover:bg-[#00E5FF]/90 transition-colors">
+          <button className="px-6 py-2 bg-[#00E5FF] text-black font-bold rounded-sm hover:bg-[#00E5FF]/90 transition-colors">
             Save & Deploy
           </button>
         </div>

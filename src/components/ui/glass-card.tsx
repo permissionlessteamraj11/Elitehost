@@ -18,7 +18,7 @@ export function GlassCard({ children, className, hover = true, glow = false, onC
       whileTap={hover ? { scale: 0.98 } : undefined}
       onClick={onClick}
       className={cn(
-        "glass-morphism rounded-2xl overflow-hidden relative group",
+        "glass-morphism rounded-sm overflow-hidden relative group",
         glow && "neon-border",
         className
       )}

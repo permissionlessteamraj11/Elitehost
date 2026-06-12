@@ -15,7 +15,7 @@ export default function DashboardLayout({
   const pathname = usePathname();
 
   return (
-    <div className="flex min-h-screen bg-[#020108] text-white selection:bg-electric/30 overflow-x-hidden">
+    <div className="flex min-h-screen bg-[#020108] text-white selection:bg-white/30 overflow-x-hidden">
       {/* Sidebar for Desktop */}
       <div className="hidden lg:block">
         <Sidebar />

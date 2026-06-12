@@ -46,13 +46,13 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 px-4 py-3 rounded-xl transition-all group",
+                "flex items-center gap-3 px-4 py-3 rounded-sm transition-all group",
                 isActive
-                  ? "bg-primary/10 text-primary border border-primary/20"
+                  ? "bg-white/10 text-white border border-white/20"
                   : "text-text-secondary hover:text-white hover:bg-white/5"
               )}
             >
-              <item.icon className={cn("w-5 h-5", isActive ? "text-primary" : "group-hover:text-white")} />
+              <item.icon className={cn("w-5 h-5", isActive ? "text-white" : "group-hover:text-white")} />
               <span className="font-medium">{item.label}</span>
             </Link>
           );
@@ -62,14 +62,14 @@ export function Sidebar() {
       <div className="p-4 border-t border-white/5 space-y-1">
         <Link
           href="/dashboard/settings?tab=help"
-          className="flex items-center gap-3 px-4 py-3 text-text-secondary hover:text-white hover:bg-white/5 rounded-xl transition-all"
+          className="flex items-center gap-3 px-4 py-3 text-text-secondary hover:text-white hover:bg-white/5 rounded-sm transition-all"
         >
           <HelpCircle className="w-5 h-5" />
           <span className="font-medium">Help & Support</span>
         </Link>
         <button
           onClick={() => signOut()}
-          className="flex items-center gap-3 px-4 py-3 w-full text-left text-text-secondary hover:text-red-400 hover:bg-red-400/5 rounded-xl transition-all"
+          className="flex items-center gap-3 px-4 py-3 w-full text-left text-text-secondary hover:text-red-400 hover:bg-red-400/5 rounded-sm transition-all"
         >
           <LogOut className="w-5 h-5" />
           <span className="font-medium">Logout</span>

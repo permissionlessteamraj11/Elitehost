@@ -32,13 +32,13 @@ export function Hero() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/auth/register"
-              className="px-8 py-4 bg-[#00E5FF] text-black font-bold rounded-lg hover:bg-[#00E5FF]/90 transition-colors"
+              className="px-8 py-4 bg-[#00E5FF] text-black font-bold rounded-sm hover:bg-[#00E5FF]/90 transition-colors"
             >
               Start Deploying Free
             </Link>
             <Link
               href="/docs"
-              className="px-8 py-4 bg-white/5 border border-white/10 text-white font-bold rounded-lg hover:bg-white/10 transition-colors"
+              className="px-8 py-4 bg-white/5 border border-white/10 text-white font-bold rounded-sm hover:bg-white/10 transition-colors"
             >
               Read Documentation
             </Link>
@@ -50,7 +50,7 @@ export function Hero() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.3, duration: 0.5 }}
-          className="mt-20 mx-auto max-w-4xl rounded-xl border border-white/10 bg-black/50 backdrop-blur-xl overflow-hidden shadow-2xl shadow-[#00E5FF]/10"
+          className="mt-20 mx-auto max-w-4xl rounded-sm border border-white/10 bg-black/50 backdrop-blur-xl overflow-hidden shadow-2xl shadow-[#00E5FF]/10"
         >
           <div className="flex items-center gap-2 px-4 py-3 bg-white/5 border-bottom border-white/10">
             <div className="flex gap-1.5">

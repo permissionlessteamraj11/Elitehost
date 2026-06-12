@@ -61,7 +61,7 @@ export function FileManager() {
   };
 
   return (
-    <div className="rounded-xl border border-white/5 bg-white/5 p-4 flex flex-col h-full">
+    <div className="rounded-sm border border-white/5 bg-white/5 p-4 flex flex-col h-full">
       <div className="flex items-center justify-between mb-4 px-2">
         <h4 className="text-xs font-bold text-gray-500 uppercase tracking-widest">Files</h4>
         <div className="flex gap-1">

@@ -132,9 +132,9 @@ export default function SettingsPage() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                    "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold text-xs uppercase tracking-widest small-caps",
+                    "w-full flex items-center gap-3 px-4 py-3 rounded-sm transition-all font-bold text-xs uppercase tracking-widest small-caps",
                 activeTab === tab.id
-                  ? "bg-primary/10 text-primary border border-primary/20"
+                  ? "bg-white/10 text-white border border-white/20"
                   : "text-text-secondary hover:text-white hover:bg-white/5"
               )}
             >
@@ -160,7 +160,7 @@ export default function SettingsPage() {
                         type="text"
                         defaultValue={user?.username}
                         disabled
-                        className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-white/20 opacity-50"
+                        className="w-full bg-void/50 border border-white/10 rounded-sm px-4 py-2.5 text-sm focus:outline-none focus:border-white/20 opacity-50"
                      />
                   </div>
                   <div className="space-y-2">
@@ -168,7 +168,7 @@ export default function SettingsPage() {
                      <input
                         type="email"
                         defaultValue={user?.email}
-                        className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-white/20 opacity-50"
+                        className="w-full bg-void/50 border border-white/10 rounded-sm px-4 py-2.5 text-sm focus:outline-none focus:border-white/20 opacity-50"
                         disabled
                      />
                   </div>
@@ -178,7 +178,7 @@ export default function SettingsPage() {
                         type="text"
                         defaultValue={(user as any)?.mobile}
                         disabled
-                        className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-white/20 opacity-50"
+                        className="w-full bg-void/50 border border-white/10 rounded-sm px-4 py-2.5 text-sm focus:outline-none focus:border-white/20 opacity-50"
                      />
                   </div>
                   <div className="space-y-2">
@@ -188,7 +188,7 @@ export default function SettingsPage() {
                            type="text"
                            readOnly
                            value={(user as any)?.referral_code || "GENERATE_CODE"}
-                           className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none font-mono text-primary"
+                           className="w-full bg-void/50 border border-white/10 rounded-sm px-4 py-2.5 text-sm focus:outline-none font-mono text-white"
                         />
                         <button
                           onClick={() => {
@@ -203,7 +203,7 @@ export default function SettingsPage() {
                   </div>
                </div>
 
-               <div className="p-4 rounded-xl bg-primary/5 border border-primary/20 text-xs text-primary leading-relaxed">
+               <div className="p-4 rounded-sm bg-white/5 border border-white/20 text-xs text-white leading-relaxed">
                   <strong>Referral System:</strong> Share your code with friends! When they sign up using your code, they get a <strong>10% discount</strong> on their first credit purchase.
                </div>
             </GlassCard>
@@ -214,20 +214,20 @@ export default function SettingsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <GlassCard className="p-6" hover={false}>
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-500">
+                    <div className="p-2 rounded-sm bg-white/10 text-white">
                       <TrendingUp className="w-5 h-5" />
                     </div>
-                    <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Commission 30%</span>
+                    <span className="text-[10px] font-bold text-white uppercase tracking-widest">Commission 30%</span>
                   </div>
                   <div className="text-2xl font-bold font-mono">₹{walletStats.totalEarnings.toFixed(2)}</div>
                   <div className="text-[10px] text-text-secondary font-bold uppercase tracking-widest mt-1 small-caps">Total Earnings</div>
                 </GlassCard>
                 <GlassCard className="p-6" hover={false} glow>
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                    <div className="p-2 rounded-sm bg-white/10 text-white">
                       <Wallet className="w-5 h-5" />
                     </div>
-                    <span className="text-[10px] font-bold text-primary uppercase tracking-widest">Ready to Withdraw</span>
+                    <span className="text-[10px] font-bold text-white uppercase tracking-widest">Ready to Withdraw</span>
                   </div>
                   <div className="text-2xl font-bold font-mono">₹{walletStats.walletBalance.toFixed(2)}</div>
                   <div className="text-[10px] text-text-secondary font-bold uppercase tracking-widest mt-1 small-caps">Wallet Balance</div>
@@ -249,7 +249,7 @@ export default function SettingsPage() {
                        value={withdrawAmount}
                        onChange={(e) => setWithdrawAmount(e.target.value)}
                        placeholder="₹100 minimum"
-                       className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary/50"
+                       className="w-full bg-void/50 border border-white/10 rounded-sm px-4 py-2.5 text-sm focus:outline-none focus:border-white/50"
                      />
                    </div>
                    <div className="space-y-2">
@@ -260,12 +260,12 @@ export default function SettingsPage() {
                        value={upiId}
                        onChange={(e) => setUpiId(e.target.value)}
                        placeholder="user@upi"
-                       className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary/50"
+                       className="w-full bg-void/50 border border-white/10 rounded-sm px-4 py-2.5 text-sm focus:outline-none focus:border-white/50"
                      />
                    </div>
 
                    {withdrawError && (
-                     <div className="p-3 rounded-lg bg-red-500/10 text-red-500 text-[10px] font-bold uppercase flex items-center gap-2">
+                     <div className="p-3 rounded-sm bg-red-500/10 text-red-500 text-[10px] font-bold uppercase flex items-center gap-2">
                        <AlertCircle className="w-3.5 h-3.5" />
                        {withdrawError}
                      </div>
@@ -295,7 +295,7 @@ export default function SettingsPage() {
                           type="password"
                           value={currentPwd}
                           onChange={(e) => setCurrentPwd(e.target.value)}
-                          className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary/50"
+                          className="w-full bg-void/50 border border-white/10 rounded-sm px-4 py-2.5 text-sm focus:outline-none focus:border-white/50"
                         />
                       </div>
                       <div className="space-y-2">
@@ -304,13 +304,13 @@ export default function SettingsPage() {
                           type="password"
                           value={newPwd}
                           onChange={(e) => setNewPwd(e.target.value)}
-                          className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary/50"
+                          className="w-full bg-void/50 border border-white/10 rounded-sm px-4 py-2.5 text-sm focus:outline-none focus:border-white/50"
                         />
                       </div>
                    </div>
 
                    {message && (
-                     <div className={cn("p-3 rounded-lg text-xs", message.type === 'success' ? "bg-emerald-500/10 text-emerald-500" : "bg-red-500/10 text-red-500")}>
+                     <div className={cn("p-3 rounded-sm text-xs", message.type === 'success' ? "bg-white/10 text-white" : "bg-red-500/10 text-red-500")}>
                         {message.text}
                      </div>
                    )}
@@ -360,12 +360,12 @@ export default function SettingsPage() {
               <GlassCard className="p-0 overflow-hidden flex flex-col h-[600px]" hover={false}>
                 <div className="p-6 border-b border-white/5 bg-white/2 flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                      <MessageCircle className="w-5 h-5 text-primary" />
+                    <div className="w-10 h-10 rounded-sm bg-white/10 flex items-center justify-center">
+                      <MessageCircle className="w-5 h-5 text-white" />
                     </div>
                     <div>
                       <h2 className="text-lg font-bold font-heading small-caps">Elite Support Chat</h2>
-                      <p className="text-[10px] text-emerald-500 font-bold uppercase tracking-widest">Online • Typical reply &lt; 2h</p>
+                      <p className="text-[10px] text-white font-bold uppercase tracking-widest">Online • Typical reply &lt; 2h</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -376,7 +376,7 @@ export default function SettingsPage() {
                 <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-void/30">
                   {chatMessages.length === 0 ? (
                     <div className="h-full flex flex-col items-center justify-center text-center space-y-4 opacity-50">
-                      <div className="p-4 rounded-full bg-white/5">
+                      <div className="p-4 rounded-sm bg-white/5">
                         <MessageCircle className="w-8 h-8" />
                       </div>
                       <div className="space-y-1">
@@ -391,9 +391,9 @@ export default function SettingsPage() {
                         msg.sender === 'user' ? "ml-auto items-end" : "mr-auto items-start"
                       )}>
                         <div className={cn(
-                          "px-4 py-2.5 rounded-2xl text-sm",
+                          "px-4 py-2.5 rounded-sm text-sm",
                           msg.sender === 'user'
-                            ? "bg-primary text-void font-medium rounded-tr-none"
+                            ? "bg-white text-void font-medium rounded-tr-none"
                             : "bg-white/10 text-white rounded-tl-none border border-white/5"
                         )}>
                           {msg.content}
@@ -412,7 +412,7 @@ export default function SettingsPage() {
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                     placeholder="Type your message..."
-                    className="flex-1 bg-void/50 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-primary/50"
+                    className="flex-1 bg-void/50 border border-white/10 rounded-sm px-4 py-2 text-sm focus:outline-none focus:border-white/50"
                   />
                   <AnimatedButton type="submit" size="sm" loading={chatLoading} disabled={!newMessage.trim()}>
                     Send
@@ -423,19 +423,19 @@ export default function SettingsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <GlassCard className="p-6 space-y-4" hover={false}>
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-white/5 text-text-secondary">
+                    <div className="p-2 rounded-sm bg-white/5 text-text-secondary">
                       <Mail className="w-5 h-5" />
                     </div>
                     <h3 className="font-bold text-sm uppercase tracking-widest small-caps">Email Support</h3>
                   </div>
                   <p className="text-xs text-text-secondary">Direct email for formal inquiries and business matters.</p>
-                  <div className="text-xs font-bold text-primary">zynochat.in@zynochat.in</div>
+                  <div className="text-xs font-bold text-white">zynochat.in@zynochat.in</div>
                   <AnimatedButton variant="outline" size="sm" className="w-full" onClick={() => window.location.href='mailto:zynochat.in@zynochat.in'}>Compose Email</AnimatedButton>
                 </GlassCard>
 
                 <GlassCard className="p-6 space-y-4" hover={false}>
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-white/5 text-text-secondary">
+                    <div className="p-2 rounded-sm bg-white/5 text-text-secondary">
                       <FileText className="w-5 h-5" />
                     </div>
                     <h3 className="font-bold text-sm uppercase tracking-widest small-caps">Documentation</h3>
@@ -474,13 +474,13 @@ export default function SettingsPage() {
                   { label: "Usage Alerts", desc: "Notify when approaching plan limits." },
                   { label: "Security Alerts", desc: "Notifications about account security." }
                 ].map((item, i) => (
-                  <div key={i} className="flex items-center justify-between p-4 rounded-xl border border-white/5">
+                  <div key={i} className="flex items-center justify-between p-4 rounded-sm border border-white/5">
                     <div>
                       <div className="text-sm font-bold">{item.label}</div>
                       <div className="text-xs text-text-secondary">{item.desc}</div>
                     </div>
-                    <div className="w-10 h-5 bg-primary/20 rounded-full relative cursor-pointer border border-primary/30">
-                       <div className="absolute right-0.5 top-0.5 w-4 h-4 bg-primary rounded-full" />
+                    <div className="w-10 h-5 bg-white/20 rounded-sm relative cursor-pointer border border-white/30">
+                       <div className="absolute right-0.5 top-0.5 w-4 h-4 bg-white rounded-sm" />
                     </div>
                   </div>
                 ))}

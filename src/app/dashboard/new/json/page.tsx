@@ -71,7 +71,7 @@ export default function JsonDeploymentPage() {
               placeholder="My Awesome Bot"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-electric/50"
+              className="w-full bg-void/50 border border-white/10 rounded-sm px-4 py-2.5 text-sm focus:outline-none focus:border-electric/50"
             />
           </div>
 
@@ -81,13 +81,13 @@ export default function JsonDeploymentPage() {
                 placeholder='{ "framework": "nextjs", "buildCommand": "npm run build", ... }'
                 value={jsonConfig}
                 onChange={(e) => setJsonConfig(e.target.value)}
-                className="w-full h-80 bg-void/50 border border-white/10 rounded-xl p-4 font-mono text-xs focus:outline-none focus:border-electric/50"
+                className="w-full h-80 bg-void/50 border border-white/10 rounded-sm p-4 font-mono text-xs focus:outline-none focus:border-electric/50"
               />
           </div>
         </div>
 
         {error && (
-          <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-xs small-caps font-bold">
+          <div className="p-4 rounded-sm bg-red-500/10 border border-red-500/20 text-red-500 text-xs small-caps font-bold">
             {error}
           </div>
         )}

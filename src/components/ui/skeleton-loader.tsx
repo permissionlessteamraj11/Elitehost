@@ -11,7 +11,7 @@ export function SkeletonLoader({ className, variant = "rectangular" }: SkeletonL
       className={cn(
         "shimmer-bg bg-white/5",
         variant === "circular" && "rounded-full",
-        variant === "rectangular" && "rounded-xl",
+        variant === "rectangular" && "rounded-sm",
         variant === "text" && "rounded h-4 w-full",
         className
       )}

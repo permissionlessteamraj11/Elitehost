@@ -55,7 +55,7 @@ export default function DocsPage() {
           className="max-w-4xl mx-auto"
         >
           <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 rounded-lg bg-white/5 border border-white/10">
+            <div className="p-2 rounded-sm bg-white/5 border border-white/10">
               <Book className="w-6 h-6 text-[#00E5FF]" />
             </div>
             <span className="text-sm font-medium tracking-wider text-[#00E5FF] uppercase">
@@ -82,9 +82,9 @@ export default function DocsPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.1 }}
-                className="p-6 rounded-2xl border border-white/10 bg-white/5 hover:border-[#00E5FF]/50 transition-all group cursor-pointer"
+                className="p-6 rounded-sm border border-white/10 bg-white/5 hover:border-[#00E5FF]/50 transition-all group cursor-pointer"
               >
-                <div className="mb-4 p-2 rounded-lg bg-white/5 w-fit group-hover:scale-110 transition-transform">
+                <div className="mb-4 p-2 rounded-sm bg-white/5 w-fit group-hover:scale-110 transition-transform">
                   {section.icon}
                 </div>
                 <h3 className="text-xl font-bold mb-2">{section.title}</h3>
@@ -102,7 +102,7 @@ export default function DocsPage() {
             </div>
             <Link
               href="/auth/register"
-              className="px-8 py-3 bg-[#00E5FF] text-black font-bold rounded-xl hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(0,229,255,0.3)]"
+              className="px-8 py-3 bg-[#00E5FF] text-black font-bold rounded-sm hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(0,229,255,0.3)]"
             >
               Start Deploying Free
             </Link>

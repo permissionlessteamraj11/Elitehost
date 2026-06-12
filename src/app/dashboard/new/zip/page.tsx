@@ -75,12 +75,12 @@ export default function ZipDeploymentPage() {
               placeholder="My Awesome Bot"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-electric/50"
+              className="w-full bg-void/50 border border-white/10 rounded-sm px-4 py-2.5 text-sm focus:outline-none focus:border-electric/50"
             />
           </div>
 
-          <div className="text-center p-12 border-2 border-dashed border-white/10 rounded-3xl hover:border-electric/30 hover:bg-electric/5 transition-all cursor-pointer group">
-            <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 group-hover:bg-electric group-hover:text-void transition-all duration-500">
+          <div className="text-center p-12 border-2 border-dashed border-white/10 rounded-3xl hover:border-electric/30 hover:bg-white/5 transition-all cursor-pointer group">
+            <div className="w-16 h-16 rounded-sm bg-white/5 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 group-hover:bg-white group-hover:text-void transition-all duration-500">
               <Upload className="w-8 h-8 text-white/40 group-hover:text-void" />
             </div>
             <h3 className="text-lg font-bold font-poppins mb-1 small-caps">Drop your ZIP here</h3>
@@ -96,7 +96,7 @@ export default function ZipDeploymentPage() {
               placeholder="npm run build"
               value={buildCommand}
               onChange={(e) => setBuildCommand(e.target.value)}
-              className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-electric/50 font-mono"
+              className="w-full bg-void/50 border border-white/10 rounded-sm px-4 py-2.5 text-sm focus:outline-none focus:border-electric/50 font-mono"
             />
           </div>
           <div className="space-y-2">
@@ -106,7 +106,7 @@ export default function ZipDeploymentPage() {
               placeholder="npm start"
               value={deployCommand}
               onChange={(e) => setDeployCommand(e.target.value)}
-              className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-electric/50 font-mono"
+              className="w-full bg-void/50 border border-white/10 rounded-sm px-4 py-2.5 text-sm focus:outline-none focus:border-electric/50 font-mono"
             />
           </div>
         </div>
@@ -114,7 +114,7 @@ export default function ZipDeploymentPage() {
         <div className="space-y-4 pt-4 border-t border-white/5">
           <div className="flex items-center justify-between">
             <label className="text-xs font-bold text-text-secondary uppercase tracking-widest small-caps">Environment Variables</label>
-            <button onClick={handleAddEnv} className="text-xs text-primary hover:underline flex items-center gap-1 small-caps font-bold">
+            <button onClick={handleAddEnv} className="text-xs text-white hover:underline flex items-center gap-1 small-caps font-bold">
               <Plus className="w-3 h-3" /> Add Variable
             </button>
           </div>
@@ -126,17 +126,17 @@ export default function ZipDeploymentPage() {
                   placeholder="KEY"
                   value={ev.key}
                   onChange={(e) => handleEnvChange(idx, 'key', e.target.value)}
-                  className="flex-1 bg-void/50 border border-white/10 rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-primary/50 font-mono"
+                  className="flex-1 bg-void/50 border border-white/10 rounded-sm px-4 py-2 text-xs focus:outline-none focus:border-white/50 font-mono"
                 />
                 <input
                   type="text"
                   placeholder="VALUE"
                   value={ev.value}
                   onChange={(e) => handleEnvChange(idx, 'value', e.target.value)}
-                  className="flex-1 bg-void/50 border border-white/10 rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-primary/50 font-mono"
+                  className="flex-1 bg-void/50 border border-white/10 rounded-sm px-4 py-2 text-xs focus:outline-none focus:border-white/50 font-mono"
                 />
                 {envVars.length > 1 && (
-                  <button onClick={() => handleRemoveEnv(idx)} className="p-2 text-red-500 hover:bg-red-500/10 rounded-lg transition-colors">
+                  <button onClick={() => handleRemoveEnv(idx)} className="p-2 text-red-500 hover:bg-red-500/10 rounded-sm transition-colors">
                     <X className="w-4 h-4" />
                   </button>
                 )}
@@ -146,7 +146,7 @@ export default function ZipDeploymentPage() {
         </div>
 
         {error && (
-          <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-xs small-caps font-bold">
+          <div className="p-4 rounded-sm bg-red-500/10 border border-red-500/20 text-red-500 text-xs small-caps font-bold">
             {error}
           </div>
         )}

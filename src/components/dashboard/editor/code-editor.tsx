@@ -10,7 +10,7 @@ interface CodeEditorProps {
 
 export function CodeEditor({ code, language = "javascript", onChange }: CodeEditorProps) {
   return (
-    <div className="rounded-xl border border-white/5 overflow-hidden">
+    <div className="rounded-sm border border-white/5 overflow-hidden">
       <Editor
         height="60vh"
         defaultLanguage={language}

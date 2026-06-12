@@ -14,16 +14,16 @@
   --font-size-3xl: 1.75rem;
   --font-size-4xl: 2.15rem;
 
-  --color-primary: #00E5FF;
-  --color-accent: #7C3AED;
-  --color-background: #0B0F19;
-  --color-card: #111827;
-  --color-text: #F9FAFB;
-  --color-text-secondary: #9CA3AF;
+  --color-primary: #FFFFFF;
+  --color-accent: #FFFFFF;
+  --color-background: #000000;
+  --color-card: #0A0A0A;
+  --color-text: #FFFFFF;
+  --color-text-secondary: #A3A3A3;
 
-  --color-electric: #00E5FF;
-  --color-electric-soft: rgba(0, 229, 255, 0.1);
-  --color-neon-purple: #7C3AED;
+  --color-electric: #FFFFFF;
+  --color-electric-soft: rgba(255, 255, 255, 0.1);
+  --color-neon-purple: #FFFFFF;
   --color-void: #0B0F19;
   --color-midnight: #111827;
 
@@ -31,9 +31,9 @@
   --color-surface-2: rgba(255, 255, 255, 0.05);
   --color-surface-3: rgba(255, 255, 255, 0.1);
 
-  --radius-2xl: 20px;
-  --radius-3xl: 24px;
-  --radius-card: 20px;
+  --radius-2xl: 0px;
+  --radius-3xl: 0px;
+  --radius-card: 4px;
 
   --animate-shimmer: shimmer 2.5s infinite linear;
   --animate-glow-pulse: glow-pulse 3s ease-in-out infinite;
@@ -62,8 +62,8 @@
 }
 
 :root {
-  --background: #0B0F19;
-  --foreground: #F9FAFB;
+  --background: #000000;
+  --foreground: #FFFFFF;
 }
 
 body {
@@ -97,12 +97,12 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   .neon-border {
-    box-shadow: 0 0 10px rgba(0, 229, 255, 0.1), inset 0 0 5px rgba(0, 229, 255, 0.05);
-    border: 1px solid rgba(0, 229, 255, 0.2);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .text-glow {
-    text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
   }
 
   .shimmer-bg {
