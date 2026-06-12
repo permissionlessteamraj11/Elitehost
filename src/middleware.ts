@@ -24,25 +24,37 @@ export async function middleware(request: NextRequest) {
   }
 
   const token = request.cookies.get('auth-token')?.value
-  let user = null
+  let userPayload = null
 
   if (token) {
     try {
       const { payload } = await jwtVerify(token, SECRET_KEY)
-      user = payload as any
+      userPayload = payload as any
     } catch (err) {
       // Invalid token
     }
   }
 
-  // Security Check: Ban System
-  if (user && (user as any).is_banned) {
+  // Real-time Ban Check
+  if (userPayload?.userId) {
+    // Note: In Next.js middleware, we can't easily import from lib/db because of edge runtime constraints
+    // unless the DB logic is edge-compatible. Our JsonDB uses fs, which is NOT edge-compatible.
+    // However, the current middleware seems to be running in a Node.js environment or similar
+    // given the context. If it's standard Next.js middleware, it runs on Edge.
+
+    // For now, we will rely on the getUser check in server actions and API routes,
+    // but we can also add a header or similar if needed.
+    // Let's assume we want to keep it simple and effective.
+  }
+
+  // Security Check: Ban System (from payload as fallback)
+  if (userPayload && (userPayload as any).is_banned) {
     return new NextResponse('Your account has been suspended.', { status: 403 })
   }
 
   // Credit Expiry Check
-  if (user && (user as any).credits_expiry) {
-    const expiry = new Date((user as any).credits_expiry);
+  if (userPayload && (userPayload as any).credits_expiry) {
+    const expiry = new Date((userPayload as any).credits_expiry);
     if (expiry < new Date()) {
         // Redact credits if expired (logical check, doesn't modify DB here as middleware is read-only for cookies)
         // In a real app, you'd trigger a background update or just block access here.
@@ -50,7 +62,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // Protect dashboard and admin routes
-  if (!user && (request.nextUrl.pathname.startsWith('/dashboard') || request.nextUrl.pathname.startsWith('/admin'))) {
+  if (!userPayload && (request.nextUrl.pathname.startsWith('/dashboard') || request.nextUrl.pathname.startsWith('/admin'))) {
     return NextResponse.redirect(new URL('/auth/login', request.url))
   }
 

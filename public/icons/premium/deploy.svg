@@ -1,0 +1,16 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="rocket_grad" x1="256" y1="100" x2="256" y2="412" gradientUnits="userSpaceOnUse">
+      <stop stop-color="white" />
+      <stop offset="1" stop-color="#6366F1" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="15" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <path d="M256 100C256 100 200 200 200 300C200 340 225 360 256 360C287 360 312 340 312 300C312 200 256 100 256 100Z" fill="url(#rocket_grad)" filter="url(#glow)"/>
+  <path d="M256 360V420M220 380L256 410L292 380" stroke="white" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/>
+  <path d="M240 220L272 220M248 260L264 260" stroke="black" stroke-width="8" stroke-linecap="round" opacity="0.3"/>
+</svg>

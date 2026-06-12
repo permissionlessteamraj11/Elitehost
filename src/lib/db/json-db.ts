@@ -148,6 +148,7 @@ if (typeof window === 'undefined') {
     referrals: new JsonDB('referrals'),
     payment_requests: new JsonDB('payment_requests'),
     messages: new JsonDB('messages'),
+    broadcasts: new JsonDB('broadcasts'),
     banned_ips: new JsonDB('banned_ips'),
     banned_users: new JsonDB('banned_users'),
   };
@@ -162,6 +163,7 @@ if (typeof window === 'undefined') {
         referrals: new JsonDB('referrals'),
         payment_requests: new JsonDB('payment_requests'),
         messages: new JsonDB('messages'),
+        broadcasts: new JsonDB('broadcasts'),
         banned_ips: new JsonDB('banned_ips'),
         banned_users: new JsonDB('banned_users'),
     };

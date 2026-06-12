@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Users, Server, ShieldAlert, Activity, FileText, Search, Lock, Eye, EyeOff, Loader2, Wallet, Check, X, Settings, Plus, Minus, CreditCard, MessageCircle } from "lucide-react";
+import { Users, Server, ShieldAlert, Activity, FileText, Search, Lock, Eye, EyeOff, Loader2, Wallet, Check, X, Settings, Plus, Minus, CreditCard, MessageCircle, Bell } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { AnimatedButton } from "@/components/ui/animated-button";
 import { cn } from "@/lib/utils";
@@ -9,6 +9,7 @@ import Image from "next/image";
 import { validateAdminPassword } from "@/app/actions/admin-auth";
 import { getPlatformSetting, updatePlatformSetting, getPendingWithdrawals, updateWithdrawalStatus, getAdminData, updateUserCredits, approvePaymentRequest, banUser, unbanUser, blockIP } from "@/app/actions/platform";
 import { getAdminChats, getConversationForAdmin, adminReply } from "@/app/actions/chat";
+import { sendBroadcast } from "@/app/actions/broadcast";
 
 export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -39,6 +40,11 @@ export default function AdminDashboard() {
   const [chatMessages, setChatMessages] = useState<any[]>([]);
   const [replyText, setReplyText] = useState("");
   const [sendingReply, setSendingReply] = useState(false);
+
+  // Broadcast State
+  const [broadcastTitle, setBroadcastTitle] = useState("");
+  const [broadcastMessage, setBroadcastMessage] = useState("");
+  const [sendingBroadcast, setSendingBroadcast] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,6 +102,19 @@ export default function AdminDashboard() {
       fetchConversation(selectedChatUser);
     }
     setSendingReply(false);
+  };
+
+  const handleSendBroadcast = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!broadcastTitle.trim() || !broadcastMessage.trim()) return;
+    setSendingBroadcast(true);
+    const res = await sendBroadcast(broadcastTitle, broadcastMessage);
+    if (res.success) {
+      setBroadcastTitle("");
+      setBroadcastMessage("");
+      alert("Broadcast sent to all users!");
+    }
+    setSendingBroadcast(false);
   };
 
   const fetchData = async () => {
@@ -280,6 +299,37 @@ export default function AdminDashboard() {
                <div className="text-lg font-bold">SQL Injection Guard Active</div>
                <div className="text-[10px] text-text-secondary mt-1">Real-time threat monitoring is enabled.</div>
             </div>
+          </GlassCard>
+
+          {/* Broadcast Center */}
+          <h2 className="text-2xl font-bold font-heading flex items-center gap-2 mt-10">
+            <Bell className="w-6 h-6 text-primary" /> Broadcast Center
+          </h2>
+          <GlassCard className="p-6 space-y-4" hover={false}>
+            <form onSubmit={handleSendBroadcast} className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">Broadcast Title</label>
+                <input
+                  type="text"
+                  value={broadcastTitle}
+                  onChange={(e) => setBroadcastTitle(e.target.value)}
+                  placeholder="System Update"
+                  className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-primary/50"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">Message</label>
+                <textarea
+                  value={broadcastMessage}
+                  onChange={(e) => setBroadcastMessage(e.target.value)}
+                  placeholder="Tell your users something important..."
+                  className="w-full bg-void/50 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-primary/50 min-h-[100px]"
+                />
+              </div>
+              <AnimatedButton type="submit" loading={sendingBroadcast} className="w-full uppercase tracking-widest small-caps">
+                Send Broadcast
+              </AnimatedButton>
+            </form>
           </GlassCard>
 
           {/* Withdrawals */}

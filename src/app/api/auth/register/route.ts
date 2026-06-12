@@ -39,7 +39,8 @@ export async function POST(req: Request) {
       referral_code: userReferralCode,
       referrer_id: referrerId,
       role: "user",
-      credit_balance: 2.0,
+      credit_balance: 0,
+      paid_credits: 0,
       wallet_balance: 0,
     });
 

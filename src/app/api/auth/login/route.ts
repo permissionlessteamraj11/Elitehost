@@ -17,6 +17,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
+    if (user.is_banned) {
+      return NextResponse.json({ error: "Your account has been suspended." }, { status: 403 });
+    }
+
     const token = await createToken({ userId: user.id, email: user.email, role: user.role, is_banned: !!user.is_banned });
     (await cookies()).set("auth-token", token, {
       httpOnly: true,

@@ -9,6 +9,18 @@ export async function GET() {
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const deployments = await db.deployments.find((d: any) => d.user_id === user.id);
+
+    // Auto-expire check
+    let updated = false;
+    const now = new Date();
+    for (const d of deployments) {
+      if (d.status === 'ready' && d.expires_at && new Date(d.expires_at) < now) {
+        await db.deployments.update((item: any) => item.id === d.id, { status: 'expired' });
+        d.status = 'expired';
+        updated = true;
+      }
+    }
+
     return NextResponse.json({ success: true, deployments });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -50,14 +62,10 @@ export async function POST(request: Request) {
         credit_balance: freeCredits - 1
       });
     } else {
-      // Free trial deployment: 3 hours (only if free plan enabled)
-      if (!freePlanEnabled) {
-        return NextResponse.json({ error: "Free plan is disabled. Please buy credits to deploy." }, { status: 400 });
-      }
-
+      // Free trial deployment: 3 hours (always allowed once for users with 0 credits)
       const existingFree = await db.deployments.find((d: any) => d.user_id === user.id && d.is_free === true);
       if (existingFree.length > 0) {
-        return NextResponse.json({ error: "Free trial already used. Please buy credits." }, { status: 400 });
+        return NextResponse.json({ error: "Free trial already used. Please buy credits to deploy more projects." }, { status: 400 });
       }
       expiresAt = new Date(Date.now() + 3 * 60 * 60 * 1000).toISOString();
       isFree = true;
