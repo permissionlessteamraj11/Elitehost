@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, use } from "react";
+import { useEffect, useState, use, useCallback } from "react";
 import { TerminalLogs } from "@/components/dashboard/deployments/terminal-logs";
 import { GlassCard } from "@/components/ui/glass-card";
 import { AnimatedButton } from "@/components/ui/animated-button";
@@ -17,13 +17,7 @@ export default function DeploymentDetailPage({ params }: { params: Promise<{ id:
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    fetchDeployment();
-    const interval = setInterval(fetchLogs, 3000);
-    return () => clearInterval(interval);
-  }, [id]);
-
-  const fetchDeployment = async () => {
+  const fetchDeployment = useCallback(async () => {
     try {
       const res = await fetch(`/api/deployments/${id}`);
       const data = await res.json();
@@ -35,9 +29,9 @@ export default function DeploymentDetailPage({ params }: { params: Promise<{ id:
     } catch (e) {
       console.error("Fetch error", e);
     }
-  };
+  }, [id]);
 
-  const fetchLogs = async () => {
+  const fetchLogs = useCallback(async () => {
     try {
       const res = await fetch(`/api/deployments/${id}/logs`);
       if (res.ok) {
@@ -48,7 +42,13 @@ export default function DeploymentDetailPage({ params }: { params: Promise<{ id:
         }
       }
     } catch (e) {}
-  };
+  }, [id, deployment?.status]);
+
+  useEffect(() => {
+    fetchDeployment();
+    const interval = setInterval(fetchLogs, 3000);
+    return () => clearInterval(interval);
+  }, [fetchDeployment, fetchLogs]);
 
   const handleSaveConfig = async () => {
     setSaving(true);

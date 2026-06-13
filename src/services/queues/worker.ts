@@ -26,7 +26,7 @@ export const buildWorker = new Worker('build-queue', async (job) => {
     }
 
     // 3. Framework Detection (Simplified)
-    let detectedFramework = config.projectType;
+    const detectedFramework = config.projectType;
     console.log(`Detected framework: ${detectedFramework}`);
 
     // 4. Execution Plan

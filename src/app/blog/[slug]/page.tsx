@@ -5,6 +5,7 @@ import { Calendar, User, ArrowLeft, Share2, Tag, MessageSquare, Clock } from "lu
 import { GlassCard } from "@/components/ui/glass-card";
 import { AnimatedButton } from "@/components/ui/animated-button";
 import Link from "next/link";
+import Image from "next/image";
 import { use } from "react";
 import { blogPosts } from "@/lib/blog-data";
 
@@ -17,10 +18,12 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
     <div className="min-h-screen bg-[#020108] text-white pb-32">
       {/* Header Image */}
       <div className="relative h-[40vh] md:h-[60vh] w-full overflow-hidden">
-        <img
+        <Image
           src={post.image}
           alt={post.title}
-          className="w-full h-full object-cover"
+          fill
+          priority
+          className="object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#020108] via-transparent to-transparent" />
         <div className="absolute top-8 left-8">

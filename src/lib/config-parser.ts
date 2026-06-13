@@ -37,30 +37,30 @@ export const deploymentConfigSchema = z.object({
     public: z.record(z.string(), z.string()).default({}),
     secret: z.record(z.string(), z.string()).default({}),
     groups: z.array(z.string()).default([])
-  }).default({}),
+  }).default({ public: {}, secret: {}, groups: [] }),
   resources: z.object({
     cpu: z.string().default("0.5"),
     ram: z.string().default("512MB"),
     storage: z.string().default("1GB"),
     replicas: z.number().default(1)
-  }).default({}),
+  }).default({ cpu: "0.5", ram: "512MB", storage: "1GB", replicas: 1 }),
   networking: z.object({
     customDomain: z.string().nullable().optional(),
     ssl: z.boolean().default(true),
     ports: z.array(z.number()).default([3000])
-  }).default({}),
+  }).default({ ssl: true, ports: [3000] }),
   scaling: z.object({
     enabled: z.boolean().default(false),
     horizontal: z.boolean().default(false),
     vertical: z.boolean().default(false),
     minReplicas: z.number().default(1),
     maxReplicas: z.number().default(1)
-  }).default({}),
+  }).default({ enabled: false, horizontal: false, vertical: false, minReplicas: 1, maxReplicas: 1 }),
   security: z.object({
     rateLimit: z.boolean().default(true),
     firewall: z.boolean().default(true),
     secretEncryption: z.boolean().default(true)
-  }).default({}),
+  }).default({ rateLimit: true, firewall: true, secretEncryption: true }),
   metadata: z.object({
     createdAt: z.string().optional(),
     updatedAt: z.string().optional(),
