@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db/json-db';
 import { getUser } from '@/lib/auth-service';
 import { scanForMaliciousCode } from '@/lib/security';
+import { createDeploymentVersion } from '@/lib/db/versioning';
+import { buildQueue } from '@/services/queues/config';
 
 export async function GET() {
   try {
@@ -11,13 +13,11 @@ export async function GET() {
     const deployments = await db.deployments.find((d: any) => d.user_id === user.id);
 
     // Auto-expire check
-    let updated = false;
     const now = new Date();
     for (const d of deployments) {
       if (d.status === 'ready' && d.expires_at && new Date(d.expires_at) < now) {
         await db.deployments.update((item: any) => item.id === d.id, { status: 'expired' });
         d.status = 'expired';
-        updated = true;
       }
     }
 
@@ -44,25 +44,16 @@ export async function POST(request: Request) {
     let isFree = false;
 
     const freePlanEnabled = (await db.platform_settings.findOne((s: any) => s.key === 'free_plan_enabled'))?.value !== false;
-
-    // Separate paid and free credits logic
     const paidCredits = Number(user.paid_credits || 0);
     const freeCredits = Number(user.credit_balance || 0);
 
     if (paidCredits >= 1) {
-      // Prioritize paid credits
       expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
-      await db.users.update((u: any) => u.id === user.id, {
-        paid_credits: paidCredits - 1
-      });
+      await db.users.update((u: any) => u.id === user.id, { paid_credits: paidCredits - 1 });
     } else if (freePlanEnabled && freeCredits >= 1) {
-      // Use free credits if enabled
       expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
-      await db.users.update((u: any) => u.id === user.id, {
-        credit_balance: freeCredits - 1
-      });
+      await db.users.update((u: any) => u.id === user.id, { credit_balance: freeCredits - 1 });
     } else {
-      // Free trial deployment: 3 hours (always allowed once for users with 0 credits)
       const existingFree = await db.deployments.find((d: any) => d.user_id === user.id && d.is_free === true);
       if (existingFree.length > 0) {
         return NextResponse.json({ error: "Free trial already used. Please buy credits to deploy more projects." }, { status: 400 });
@@ -71,18 +62,47 @@ export async function POST(request: Request) {
       isFree = true;
     }
 
+    // Default configuration from payload
+    const initialConfig = {
+      name: payload.name || "My Awesome App",
+      projectType: payload.framework?.toLowerCase() || "nodejs",
+      runtime: { language: "nodejs", version: "22" },
+      source: {
+        type: payload.method || "github",
+        repoUrl: payload.repoUrl || "",
+        branch: "main",
+        autoDeploy: true
+      },
+      build: {
+        command: payload.build_command || null,
+        installCommand: null,
+        outputDir: null
+      },
+      start: {
+        command: payload.deploy_command || null,
+        healthCheckPath: "/",
+        port: 3000
+      },
+      env: {
+        public: (payload.env_vars || []).reduce((acc: any, curr: any) => ({ ...acc, [curr.key]: curr.value }), {}),
+        secret: {}
+      }
+    };
+
     const deployment = await db.deployments.insert({
       user_id: user.id,
-      name: payload.name || "Unnamed Project",
-      status: 'ready',
-      framework: payload.framework || 'Universal',
-      config: payload.config || {},
-      env_vars: payload.env_vars || [],
-      build_command: payload.build_command || null,
-      deploy_command: payload.deploy_command || null,
+      name: initialConfig.name,
+      status: 'pending',
+      config: initialConfig,
       expires_at: expiresAt,
       is_free: isFree,
     });
+
+    // Create initial version
+    await createDeploymentVersion(deployment.id, user.id, initialConfig, "Initial deployment");
+
+    // Add to build queue
+    await buildQueue.add('build', { deploymentId: deployment.id, userId: user.id });
 
     return NextResponse.json({ success: true, deploymentId: deployment.id });
   } catch (error: any) {
