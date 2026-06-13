@@ -5,6 +5,7 @@ import { BookOpen, Calendar, User, ArrowRight, Search, Tag } from "lucide-react"
 import { GlassCard } from "@/components/ui/glass-card";
 import { AnimatedButton } from "@/components/ui/animated-button";
 import Link from "next/link";
+import Image from "next/image";
 import { blogPosts } from "@/lib/blog-data";
 
 export default function BlogPage() {
@@ -61,10 +62,11 @@ export default function BlogPage() {
               <Link href={`/blog/${post.slug}`}>
                 <GlassCard className="h-full flex flex-col group overflow-hidden" glow>
                   <div className="relative h-48 overflow-hidden">
-                    <img
+                    <Image
                       src={post.image}
                       alt={post.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                      fill
+                      className="object-cover group-hover:scale-110 transition-transform duration-700"
                     />
                     <div className="absolute top-4 left-4">
                       <span className="px-3 py-1 bg-void/80 backdrop-blur-md border border-white/10 rounded-full text-[10px] font-bold uppercase tracking-widest text-electric">
