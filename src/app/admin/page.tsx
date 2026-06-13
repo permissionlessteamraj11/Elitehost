@@ -15,7 +15,7 @@ export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [authError, setAuthError] = useState(false);
+  const [authError, setAuthError] = useState<string | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   const [stats, setStats] = useState([
@@ -49,17 +49,17 @@ export default function AdminDashboard() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoggingIn(true);
-    setAuthError(false);
+    setAuthError(null);
 
     try {
       const result = await validateAdminPassword(password);
       if (result.success) {
         setIsAuthenticated(true);
       } else {
-        setAuthError(true);
+        setAuthError(result.error || "Invalid password");
       }
     } catch (error) {
-      setAuthError(true);
+      setAuthError("An unexpected error occurred");
     } finally {
       setIsLoggingIn(false);
     }
@@ -222,7 +222,7 @@ export default function AdminDashboard() {
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
-              {authError && <p className="text-red-500 text-[10px] font-bold uppercase tracking-wider">Invalid password</p>}
+              {authError && <p className="text-red-500 text-[10px] font-bold uppercase tracking-wider">{authError}</p>}
             </div>
             <AnimatedButton type="submit" className="w-full gap-2" disabled={isLoggingIn}>
               {isLoggingIn ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
