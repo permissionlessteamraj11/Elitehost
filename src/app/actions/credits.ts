@@ -58,3 +58,23 @@ export async function submitWithdrawalRequest(amount: number, upiId: string) {
 
     return { success: true };
 }
+
+export async function claimTrial() {
+  const user = await getUser();
+  if (!user) return { success: false, error: "Unauthorized" };
+
+  const dbUser = await db.users.findOne((u: any) => u.id === user.id);
+  if (!dbUser) return { success: false, error: "User not found" };
+
+  if (dbUser.trial_claimed) {
+    return { success: false, error: "Trial already claimed" };
+  }
+
+  await db.users.update((u: any) => u.id === user.id, {
+    credit_balance: (Number(dbUser.credit_balance) || 0) + 1,
+    trial_claimed: true,
+    next_deploy_is_trial: true
+  });
+
+  return { success: true };
+}

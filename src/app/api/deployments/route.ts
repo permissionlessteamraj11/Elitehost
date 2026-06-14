@@ -43,9 +43,17 @@ export async function POST(request: Request) {
     // Credit Enforcement: Strictly 1 credit per deployment
     const paidCredits = Number(user.paid_credits || 0);
     const freeCredits = Number(user.credit_balance || 0);
-    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+    let expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
-    if (paidCredits >= 1) {
+    if (user.next_deploy_is_trial) {
+      // 3-hour trial deployment
+      expiresAt = new Date(Date.now() + 3 * 60 * 60 * 1000).toISOString();
+      if (freeCredits >= 1) {
+        await db.users.update((u: any) => u.id === user.id, { credit_balance: freeCredits - 1, next_deploy_is_trial: false });
+      } else if (paidCredits >= 1) {
+        await db.users.update((u: any) => u.id === user.id, { paid_credits: paidCredits - 1, next_deploy_is_trial: false });
+      }
+    } else if (paidCredits >= 1) {
       await db.users.update((u: any) => u.id === user.id, { paid_credits: paidCredits - 1 });
     } else if (freeCredits >= 1) {
       await db.users.update((u: any) => u.id === user.id, { credit_balance: freeCredits - 1 });

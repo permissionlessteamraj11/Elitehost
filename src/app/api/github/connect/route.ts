@@ -6,7 +6,7 @@ export async function GET() {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const clientId = process.env.GITHUB_CLIENT_ID;
-  const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL}/api/github/callback`;
+  const redirectUri = "https://elitehosting.in/api/github/callback";
   const scope = 'repo,read:user,user:email';
 
   const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&state=${user.id}`;

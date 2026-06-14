@@ -36,7 +36,16 @@ export default function DeploymentDetailPage({ params }: { params: Promise<{ id:
       const res = await fetch(`/api/deployments/${id}/logs`);
       if (res.ok) {
         const data = await res.json();
-        if (data.logs) setLogs(data.logs.split('\n'));
+        if (data.logs) {
+          const newLogs = data.logs.split('\n');
+          // Only update if logs have changed to prevent unnecessary re-renders
+          setLogs(prev => {
+            if (prev.length === newLogs.length && prev[prev.length - 1] === newLogs[newLogs.length - 1]) {
+              return prev;
+            }
+            return newLogs;
+          });
+        }
         if (data.status && deployment?.status !== data.status) {
           setDeployment((prev: any) => ({ ...prev, status: data.status }));
         }
