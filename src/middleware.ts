@@ -1,19 +1,48 @@
 import { NextResponse, type NextRequest } from 'next/server'
-import { ratelimit } from '@/lib/ratelimit'
+import { authRateLimit, generalRateLimit, aiRateLimit, uploadRateLimit } from '@/lib/ratelimit'
 import { jwtVerify } from 'jose'
+import { LRUCache } from 'lru-cache'
 
-const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET || 'elite-hosting-secret-key-2025')
+const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET)
 
-// In-memory rate limiting fallback
-const memoryLimit = new Map<string, { count: number; reset: number }>()
+// In-memory rate limiting fallback using lru-cache
+const memoryCache = new LRUCache<string, { count: number; reset: number }>({
+  max: 5000,
+  ttl: 15 * 60 * 1000, // 15 mins max
+})
+
+async function checkRateLimit(ip: string, type: 'auth' | 'gen' | 'ai' | 'upload') {
+  const limits = {
+    auth: { count: 5, window: 15 * 60 * 1000 },
+    gen: { count: 60, window: 60 * 1000 },
+    ai: { count: 10, window: 60 * 1000 },
+    upload: { count: 5, window: 60 * 1000 },
+  }
+
+  const { count, window } = limits[type]
+  const key = `${type}:${ip}`
+  const now = Date.now()
+
+  let entry = memoryCache.get(key)
+  if (!entry || now > entry.reset) {
+    entry = { count: 0, reset: now + window }
+  }
+
+  entry.count++
+  memoryCache.set(key, entry)
+
+  return {
+    success: entry.count <= count,
+    remaining: Math.max(0, count - entry.count),
+    reset: entry.reset
+  }
+}
 
 export async function middleware(request: NextRequest) {
   const ip = request.headers.get('x-forwarded-for') ?? '127.0.0.1'
   const url = request.nextUrl.clone()
 
-  // 1. IP Ban Check (via Internal API call to bypass fs limitations in Edge)
-  // Note: Middleware can fetch internal APIs if they are deployed.
-  // However, for local development/simplicity, we check if the path is NOT the ban check itself to avoid recursion.
+  // 1. IP Ban Check
   if (!request.nextUrl.pathname.startsWith('/api/security/is-banned')) {
     try {
       const banCheck = await fetch(new URL('/api/security/is-banned', request.url), {
@@ -28,29 +57,48 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // 2. Rate Limiting
+  // 2. Rate Limiting Logic
   if (request.nextUrl.pathname.startsWith('/api')) {
-    if (process.env.UPSTASH_REDIS_REST_URL) {
-      const { success } = await ratelimit.limit(ip)
-      if (!success) {
-        return new NextResponse('Too Many Requests', { status: 429 })
+    let limitResult = { success: true, reset: Date.now() + 60000 }
+    const path = request.nextUrl.pathname
+    const isAction = request.headers.get('Next-Action')
+
+    if (path.startsWith('/api/auth/login') || path.startsWith('/api/auth/register')) {
+      if (authRateLimit) {
+        const { success, reset } = await authRateLimit.limit(ip)
+        limitResult = { success, reset }
+      } else {
+        limitResult = await checkRateLimit(ip, 'auth')
       }
+    } else if (path.startsWith('/api/deployments/zip')) {
+      if (uploadRateLimit) {
+        const { success, reset } = await uploadRateLimit.limit(ip)
+        limitResult = { success, reset }
+      } else {
+        limitResult = await checkRateLimit(ip, 'upload')
+      }
+    } else if (isAction) {
+        if (aiRateLimit) {
+            const { success, reset } = await aiRateLimit.limit(ip)
+            limitResult = { success, reset }
+        } else {
+            limitResult = await checkRateLimit(ip, 'ai')
+        }
     } else {
-      // Fallback in-memory rate limiting (best effort)
-      const now = Date.now()
-      const limitInfo = memoryLimit.get(ip) || { count: 0, reset: now + 60000 }
-
-      if (now > limitInfo.reset) {
-        limitInfo.count = 0
-        limitInfo.reset = now + 60000
+      if (generalRateLimit) {
+        const { success, reset } = await generalRateLimit.limit(ip)
+        limitResult = { success, reset }
+      } else {
+        limitResult = await checkRateLimit(ip, 'gen')
       }
+    }
 
-      limitInfo.count++
-      memoryLimit.set(ip, limitInfo)
-
-      if (limitInfo.count > 100) { // 100 requests per minute
-        return new NextResponse('Too Many Requests (Fallback)', { status: 429 })
-      }
+    if (!limitResult.success) {
+      const retryAfter = Math.ceil((limitResult.reset - Date.now()) / 1000)
+      return new NextResponse('Too Many Requests', {
+        status: 429,
+        headers: { 'Retry-After': retryAfter.toString() }
+      })
     }
   }
 
@@ -77,13 +125,23 @@ export async function middleware(request: NextRequest) {
 
   const response = NextResponse.next()
 
-  // 4. Security Headers (Defense in Depth)
+  // 4. Security Headers
   response.headers.set('X-Frame-Options', 'DENY')
   response.headers.set('X-Content-Type-Options', 'nosniff')
-  response.headers.set('X-XSS-Protection', '1; mode=block')
+  response.headers.delete('X-Powered-By')
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
   response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), interest-cohort=()')
   response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload')
+
+  // Explicit CORS Whitelist
+  const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || []
+  const origin = request.headers.get('origin')
+  if (origin && allowedOrigins.includes(origin)) {
+    response.headers.set('Access-Control-Allow-Origin', origin)
+    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS')
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    response.headers.set('Access-Control-Allow-Credentials', 'true')
+  }
 
   // Production-grade strict CSP
   const csp = [

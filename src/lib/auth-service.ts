@@ -3,10 +3,10 @@ import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 import bcrypt from 'bcryptjs';
 
-const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET || 'elite-hosting-secret-key-2025');
+const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET);
 
 export async function hashPassword(password: string) {
-  return await bcrypt.hash(password, 10);
+  return await bcrypt.hash(password, 12);
 }
 
 export async function comparePassword(password: string, hashed: string) {
@@ -17,7 +17,7 @@ export async function createToken(payload: any) {
   return await new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
-    .setExpirationTime('24h')
+    .setExpirationTime('60m')
     .sign(SECRET_KEY);
 }
 

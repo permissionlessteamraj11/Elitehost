@@ -4,6 +4,7 @@ import { getUser } from '@/lib/auth-service';
 import { scanForMaliciousCode, decrypt } from '@/lib/security';
 import { createDeploymentVersion } from '@/lib/db/versioning';
 import { buildQueue } from '@/services/queues/config';
+import { deploymentSchema } from '@/lib/validation';
 
 export async function GET() {
   try {
@@ -23,7 +24,7 @@ export async function GET() {
 
     return NextResponse.json({ success: true, deployments });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }
 }
 
@@ -32,7 +33,12 @@ export async function POST(request: Request) {
     const user = await getUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const payload = await request.json();
+    const body = await request.json();
+    const result = deploymentSchema.safeParse(body);
+    if (!result.success) {
+        return NextResponse.json({ error: "Invalid input", details: result.error.format() }, { status: 400 });
+    }
+    const payload = result.data;
 
     // Security Scan
     const securityCheck = scanForMaliciousCode(payload);
@@ -58,7 +64,6 @@ export async function POST(request: Request) {
     } else if (freeCredits >= 1) {
       await db.users.update((u: any) => u.id === user.id, { credit_balance: freeCredits - 1 });
     } else {
-      // For Admin users, we allow deployment for testing even with 0 credits
       if (user.role !== 'admin') {
           return NextResponse.json({ error: "Insufficient credits. Please buy credits to deploy.", code: 'INSUFFICIENT_CREDITS' }, { status: 402 });
       }
@@ -120,6 +125,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true, deploymentId: deployment.id });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error('Deployment error:', error);
+    return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }
 }
