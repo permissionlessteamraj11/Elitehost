@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import {
-  Sparkles,
+  Bot,
   Terminal,
   Rocket,
   Code2,
@@ -109,17 +109,17 @@ export function AIStudio() {
     )}>
       {/* Sidebar / Controls */}
       <div className={cn("lg:col-span-4 space-y-6", isFullscreen && "hidden lg:block")}>
-        <GlassCard className="p-6 h-full border-white/5" hover={false}>
+        <GlassCard className="p-6 h-full border-white/5" hover={false} glow={true}>
           <div className="space-y-6 flex flex-col h-full">
             <div className="space-y-3 flex-1">
               <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] flex items-center gap-2">
-                <Sparkles className="w-3 h-3 text-white" /> System Objective
+                <Bot className="w-3 h-3 text-white" /> System Objective
               </label>
               <textarea
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder="Describe project requirements (e.g. 'Highly advanced Ecommerce with framer-motion and zustand')..."
-                className="w-full h-48 bg-white/5 border border-white/10 rounded-sm p-4 text-xs focus:outline-none focus:border-white/30 transition-all placeholder:text-zinc-700 font-mono resize-none"
+                className="w-full h-48 bg-white/[0.07] border border-white/10 rounded-sm p-4 text-xs focus:outline-none focus:border-white/30 focus:shadow-[0_0_15px_rgba(255,255,255,0.05)] transition-all placeholder:text-zinc-700 font-mono resize-none"
               />
             </div>
 
@@ -175,7 +175,7 @@ export function AIStudio() {
             <AnimatedButton
               onClick={handleGenerate}
               disabled={isGenerating || !prompt}
-              className="w-full h-12 text-xs font-bold gap-3 border-white"
+              className="w-full h-12 text-xs font-bold gap-3 border-white animate-glow-pulse"
             >
               {isGenerating ? "Synthesizing..." : "Initialize Generation"}
             </AnimatedButton>
@@ -185,7 +185,7 @@ export function AIStudio() {
 
       {/* Main Workspace */}
       <div className={cn("lg:col-span-8 flex flex-col gap-6", isFullscreen && "lg:col-span-12")}>
-        <GlassCard className="flex-1 flex flex-col overflow-hidden border-white/5" hover={false}>
+        <GlassCard className="flex-1 flex flex-col overflow-hidden border-white/5" hover={false} glow={true}>
           {/* Workspace Content */}
           <div className="flex-1 flex flex-col md:flex-row">
             {/* File Tree Sidebar */}
