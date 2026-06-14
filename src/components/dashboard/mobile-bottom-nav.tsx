@@ -7,7 +7,7 @@ import {
   LayoutDashboard,
   Layers,
   PlusCircle,
-  Sparkles,
+  Bot,
   Settings
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -16,7 +16,7 @@ const navItems = [
   { icon: LayoutDashboard, label: "Home", href: "/dashboard" },
   { icon: Layers, label: "Deployments", href: "/dashboard/deployments" },
   { icon: PlusCircle, label: "New", href: "/dashboard/new", center: true },
-  { icon: Sparkles, label: "AI", href: "/dashboard/ai-studio" },
+  { icon: Bot, label: "AI", href: "/dashboard/ai-studio" },
   { icon: Settings, label: "Settings", href: "/dashboard/settings" },
 ];
 

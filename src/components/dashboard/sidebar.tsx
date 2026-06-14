@@ -7,7 +7,7 @@ import {
   LayoutDashboard,
   PlusCircle,
   Layers,
-  Sparkles,
+  Bot,
   Settings,
   HelpCircle,
   LogOut
@@ -19,7 +19,7 @@ const menuItems = [
   { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
   { icon: PlusCircle, label: "New Project", href: "/dashboard/new" },
   { icon: Layers, label: "Deployments", href: "/dashboard/deployments" },
-  { icon: Sparkles, label: "AI Studio", href: "/dashboard/ai-studio" },
+  { icon: Bot, label: "AI Studio", href: "/dashboard/ai-studio" },
   { icon: Settings, label: "Settings", href: "/dashboard/settings" },
 ];
 
@@ -48,7 +48,7 @@ export function Sidebar() {
               className={cn(
                 "flex items-center gap-3 px-4 py-3 rounded-sm transition-all group font-bold text-[10px] uppercase tracking-widest",
                 isActive
-                  ? "bg-white text-black border border-white"
+                  ? "bg-white text-black border border-white shadow-[0_0_20px_rgba(255,255,255,0.15)]"
                   : "text-zinc-500 hover:text-white hover:bg-white/5"
               )}
             >

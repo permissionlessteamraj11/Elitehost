@@ -63,7 +63,7 @@ export function Hero() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4, duration: 0.8 }}
-              className="text-white drop-shadow-[0_0_25px_rgba(255,255,255,0.3)] bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60"
+              className="text-white drop-shadow-[0_0_40px_rgba(255,255,255,0.4)] bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-white/20"
             >
               instantly. 🚀
             </motion.span>
@@ -103,7 +103,7 @@ export function Hero() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.3, duration: 0.5 }}
-          className="mt-20 mx-auto max-w-4xl rounded-sm border border-white/10 bg-black/40 backdrop-blur-2xl overflow-hidden shadow-2xl"
+          className="mt-20 mx-auto max-w-4xl rounded-sm border border-white/10 bg-black/40 backdrop-blur-2xl overflow-hidden shadow-2xl animate-float"
         >
           <div className="flex items-center gap-2 px-4 py-3 bg-white/5 border-b border-white/10">
             <div className="flex gap-1.5">
