@@ -1,36 +1,36 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Zap, Shield, Cpu, Cloud, Terminal, RefreshCw, Smartphone, Globe, Lock } from "lucide-react";
+import Image from "next/image";
 
 const features = [
   {
-    icon: "⚡",
+    icon: "/icons/premium/deploy.svg",
     title: "Instant Deploy",
     description: "Push to GitHub and your Telegram bot is live in seconds with our optimized Mumbai build engine."
   },
   {
-    icon: "🛡️",
+    icon: "/icons/premium/security.svg",
     title: "Enterprise Shield",
     description: "Military-grade encryption for your bot tokens and advanced DDoS protection on all Mumbai nodes."
   },
   {
-    icon: "💎",
+    icon: "/icons/premium/mumbai.svg",
     title: "Mumbai Premium",
     description: "Ultra-low latency sub-5ms routing for Indian users, ensuring your bots respond instantly."
   },
   {
-    icon: "📱",
+    icon: "/icons/premium/mobile.svg",
     title: "Mobile First",
     description: "Fully optimized dashboard for managing your deployments on the go from any device."
   },
   {
-    icon: "💻",
-    title: "Advanced CLI",
-    description: "Control your entire infrastructure from the terminal with our powerful CLI tool."
+    icon: "/icons/premium/database.svg",
+    title: "Persistent Storage",
+    description: "High-performance NVMe storage for your bot databases with automated daily backups."
   },
   {
-    icon: "🔄",
+    icon: "/icons/premium/uptime.svg",
     title: "Zero Downtime",
     description: "Roll out updates seamlessly with blue-green deployments and instant rollbacks."
   }
@@ -62,16 +62,17 @@ export function Features() {
               key={idx}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
+              whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(255,255,255,0.05)' }}
               transition={{ delay: idx * 0.05 }}
               viewport={{ once: true }}
-              className="p-8 rounded-sm border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] hover:border-white/20 transition-all group relative overflow-hidden"
+              className="p-8 rounded-sm border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] hover:border-white/30 transition-all group relative overflow-hidden"
             >
               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                 <div className="text-4xl grayscale select-none">{feature.icon}</div>
+                 <Image src={feature.icon} alt="" width={80} height={80} className="select-none" />
               </div>
 
-              <div className="mb-6 flex items-center justify-center w-10 h-10 rounded-sm bg-white/5 border border-white/10 group-hover:border-white/30 transition-colors">
-                <span className="text-xl">{feature.icon}</span>
+              <div className="mb-6 flex items-center justify-center w-12 h-12 rounded-sm bg-white/5 border border-white/10 group-hover:border-white/30 transition-colors">
+                <Image src={feature.icon} alt={feature.title} width={24} height={24} className="" />
               </div>
 
               <h3 className="text-lg font-bold mb-2 tracking-tight">{feature.title}</h3>

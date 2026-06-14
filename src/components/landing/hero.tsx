@@ -6,10 +6,34 @@ import Link from "next/link";
 import { AnimatedButton } from "@/components/ui/animated-button";
 
 export function Hero() {
+  const terminalLines = [
+    { text: "$ git push elite main", delay: 0.1 },
+    { text: "Enumerating objects: 42, done.", delay: 0.2, color: "text-zinc-600" },
+    { text: "Counting objects: 100% (42/42), done.", delay: 0.3, color: "text-zinc-600" },
+    { text: "✨ INITIALIZING ELITE ENGINE...", delay: 0.5, color: "text-white font-bold animate-pulse" },
+    { text: "📡 NODE: Mumbai-Edge-01 💎 [SECURE]", delay: 0.7, color: "text-zinc-400" },
+    { text: "✅ FRAMEWORK: Telegram Bot (Python) Detected", delay: 0.9, color: "text-zinc-300" },
+    { text: "📦 Installing production dependencies...", delay: 1.1, color: "text-zinc-500" },
+    { text: "✓ BUILD SUCCESSFUL [1.2s] ⚡", delay: 1.3, color: "text-white font-bold" },
+    { text: "🌍 STATUS: ONLINE 24/7", delay: 1.5, color: "text-white font-bold" }
+  ];
+
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-20">
-      {/* Refined B&W background */}
+      {/* Refined B&W background with grid */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.05),transparent_70%)]" />
+      <div
+        className="absolute inset-0 opacity-[0.15] pointer-events-none"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)
+          `,
+          backgroundSize: '40px 40px',
+          maskImage: 'radial-gradient(circle at 50% 50%, black, transparent 80%)',
+          WebkitMaskImage: 'radial-gradient(circle at 50% 50%, black, transparent 80%)'
+        }}
+      />
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 pointer-events-none" />
 
       <div className="container mx-auto px-4 relative z-10 text-center">
@@ -30,6 +54,7 @@ export function Hero() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2, duration: 0.8 }}
+              className="bg-clip-text text-transparent bg-gradient-to-b from-white to-white/40"
             >
               Deploy your code
             </motion.span>
@@ -38,7 +63,7 @@ export function Hero() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4, duration: 0.8 }}
-              className="text-white drop-shadow-[0_0_25px_rgba(255,255,255,0.5)]"
+              className="text-white drop-shadow-[0_0_25px_rgba(255,255,255,0.3)] bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60"
             >
               instantly. 🚀
             </motion.span>
@@ -91,18 +116,18 @@ export function Hero() {
             </div>
           </div>
           <div className="p-6 text-left font-mono text-xs md:text-sm leading-relaxed">
-            <div className="flex gap-4">
-              <span className="text-zinc-500">$</span>
-              <span className="text-white">git push zyno main</span>
-            </div>
-            <div className="mt-2 text-zinc-600">Enumerating objects: 42, done.</div>
-            <div className="text-zinc-600">Counting objects: 100% (42/42), done.</div>
-            <div className="text-white font-bold mt-2 animate-pulse">✨ INITIALIZING ELITE ENGINE...</div>
-            <div className="text-zinc-400">📡 NODE: Mumbai-Edge-01 💎 [SECURE]</div>
-            <div className="text-zinc-300">✅ FRAMEWORK: Telegram Bot (Python) Detected</div>
-            <div className="text-zinc-500 mt-2">📦 Installing production dependencies...</div>
-            <div className="text-white font-bold">✓ BUILD SUCCESSFUL [1.2s] ⚡</div>
-            <div className="text-zinc-400">🌍 STATUS: <span className="text-white font-bold">ONLINE 24/7</span></div>
+            {terminalLines.map((line, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 1 + line.delay, duration: 0.3 }}
+                className={`flex gap-4 ${idx > 0 ? "mt-1" : ""} ${line.color || "text-white"}`}
+              >
+                {idx === 0 && <span className="text-zinc-500">$</span>}
+                <span>{line.text}</span>
+              </motion.div>
+            ))}
           </div>
         </motion.div>
       </div>
