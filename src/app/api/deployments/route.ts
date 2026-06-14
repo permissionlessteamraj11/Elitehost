@@ -50,7 +50,10 @@ export async function POST(request: Request) {
     } else if (freeCredits >= 1) {
       await db.users.update((u: any) => u.id === user.id, { credit_balance: freeCredits - 1 });
     } else {
-      return NextResponse.json({ error: "Insufficient credits. Please buy credits to deploy.", code: 'INSUFFICIENT_CREDITS' }, { status: 402 });
+      // For Admin users, we allow deployment for testing even with 0 credits
+      if (user.role !== 'admin') {
+          return NextResponse.json({ error: "Insufficient credits. Please buy credits to deploy.", code: 'INSUFFICIENT_CREDITS' }, { status: 402 });
+      }
     }
 
     // Source Configuration

@@ -10,7 +10,13 @@ const MALICIOUS_PATTERNS = [
   // Reverse shells / Malicious commands
   'nc -e /bin/sh', 'nc -e /bin/bash', 'python -c "import socket', 'perl -e \'use Socket',
   // Suspicious process names/scripts
-  'payload.sh', 'exploit.py', 'backdoor', 'malware'
+  'payload.sh', 'exploit.py', 'backdoor', 'malware',
+  // SSTI Patterns
+  '{{', '${', '<%=', '#{', '{%',
+  // Command Injection
+  '; rm -rf', '&& rm -rf', '| rm -rf', '`rm -rf`', '$(rm -rf)',
+  // AWS / Secret Leaks
+  'AKIA', 'SECRET_KEY', 'AWS_ACCESS_KEY', 'xoxp-', 'xoxb-'
 ];
 
 export function scanForMaliciousCode(payload: any): { isSafe: boolean; reason?: string } {

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/components/auth/auth-provider";
+import { SchemaMarkup } from "@/components/seo/schema-markup";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -62,6 +63,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} antialiased bg-black text-white selection:bg-white/10 selection:text-white font-sans`}
       >
+        <SchemaMarkup />
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>

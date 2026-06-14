@@ -5,7 +5,22 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const { email, mobile, password, username, referralCode } = await req.json();
+    const body = await req.json();
+    const { email, mobile, password, username, referralCode } = body;
+
+    // Security Hardening: Input Validation
+    if (!email || typeof email !== 'string' || !email.includes('@')) {
+      return NextResponse.json({ error: "Invalid email address" }, { status: 400 });
+    }
+    if (!username || typeof username !== 'string' || username.length < 3) {
+      return NextResponse.json({ error: "Username must be at least 3 characters" }, { status: 400 });
+    }
+    if (!password || typeof password !== 'string' || password.length < 8) {
+      return NextResponse.json({ error: "Password must be at least 8 characters" }, { status: 400 });
+    }
+    if (password.length > 128) {
+      return NextResponse.json({ error: "Password too long (max 128 characters)" }, { status: 400 });
+    }
 
     const existingEmail = await db.users.findOne((u: any) => u.email === email);
     if (existingEmail) {

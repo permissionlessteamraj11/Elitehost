@@ -26,18 +26,40 @@ export function Hero() {
             EliteHost v15.0 — Premium Edition 💎
           </span>
           <h1 className="text-5xl md:text-8xl font-bold mb-6 tracking-tighter leading-tight">
-            Deploy your code <br />
-            <span className="text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+            <motion.span
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2, duration: 0.8 }}
+            >
+              Deploy your code
+            </motion.span>
+            <br />
+            <motion.span
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4, duration: 0.8 }}
+              className="text-white drop-shadow-[0_0_25px_rgba(255,255,255,0.5)]"
+            >
               instantly. 🚀
-            </span>
+            </motion.span>
           </h1>
-          <p className="max-w-2xl mx-auto text-base md:text-lg text-zinc-400 mb-10 leading-relaxed">
-            Professional-grade cloud infrastructure for modern developers.
-            Experience ultra-fast Mumbai nodes, enterprise security, and
-            seamless scaling without the complexity. ⚡
-          </p>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6, duration: 1 }}
+            className="max-w-2xl mx-auto text-base md:text-lg text-zinc-400 mb-10 leading-relaxed aeo-answer"
+          >
+            EliteHost provides the fastest <strong>Telegram bot hosting</strong> in India with a dedicated Mumbai edge network.
+            Experience professional-grade cloud infrastructure, enterprise security 🛡️, and
+            seamless scaling for your Python and Node.js bots. ⚡
+          </motion.p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8, duration: 0.5 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+          >
             <Link href="/auth/register">
               <AnimatedButton variant="primary" size="sm" className="min-w-[160px]">
                 Start Free <ArrowRight className="w-3.5 h-3.5" />
@@ -48,7 +70,7 @@ export function Hero() {
                 Documentation
               </AnimatedButton>
             </Link>
-          </div>
+          </motion.div>
         </motion.div>
 
         {/* Floating Terminal Mockup - Optimized for B&W */}
@@ -75,12 +97,12 @@ export function Hero() {
             </div>
             <div className="mt-2 text-zinc-600">Enumerating objects: 42, done.</div>
             <div className="text-zinc-600">Counting objects: 100% (42/42), done.</div>
-            <div className="text-white font-bold mt-2">✨ INITIALIZING ZYNO ENGINE...</div>
-            <div className="text-zinc-400">📡 NODE: Mumbai-Edge-01 [SECURE]</div>
-            <div className="text-zinc-300">✅ FRAMEWORK: Next.js 15.0 Detected</div>
+            <div className="text-white font-bold mt-2 animate-pulse">✨ INITIALIZING ELITE ENGINE...</div>
+            <div className="text-zinc-400">📡 NODE: Mumbai-Edge-01 💎 [SECURE]</div>
+            <div className="text-zinc-300">✅ FRAMEWORK: Telegram Bot (Python) Detected</div>
             <div className="text-zinc-500 mt-2">📦 Installing production dependencies...</div>
-            <div className="text-white font-bold">✓ BUILD SUCCESSFUL [1.8s]</div>
-            <div className="text-zinc-400">🌍 DEPLOYED: <span className="underline">https://app.zynochat.in</span></div>
+            <div className="text-white font-bold">✓ BUILD SUCCESSFUL [1.2s] ⚡</div>
+            <div className="text-zinc-400">🌍 STATUS: <span className="text-white font-bold">ONLINE 24/7</span></div>
           </div>
         </motion.div>
       </div>
