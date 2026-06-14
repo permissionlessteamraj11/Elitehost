@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db/json-db';
 import { getUser } from '@/lib/auth-service';
-import { scanForMaliciousCode } from '@/lib/security';
+import { scanForMaliciousCode, decrypt } from '@/lib/security';
 import { createDeploymentVersion } from '@/lib/db/versioning';
 import { buildQueue } from '@/services/queues/config';
 
@@ -40,26 +40,34 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: securityCheck.reason }, { status: 403 });
     }
 
-    let expiresAt;
-    let isFree = false;
-
-    const freePlanEnabled = (await db.platform_settings.findOne((s: any) => s.key === 'free_plan_enabled'))?.value !== false;
+    // Credit Enforcement: Strictly 1 credit per deployment
     const paidCredits = Number(user.paid_credits || 0);
     const freeCredits = Number(user.credit_balance || 0);
+    let expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
     if (paidCredits >= 1) {
-      expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
       await db.users.update((u: any) => u.id === user.id, { paid_credits: paidCredits - 1 });
-    } else if (freePlanEnabled && freeCredits >= 1) {
-      expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+    } else if (freeCredits >= 1) {
       await db.users.update((u: any) => u.id === user.id, { credit_balance: freeCredits - 1 });
     } else {
-      const existingFree = await db.deployments.find((d: any) => d.user_id === user.id && d.is_free === true);
-      if (existingFree.length > 0) {
-        return NextResponse.json({ error: "Free trial already used. Please buy credits to deploy more projects." }, { status: 400 });
-      }
-      expiresAt = new Date(Date.now() + 3 * 60 * 60 * 1000).toISOString();
-      isFree = true;
+      return NextResponse.json({ error: "Insufficient credits. Please buy credits to deploy.", code: 'INSUFFICIENT_CREDITS' }, { status: 402 });
+    }
+
+    // Source Configuration
+    let sourceConfig: any = {
+        type: payload.method || "github",
+        repoUrl: payload.repoUrl || "",
+        branch: payload.branch || "main",
+        autoDeploy: payload.method === 'github'
+    };
+
+    if (payload.method === 'github_public') {
+        sourceConfig.type = 'github';
+        sourceConfig.isPublic = true;
+    } else if (payload.method === 'github') {
+        if (!user.github_token) {
+            return NextResponse.json({ error: "GitHub not connected" }, { status: 400 });
+        }
     }
 
     // Default configuration from payload
@@ -67,12 +75,7 @@ export async function POST(request: Request) {
       name: payload.name || "My Awesome App",
       projectType: payload.framework?.toLowerCase() || "nodejs",
       runtime: { language: "nodejs", version: "22" },
-      source: {
-        type: payload.method || "github",
-        repoUrl: payload.repoUrl || "",
-        branch: "main",
-        autoDeploy: true
-      },
+      source: sourceConfig,
       build: {
         command: payload.build_command || null,
         installCommand: null,
@@ -95,7 +98,7 @@ export async function POST(request: Request) {
       status: 'pending',
       config: initialConfig,
       expires_at: expiresAt,
-      is_free: isFree,
+      is_free: false,
     });
 
     // Create initial version

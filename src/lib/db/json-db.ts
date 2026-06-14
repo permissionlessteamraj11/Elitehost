@@ -151,6 +151,7 @@ if (typeof window === 'undefined') {
     broadcasts: new JsonDB('broadcasts'),
     banned_ips: new JsonDB('banned_ips'),
     banned_users: new JsonDB('banned_users'),
+    admin_attempts: new JsonDB('admin_attempts'),
   };
 } else {
     db = {
@@ -166,6 +167,7 @@ if (typeof window === 'undefined') {
         broadcasts: new JsonDB('broadcasts'),
         banned_ips: new JsonDB('banned_ips'),
         banned_users: new JsonDB('banned_users'),
+        admin_attempts: new JsonDB('admin_attempts'),
     };
 }
 
