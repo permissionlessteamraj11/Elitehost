@@ -44,18 +44,31 @@ if (typeof window === 'undefined') {
     async write(data: any[]): Promise<void> {
       await this.ensureFile();
       const tempPath = `${this.filePath}.tmp`;
-      await fs.writeFile(tempPath, JSON.stringify(data, null, 2));
+      // Prevent DoS by limiting total file size to 100MB
+      const content = JSON.stringify(data, null, 2);
+      if (content.length > 100 * 1024 * 1024) {
+        throw new Error("Database size limit exceeded");
+      }
+      await fs.writeFile(tempPath, content);
       await fs.rename(tempPath, this.filePath);
+    }
+
+    // Security Hardening: NoSQL Injection Protection
+    private sanitizeFilter(filter: any): (item: any) => boolean {
+        if (typeof filter !== 'function') {
+            return () => false;
+        }
+        return filter;
     }
 
     async find(filter: (item: any) => boolean): Promise<any[]> {
       const data = await this.read();
-      return data.filter(filter);
+      return data.filter(this.sanitizeFilter(filter));
     }
 
     async findOne(filter: (item: any) => boolean): Promise<any | null> {
       const data = await this.read();
-      return data.find(filter) || null;
+      return data.find(this.sanitizeFilter(filter)) || null;
     }
 
     async insert(item: any): Promise<any> {
@@ -74,8 +87,9 @@ if (typeof window === 'undefined') {
     async update(filter: (item: any) => boolean, updates: any): Promise<any[]> {
       const data = await this.read();
       let updatedCount = 0;
+      const sanitizedFilter = this.sanitizeFilter(filter);
       const newData = data.map((item: any) => {
-        if (filter(item)) {
+        if (sanitizedFilter(item)) {
           updatedCount++;
           return {
             ...item,
@@ -88,12 +102,13 @@ if (typeof window === 'undefined') {
       if (updatedCount > 0) {
         await this.write(newData);
       }
-      return newData.filter(filter);
+      return newData.filter(sanitizedFilter);
     }
 
     async delete(filter: (item: any) => boolean): Promise<void> {
       const data = await this.read();
-      const newData = data.filter((item: any) => !filter(item));
+      const sanitizedFilter = this.sanitizeFilter(filter);
+      const newData = data.filter((item: any) => !sanitizedFilter(item));
       await this.write(newData);
     }
 
@@ -104,6 +119,10 @@ if (typeof window === 'undefined') {
           return { data, error: null };
         },
         eq: async (column: string, value: any) => {
+          // Prevent NoSQL injection by ensuring value is a primitive
+          if (value !== null && typeof value === 'object') {
+            return { data: [], error: { message: 'Invalid query value' } };
+          }
           const data = await this.find((item: any) => item[column] === value);
           return {
             data,
@@ -118,6 +137,9 @@ if (typeof window === 'undefined') {
         update: async (updates: any) => {
           return {
             eq: async (column: string, value: any) => {
+              if (value !== null && typeof value === 'object') {
+                return { data: [], error: { message: 'Invalid query value' } };
+              }
               const data = await this.update((item: any) => item[column] === value, updates);
               return { data, error: null };
             }

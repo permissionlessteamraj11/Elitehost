@@ -7,17 +7,17 @@ const features = [
   {
     icon: "⚡",
     title: "Instant Deploy",
-    description: "Push to GitHub and your application is live in seconds with our optimized build engine."
+    description: "Push to GitHub and your Telegram bot is live in seconds with our optimized Mumbai build engine."
   },
   {
     icon: "🛡️",
-    title: "Elite Security",
-    description: "Advanced DDoS protection, SSL certificates, and secure environment variable management."
+    title: "Enterprise Shield",
+    description: "Military-grade encryption for your bot tokens and advanced DDoS protection on all Mumbai nodes."
   },
   {
-    icon: "🇮🇳",
-    title: "Mumbai Edge",
-    description: "Ultra-low latency for users in India and Southeast Asia with our edge datacenter."
+    icon: "💎",
+    title: "Mumbai Premium",
+    description: "Ultra-low latency sub-5ms routing for Indian users, ensuring your bots respond instantly."
   },
   {
     icon: "📱",

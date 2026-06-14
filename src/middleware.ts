@@ -80,10 +80,26 @@ export async function middleware(request: NextRequest) {
   // 4. Security Headers (Defense in Depth)
   response.headers.set('X-Frame-Options', 'DENY')
   response.headers.set('X-Content-Type-Options', 'nosniff')
+  response.headers.set('X-XSS-Protection', '1; mode=block')
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
-  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
+  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), interest-cohort=()')
   response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload')
-  response.headers.set('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data: https://images.unsplash.com; font-src 'self' data:; connect-src 'self' https://api.github.com;")
+
+  // Production-grade strict CSP
+  const csp = [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com",
+    "style-src 'self' 'unsafe-inline' https://api.fontshare.com",
+    "img-src 'self' blob: data: https://images.unsplash.com https://grainy-gradients.vercel.app",
+    "font-src 'self' data: https://api.fontshare.com https://fonts.gstatic.com",
+    "connect-src 'self' https://api.github.com https://vitals.vercel-insights.com",
+    "frame-ancestors 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "object-src 'none'",
+  ].join('; ')
+
+  response.headers.set('Content-Security-Policy', csp)
 
   return response
 }

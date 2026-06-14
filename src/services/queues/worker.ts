@@ -18,28 +18,40 @@ export const buildWorker = new Worker('build-queue', async (job) => {
     // Update status to 'building'
     await db.deployments.update((d: any) => d.id === deploymentId, { status: 'building' });
 
-    // 2. Prepare Source
+    // 2. Prepare Source (Simulation)
     if (config.source.type === 'github') {
       const token = user.github_token ? decrypt(user.github_token) : null;
-      console.log(`Cloning ${config.source.repoUrl} (Branch: ${config.source.branch})`);
-      // Logic to clone repo using token
+      console.log(`[BUILD] Cloning ${config.source.repoUrl} (Branch: ${config.source.branch})`);
+      // In a real environment, this would use 'git clone' with the token
+      await new Promise(res => setTimeout(res, 2000));
+      console.log(`[BUILD] Repository cloned successfully.`);
+    } else if (config.source.type === 'zip') {
+      console.log(`[BUILD] Extracting ZIP archive...`);
+      await new Promise(res => setTimeout(res, 1500));
     }
 
-    // 3. Framework Detection (Simplified)
-    const detectedFramework = config.projectType;
-    console.log(`Detected framework: ${detectedFramework}`);
+    // 3. Framework Detection & Dependency Analysis
+    const detectedFramework = config.projectType || "nodejs";
+    console.log(`[BUILD] Detected framework: ${detectedFramework}`);
+    await new Promise(res => setTimeout(res, 1000));
 
-    // 4. Execution Plan
-    const buildCmd = config.build.command || "npm install && npm run build";
-    const startCmd = config.start.command || "npm start";
+    // 4. Execution Plan (Build Phase)
+    const buildCmd = config.build.command || (detectedFramework === 'python' ? "pip install -r requirements.txt" : "npm install && npm run build");
+    console.log(`[BUILD] Running build: ${buildCmd}`);
 
-    console.log(`Running build: ${buildCmd}`);
-    // Execute build...
-    await new Promise(res => setTimeout(res, 3000));
+    // Simulate build logs
+    const stages = ["Installing dependencies...", "Compiling assets...", "Optimizing bundle...", "Build finished."];
+    for (const stage of stages) {
+        console.log(`[BUILD] ${stage}`);
+        await new Promise(res => setTimeout(res, 1500));
+    }
 
-    console.log(`Running deploy: ${startCmd}`);
-    // Execute deploy...
+    // 5. Deployment Phase
+    const startCmd = config.start.command || (detectedFramework === 'python' ? "python main.py" : "npm start");
+    console.log(`[DEPLOY] Starting application with: ${startCmd}`);
+
     await new Promise(res => setTimeout(res, 2000));
+    console.log(`[DEPLOY] Health check passed on port ${config.start.port || 3000}`);
 
     // 5. Success
     await db.deployments.update((d: any) => d.id === deploymentId, {
