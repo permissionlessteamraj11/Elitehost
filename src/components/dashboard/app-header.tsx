@@ -50,7 +50,7 @@ export function AppHeader() {
               className="flex items-center gap-1.5 px-2 py-1 sm:px-3 sm:py-1.5 rounded-sm bg-white/10 border border-white/20 text-white cursor-pointer"
             >
               <Wallet className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-              <span className="text-[10px] sm:text-xs font-bold font-mono">{profile?.credit_balance?.toFixed(2) || "2.00"} CR</span>
+              <span className="text-[10px] sm:text-xs font-bold font-mono">{profile?.credit_balance?.toFixed(2) || "0.00"} CR</span>
             </motion.div>
           </Link>
 

@@ -3,10 +3,13 @@
 import { motion } from "framer-motion";
 import { MobileDashboardWidget } from "@/components/dashboard/mobile-dashboard-widget";
 import { ResourceCharts } from "@/components/dashboard/stats/resource-charts";
-import { Rocket, Box, Activity, Zap, ArrowRight, History } from "lucide-react";
+import { Rocket, Box, Activity, Zap, ArrowRight, History, Gift, CheckCircle2, Clock } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { AnimatedButton } from "@/components/ui/animated-button";
 import Link from "next/link";
+import { useAuthStore } from "@/hooks/use-auth";
+import { claimTrial } from "@/app/actions/credits";
+import { useState } from "react";
 
 const stats = [
   { label: "Active Engines", value: "Active", icon: Zap, color: "text-primary", trend: "Stable" },
@@ -31,6 +34,24 @@ const item = {
 };
 
 export default function DashboardPage() {
+  const { profile, setProfile } = useAuthStore();
+  const [claiming, setClaiming] = useState(false);
+
+  const handleClaimTrial = async () => {
+    setClaiming(true);
+    const res = await claimTrial();
+    if (res.success) {
+      alert("Success! 1 Credit (3-hour deploy) added to your account.");
+      // Refresh profile to update UI balance
+      const userRes = await fetch('/api/auth/me');
+      const userData = await userRes.json();
+      if (userData.user) setProfile(userData.user);
+    } else {
+      alert(res.error || "Failed to claim trial.");
+    }
+    setClaiming(false);
+  };
+
   return (
     <motion.div
       variants={container}
@@ -49,6 +70,34 @@ export default function DashboardPage() {
            </AnimatedButton>
         </div>
       </motion.div>
+
+      {!profile?.trial_claimed && (
+        <motion.div variants={item}>
+          <GlassCard className="p-6 border-primary/20 bg-primary/5 overflow-hidden relative group" hover={false}>
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-125 transition-transform duration-700">
+              <Gift className="w-24 h-24 text-primary" />
+            </div>
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center text-primary">
+                  <Clock className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold font-heading small-caps">3-Hour Deploy Trial</h3>
+                  <p className="text-sm text-text-secondary">Claim 1 free credit to test any feature for 3 hours. Limited to 1 use per account.</p>
+                </div>
+              </div>
+              <AnimatedButton
+                onClick={handleClaimTrial}
+                loading={claiming}
+                className="w-full md:w-auto px-8 gap-2 small-caps font-bold"
+              >
+                Claim Now
+              </AnimatedButton>
+            </div>
+          </GlassCard>
+        </motion.div>
+      )}
 
       <motion.div
         variants={item}

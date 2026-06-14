@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Users, Server, ShieldAlert, Activity, FileText, Search, Lock, Eye, EyeOff, Loader2, Wallet, Check, X, Settings, Plus, Minus, CreditCard, MessageCircle, Bell } from "lucide-react";
+import { Users, Server, ShieldAlert, Activity, FileText, Search, Lock, Eye, EyeOff, Loader2, Wallet, Check, X, Settings, Plus, Minus, CreditCard, MessageCircle, Bell, Gift, Send } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { AnimatedButton } from "@/components/ui/animated-button";
 import { cn } from "@/lib/utils";
@@ -22,6 +22,8 @@ export default function AdminDashboard() {
     { label: "Total Users", value: "0", icon: Users, color: "text-primary" },
     { label: "Total Projects", value: "0", icon: Server, color: "text-emerald-500" },
     { label: "Active Deployments", value: "0", icon: Activity, color: "text-accent" },
+    { label: "System Credits", value: "0", icon: Wallet, color: "text-primary" },
+    { label: "Trial Users", value: "0", icon: Gift, color: "text-emerald-500" },
     { label: "Mumbai Node", value: "Online", icon: ShieldAlert, color: "text-emerald-500" },
   ]);
 
@@ -130,10 +132,15 @@ export default function AdminDashboard() {
       setWithdrawals(pendingWithdrawals);
       setFreePlanEnabled(freePlan === true);
 
+      const totalCredits = adminData.users.reduce((acc: number, u: any) => acc + (Number(u.paid_credits) || 0) + (Number(u.credit_balance) || 0), 0);
+      const trialUsers = adminData.users.filter((u: any) => u.trial_claimed).length;
+
       setStats([
         { label: "Total Users", value: adminData.userCount.toString(), icon: Users, color: "text-primary" },
         { label: "Total Projects", value: adminData.projectCount.toString(), icon: Server, color: "text-emerald-500" },
         { label: "Active Deployments", value: adminData.deployCount.toString(), icon: Activity, color: "text-accent" },
+        { label: "System Credits", value: totalCredits.toFixed(0), icon: Wallet, color: "text-primary" },
+        { label: "Trial Users", value: trialUsers.toString(), icon: Gift, color: "text-emerald-500" },
         { label: "Mumbai Node", value: "Online", icon: ShieldAlert, color: "text-emerald-500" },
       ]);
     } catch (error) {
@@ -251,7 +258,7 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
         {stats.map((s, idx) => (
           <GlassCard key={idx} className="p-6" hover={false}>
             <div className="flex items-center justify-between mb-4">
@@ -368,91 +375,116 @@ export default function AdminDashboard() {
 
         {/* Admin Support Chat */}
         <div className="lg:col-span-3 space-y-6">
-           <h2 className="text-2xl font-bold font-heading flex items-center gap-2">
-            <MessageCircle className="w-6 h-6 text-primary" /> Support Command Center
-          </h2>
-          <GlassCard className="p-0 overflow-hidden flex h-[600px]" hover={false}>
+           <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold font-heading flex items-center gap-2">
+                <MessageCircle className="w-6 h-6 text-primary" /> Support Command Center
+              </h2>
+              {selectedChatUser && (
+                <div className="text-[10px] font-bold uppercase tracking-widest text-text-secondary bg-white/5 px-3 py-1 rounded-full border border-white/10">
+                  User ID: {selectedChatUser}
+                </div>
+              )}
+           </div>
+          <GlassCard className="p-0 overflow-hidden flex h-[650px] border-white/5" hover={false} glow>
             {/* Sidebar: Chat List */}
-            <div className="w-80 border-r border-white/5 bg-white/2 flex flex-col">
-              <div className="p-4 border-b border-white/5 font-bold text-xs uppercase tracking-widest text-text-secondary">
-                Active Conversations
+            <div className="w-80 border-r border-white/10 bg-black/20 flex flex-col">
+              <div className="p-5 border-b border-white/10 bg-white/2 flex items-center justify-between">
+                <span className="font-bold text-[10px] uppercase tracking-[0.2em] text-text-secondary">Inbox</span>
+                <span className="bg-primary/10 text-primary text-[9px] font-bold px-2 py-0.5 rounded-full">{chats.length}</span>
               </div>
-              <div className="flex-1 overflow-y-auto divide-y divide-white/5">
+              <div className="flex-1 overflow-y-auto custom-scrollbar">
                 {chats.length > 0 ? chats.map((chat) => (
                   <button
                     key={chat.userId}
                     onClick={() => setSelectedChatUser(chat.userId)}
                     className={cn(
-                      "w-full p-4 text-left hover:bg-white/5 transition-colors group",
-                      selectedChatUser === chat.userId ? "bg-primary/5" : ""
+                      "w-full p-5 text-left transition-all border-b border-white/5 relative group",
+                      selectedChatUser === chat.userId ? "bg-primary/10" : "hover:bg-white/5"
                     )}
                   >
-                    <div className="flex justify-between items-start mb-1">
-                      <div className="font-bold text-sm truncate pr-2">{chat.username}</div>
-                      <div className="text-[9px] text-text-secondary whitespace-nowrap">{new Date(chat.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                    {selectedChatUser === chat.userId && <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary" />}
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="font-bold text-sm text-white group-hover:text-primary transition-colors truncate pr-2">{chat.username}</div>
+                      <div className="text-[9px] text-text-secondary font-mono whitespace-nowrap">{new Date(chat.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                     </div>
-                    <div className="text-xs text-text-secondary truncate">{chat.lastMessage}</div>
+                    <div className="text-xs text-text-secondary line-clamp-2 leading-relaxed">{chat.lastMessage}</div>
                     {chat.unread > 0 && (
-                      <div className="mt-2 inline-flex items-center px-1.5 py-0.5 rounded-full bg-primary text-void text-[9px] font-bold">
+                      <div className="mt-3 inline-flex items-center px-2 py-0.5 rounded-sm bg-primary text-void text-[9px] font-bold uppercase tracking-wider">
                         {chat.unread} New
                       </div>
                     )}
                   </button>
                 )) : (
-                  <div className="p-8 text-center text-text-secondary italic text-xs">No active chats.</div>
+                  <div className="p-12 text-center text-text-secondary italic text-xs flex flex-col items-center gap-3 opacity-30">
+                    <MessageCircle className="w-8 h-8" />
+                    No active chats.
+                  </div>
                 )}
               </div>
             </div>
 
             {/* Main: Active Conversation */}
-            <div className="flex-1 flex flex-col bg-void/20">
+            <div className="flex-1 flex flex-col bg-void/40 relative">
               {selectedChatUser ? (
                 <>
-                  <div className="p-4 border-b border-white/5 bg-white/2 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">
+                  <div className="p-5 border-b border-white/10 bg-black/40 flex items-center justify-between backdrop-blur-md">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary font-bold text-sm shadow-[0_0_15px_rgba(255,255,255,0.05)] border border-primary/20">
                         {chats.find(c => c.userId === selectedChatUser)?.username[0]}
                       </div>
-                      <div className="font-bold text-sm">{chats.find(c => c.userId === selectedChatUser)?.username}</div>
+                      <div>
+                        <div className="font-bold text-base text-white tracking-tight">{chats.find(c => c.userId === selectedChatUser)?.username}</div>
+                        <div className="text-[9px] text-emerald-500 font-bold uppercase tracking-widest flex items-center gap-1.5 mt-0.5">
+                          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                          Active Connection
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                       <button className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-text-secondary hover:text-white transition-all border border-white/10">
+                          <ShieldAlert className="w-4 h-4" />
+                       </button>
                     </div>
                   </div>
-                  <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                  <div className="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar">
                     {chatMessages.map((msg, i) => (
                       <div key={i} className={cn(
-                        "flex flex-col max-w-[80%]",
+                        "flex flex-col max-w-[75%]",
                         msg.sender === 'admin' ? "ml-auto items-end" : "mr-auto items-start"
                       )}>
                         <div className={cn(
-                          "px-4 py-2 rounded-xl text-sm",
+                          "px-5 py-3.5 rounded-2xl text-sm leading-relaxed shadow-lg",
                           msg.sender === 'admin'
-                            ? "bg-primary text-void font-medium"
-                            : "bg-white/10 text-white border border-white/5"
+                            ? "bg-primary text-void font-medium rounded-tr-none"
+                            : "bg-white/5 text-white border border-white/10 rounded-tl-none"
                         )}>
                           {msg.content}
                         </div>
-                        <span className="text-[9px] text-text-secondary mt-1">
-                          {new Date(msg.timestamp).toLocaleString()}
+                        <span className="text-[9px] text-text-secondary mt-2 font-mono px-1">
+                          {new Date(msg.timestamp).toLocaleString([], { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' })}
                         </span>
                       </div>
                     ))}
                   </div>
-                  <form onSubmit={handleSendReply} className="p-4 border-t border-white/5 flex gap-2">
+                  <form onSubmit={handleSendReply} className="p-6 border-t border-white/10 bg-black/60 flex gap-4 backdrop-blur-xl">
                     <input
                       type="text"
                       value={replyText}
                       onChange={(e) => setReplyText(e.target.value)}
-                      placeholder="Type your reply..."
-                      className="flex-1 bg-void/50 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-primary/50"
+                      placeholder="Type a highly professional reply..."
+                      className="flex-1 bg-void/50 border border-white/10 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-primary/50 transition-all placeholder:text-zinc-700 font-medium"
                     />
-                    <AnimatedButton type="submit" size="sm" loading={sendingReply} disabled={!replyText.trim()}>
-                      Send Reply
+                    <AnimatedButton type="submit" size="sm" loading={sendingReply} disabled={!replyText.trim()} className="px-8 gap-2 rounded-2xl">
+                      <Send className="w-4 h-4" /> Reply
                     </AnimatedButton>
                   </form>
                 </>
               ) : (
-                <div className="h-full flex flex-col items-center justify-center text-text-secondary opacity-30">
-                  <MessageCircle className="w-12 h-12 mb-4" />
-                  <p className="font-bold uppercase tracking-widest text-xs">Select a chat to respond</p>
+                <div className="h-full flex flex-col items-center justify-center text-text-secondary opacity-20 select-none">
+                  <div className="w-24 h-24 rounded-full bg-white/5 flex items-center justify-center mb-6">
+                    <MessageCircle className="w-12 h-12" />
+                  </div>
+                  <p className="font-bold uppercase tracking-[0.3em] text-[10px]">Select a session to begin</p>
                 </div>
               )}
             </div>

@@ -50,6 +50,7 @@ export function TerminalLogs({ logs }: TerminalLogsProps) {
     if (xtermRef.current && logs.length > 0) {
       xtermRef.current.clear();
       logs.forEach((log) => xtermRef.current?.writeln(log));
+      xtermRef.current.scrollToBottom();
     }
   }, [logs]);
 

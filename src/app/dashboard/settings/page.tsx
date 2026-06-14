@@ -31,6 +31,7 @@ import { useEffect } from "react";
 import { submitWithdrawalRequest } from "@/app/actions/credits";
 import { getReferralStats } from "@/app/actions/referrals";
 import { sendMessage, getMessages } from "@/app/actions/chat";
+import Link from "next/link";
 
 const tabs = [
   { id: "account", label: "Account", icon: User },
@@ -70,32 +71,7 @@ export default function SettingsPage() {
     if (activeTab === "wallet") {
       fetchWalletData();
     }
-    if (activeTab === "help") {
-      fetchMessages();
-      const interval = setInterval(fetchMessages, 5000);
-      return () => clearInterval(interval);
-    }
   }, [activeTab]);
-
-  const fetchMessages = async () => {
-    const res = await getMessages();
-    if (res.success) {
-      setChatMessages(res.messages || []);
-    }
-  };
-
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newMessage.trim()) return;
-
-    setChatLoading(true);
-    const res = await sendMessage(newMessage);
-    if (res.success) {
-      setNewMessage("");
-      fetchMessages();
-    }
-    setChatLoading(false);
-  };
 
   const fetchWalletData = async () => {
     const data = await getReferralStats();
@@ -360,79 +336,21 @@ export default function SettingsPage() {
 
           {activeTab === "help" && (
             <div className="space-y-6">
-              <GlassCard
-                className={cn(
-                  "p-0 overflow-hidden flex flex-col transition-all duration-500",
-                  isChatMaximized ? "fixed inset-4 z-[100] h-[calc(100vh-32px)]" : "h-[600px]"
-                )}
-                hover={false}
-              >
-                <div className="p-6 border-b border-white/10 bg-white/5 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-sm bg-white/10 flex items-center justify-center">
-                      <MessageCircle className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                      <h2 className="text-lg font-bold font-heading small-caps">Elite Support Chat</h2>
-                      <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Online • Typical reply &lt; 2h</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                     <div className="text-[10px] text-text-secondary font-bold uppercase tracking-widest hidden sm:block">ID: #{user?.id?.substring(0,8)}</div>
-                     <button
-                        onClick={() => setIsChatMaximized(!isChatMaximized)}
-                        className="p-2 hover:bg-white/10 rounded-sm transition-colors text-white"
-                     >
-                        {isChatMaximized ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-                     </button>
-                  </div>
-                </div>
-
-                <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-void/30">
-                  {chatMessages.length === 0 ? (
-                    <div className="h-full flex flex-col items-center justify-center text-center space-y-4 opacity-50">
-                      <div className="p-4 rounded-full bg-white/5">
-                        <MessageCircle className="w-8 h-8" />
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-sm font-bold">No messages yet</p>
-                        <p className="text-xs">Send a message to start a conversation with our support team.</p>
-                      </div>
-                    </div>
-                  ) : (
-                    chatMessages.map((msg, i) => (
-                      <div key={i} className={cn(
-                        "flex flex-col max-w-[80%]",
-                        msg.sender === 'user' ? "ml-auto items-end" : "mr-auto items-start"
-                      )}>
-                        <div className={cn(
-                          "px-4 py-2.5 rounded-2xl text-sm",
-                          msg.sender === 'user'
-                            ? "bg-primary text-void font-medium rounded-tr-none"
-                            : "bg-white/10 text-white rounded-tl-none border border-white/5"
-                        )}>
-                          {msg.content}
-                        </div>
-                        <span className="text-[9px] text-text-secondary mt-1 px-1">
-                          {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </span>
-                      </div>
-                    ))
-                  )}
-                </div>
-
-                <form onSubmit={handleSendMessage} className="p-4 bg-white/2 border-t border-white/5 flex gap-2">
-                  <input
-                    type="text"
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder="Type your message..."
-                    className="flex-1 bg-void/50 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-primary/50"
-                  />
-                  <AnimatedButton type="submit" size="sm" loading={chatLoading} disabled={!newMessage.trim()}>
-                    Send
-                  </AnimatedButton>
-                </form>
+              <GlassCard className="p-8 flex flex-col items-center text-center space-y-6" hover={false} glow>
+                 <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center">
+                    <MessageCircle className="w-8 h-8 text-primary" />
+                 </div>
+                 <div className="space-y-2">
+                    <h2 className="text-2xl font-bold font-heading small-caps">Need Assistance?</h2>
+                    <p className="text-sm text-text-secondary max-w-md mx-auto">
+                       Our support team is available 24/7 to help you with any technical issues or billing inquiries. Click below to start a real-time conversation.
+                    </p>
+                 </div>
+                 <Link href="/dashboard/support" className="w-full sm:w-auto">
+                    <AnimatedButton className="w-full px-12 gap-2 small-caps font-bold">
+                       Open Support Chat <ArrowUpRight className="w-4 h-4" />
+                    </AnimatedButton>
+                 </Link>
               </GlassCard>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
