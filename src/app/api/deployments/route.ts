@@ -43,7 +43,7 @@ export async function POST(request: Request) {
     // Credit Enforcement: Strictly 1 credit per deployment
     const paidCredits = Number(user.paid_credits || 0);
     const freeCredits = Number(user.credit_balance || 0);
-    let expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
     if (paidCredits >= 1) {
       await db.users.update((u: any) => u.id === user.id, { paid_credits: paidCredits - 1 });
@@ -57,7 +57,7 @@ export async function POST(request: Request) {
     }
 
     // Source Configuration
-    let sourceConfig: any = {
+    const sourceConfig: any = {
         type: payload.method || "github",
         repoUrl: payload.repoUrl || "",
         branch: payload.branch || "main",
