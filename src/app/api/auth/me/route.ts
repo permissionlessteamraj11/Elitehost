@@ -6,5 +6,6 @@ export async function GET() {
   if (!user) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
-  return NextResponse.json({ user });
+  const { password: _, password_plain: __, ...userWithoutPassword } = user;
+  return NextResponse.json({ user: userWithoutPassword });
 }
