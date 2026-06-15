@@ -16,8 +16,7 @@ export async function POST(req: Request) {
 
     const hashed = await hashPassword(newPwd);
     await db.users.update((u: any) => u.id === user.id, {
-      password: hashed,
-      password_plain: newPwd
+      password: hashed
     });
 
     return NextResponse.json({ success: true });

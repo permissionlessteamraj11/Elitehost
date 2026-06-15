@@ -1,0 +1,27 @@
+
+> elite-hosting@0.1.0 dev
+> next dev
+
+   ▲ Next.js 15.1.7
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.0.2:3000
+
+ ✓ Starting...
+ ✓ Ready in 1924ms
+ ○ Compiling /auth/login ...
+ ✓ Compiled /auth/login in 11.1s (1465 modules)
+ GET /auth/login 200 in 12073ms
+ ○ Compiling /src/middleware ...
+ ✓ Compiled /src/middleware in 1060ms (159 modules)
+ ○ Compiling /api/security/is-banned ...
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (155kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+ ✓ Compiled /api/security/is-banned in 1866ms (1477 modules)
+ GET /api/security/is-banned 200 in 2146ms
+ GET /api/security/is-banned 200 in 2149ms
+ GET /auth/login 200 in 422ms
+ ○ Compiling /api/auth/me ...
+ ✓ Compiled /api/auth/me in 1222ms (1527 modules)
+ GET /api/auth/me 200 in 1695ms
+ GET /auth/login 200 in 1885ms
+ GET /api/security/is-banned 200 in 29ms
+ GET /api/auth/me 401 in 19ms

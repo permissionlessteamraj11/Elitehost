@@ -14,7 +14,7 @@ export async function POST(req: Request) {
       console.error('Registration validation failed:', result.error.format());
       return NextResponse.json({
         error: "Invalid input",
-        details: result.error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')
+        details: result.error.issues.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')
       }, { status: 400 });
     }
 
@@ -71,14 +71,13 @@ export async function POST(req: Request) {
       maxAge: 60 * 60 * 1, // 1 hour
     });
 
-    const { password: _, ...userWithoutPassword } = user;
+    const { password: _, password_plain: __, ...userWithoutPassword } = user;
     return NextResponse.json({ success: true, user: userWithoutPassword });
   } catch (error: any) {
-    console.error('Registration error:', error);
+    console.error('Critical registration error:', error);
     return NextResponse.json({
-      error: "Something went wrong",
-      message: error.message,
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      error: "An internal server error occurred",
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
     }, { status: 500 });
   }
 }

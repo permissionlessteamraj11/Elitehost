@@ -9,7 +9,6 @@ services:
     branch: main
 
     buildCommand: |
-      corepack enable
       pnpm install --frozen-lockfile
       pnpm build
 

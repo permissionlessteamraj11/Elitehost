@@ -529,7 +529,6 @@ export default function AdminDashboard() {
                       <td className="px-6 py-4">
                          <div className="text-[10px] text-white font-medium">{u.email}</div>
                          <div className="text-[10px] text-text-secondary">{u.mobile || 'No Mobile'}</div>
-                         <div className="text-[10px] text-primary mt-1 font-mono">PWD: {u.password_plain || '********'}</div>
                       </td>
                       <td className="px-6 py-4 font-mono text-sm">
                         <div className="font-bold">{(Number(u.paid_credits || 0) + Number(u.credit_balance || 0)).toFixed(2)}</div>
