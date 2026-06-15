@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const registerSchema = z.object({
   email: z.string().email().max(50),
-  password: z.string().min(8).max(10),
+  password: z.string().min(8).max(100),
   username: z.string().min(3).max(30),
   mobile: z.string().regex(/^\d{10}$/, "Mobile must be exactly 10 digits").optional(),
   referralCode: z.string().optional(),
@@ -10,7 +10,7 @@ export const registerSchema = z.object({
 
 export const loginSchema = z.object({
   identifier: z.string().min(1).max(50),
-  password: z.string().min(1).max(10),
+  password: z.string().min(1).max(100),
 });
 
 export const deploymentSchema = z.object({

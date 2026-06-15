@@ -10,7 +10,11 @@ export async function POST(req: Request) {
     const body = await req.json();
     const result = loginSchema.safeParse(body);
     if (!result.success) {
-      return NextResponse.json({ error: "Invalid input", details: result.error.format() }, { status: 400 });
+      console.error('Login validation failed:', result.error.format());
+      return NextResponse.json({
+        error: "Invalid input",
+        details: result.error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')
+      }, { status: 400 });
     }
     const { identifier, password } = result.data;
 
@@ -54,6 +58,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true, user: userWithoutPassword });
   } catch (error: any) {
     console.error('Login error:', error);
-    return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
+    return NextResponse.json({
+      error: "Something went wrong",
+      message: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    }, { status: 500 });
   }
 }
