@@ -44,16 +44,34 @@ export async function middleware(request: NextRequest) {
 
   // 1. IP Ban Check
   if (!request.nextUrl.pathname.startsWith('/api/security/is-banned')) {
-    try {
-      const banCheck = await fetch(new URL('/api/security/is-banned', request.url), {
-        headers: { 'x-forwarded-for': ip }
-      })
-      const { banned } = await banCheck.json()
-      if (banned) {
-        return new NextResponse('Your access has been revoked.', { status: 403 })
+    // Check if we are in the build phase or pre-render to avoid ECONNREFUSED when trying to fetch internal API routes
+    const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build';
+
+    // We assume the app runs on a domain in production.
+    // In dev/build, it might use localhost/127.0.0.1.
+    const urlObj = new URL(request.url);
+    const isInternalRequest = urlObj.hostname === 'localhost' || urlObj.hostname === '127.0.0.1';
+
+    // Skip if build or if likely internal fetch during static generation to avoid ECONNREFUSED
+    if (!isBuildPhase && !isInternalRequest) {
+      try {
+        // Use a timeout to prevent hanging
+        const banCheck = await fetch(new URL('/api/security/is-banned', request.url), {
+          headers: { 'x-forwarded-for': ip },
+          signal: AbortSignal.timeout(2000)
+        })
+        if (banCheck.ok) {
+          const { banned } = await banCheck.json()
+          if (banned) {
+            return new NextResponse('Your access has been revoked.', { status: 403 })
+          }
+        }
+      } catch (e) {
+        // Silent error during build to avoid noise, but log in other environments
+        if (process.env.NODE_ENV !== 'production' || !String(e).includes('ECONNREFUSED')) {
+          console.error('Ban check failed:', e instanceof Error ? e.message : e)
+        }
       }
-    } catch (e) {
-      console.error('Ban check failed', e)
     }
   }
 
@@ -63,34 +81,28 @@ export async function middleware(request: NextRequest) {
     const path = request.nextUrl.pathname
     const isAction = request.headers.get('Next-Action')
 
-    if (path.startsWith('/api/auth/login') || path.startsWith('/api/auth/register')) {
-      if (authRateLimit) {
-        const { success, reset } = await authRateLimit.limit(ip)
-        limitResult = { success, reset }
+    const getRateLimitType = () => {
+      if (path.startsWith('/api/auth/login') || path.startsWith('/api/auth/register')) return 'auth';
+      if (path.startsWith('/api/deployments/zip')) return 'upload';
+      if (isAction) return 'ai';
+      return 'gen';
+    };
+
+    const type = getRateLimitType();
+
+    try {
+      const limiters = { auth: authRateLimit, upload: uploadRateLimit, ai: aiRateLimit, gen: generalRateLimit };
+      const limiter = limiters[type];
+
+      if (limiter) {
+        const { success, reset } = await limiter.limit(ip);
+        limitResult = { success, reset };
       } else {
-        limitResult = await checkRateLimit(ip, 'auth')
+        limitResult = await checkRateLimit(ip, type);
       }
-    } else if (path.startsWith('/api/deployments/zip')) {
-      if (uploadRateLimit) {
-        const { success, reset } = await uploadRateLimit.limit(ip)
-        limitResult = { success, reset }
-      } else {
-        limitResult = await checkRateLimit(ip, 'upload')
-      }
-    } else if (isAction) {
-        if (aiRateLimit) {
-            const { success, reset } = await aiRateLimit.limit(ip)
-            limitResult = { success, reset }
-        } else {
-            limitResult = await checkRateLimit(ip, 'ai')
-        }
-    } else {
-      if (generalRateLimit) {
-        const { success, reset } = await generalRateLimit.limit(ip)
-        limitResult = { success, reset }
-      } else {
-        limitResult = await checkRateLimit(ip, 'gen')
-      }
+    } catch (e) {
+      console.warn(`Redis Rate Limiting failed for ${type}, falling back to memory:`, e);
+      limitResult = await checkRateLimit(ip, type);
     }
 
     if (!limitResult.success) {

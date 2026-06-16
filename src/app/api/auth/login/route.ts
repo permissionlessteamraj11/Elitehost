@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     }
     const { identifier, password } = result.data;
 
-    // Check for IP-based lockout
+    // Check for IP-based lockout (15 min window)
     const attempts = await (db as any).admin_attempts?.find((a: any) => a.ip === ip && new Date(a.created_at) > new Date(Date.now() - 15 * 60 * 1000));
     if (attempts && attempts.length >= 5) {
       const { blockIP } = await import('@/app/actions/platform');
@@ -57,7 +57,11 @@ export async function POST(req: Request) {
     const { password: _, password_plain: __, ...userWithoutPassword } = user;
     return NextResponse.json({ success: true, user: userWithoutPassword });
   } catch (error: any) {
-    console.error('Critical login error:', error);
+    console.error('Critical login error:', {
+      message: error.message,
+      stack: error.stack,
+      cause: error.cause
+    });
     return NextResponse.json({
       error: "An internal server error occurred",
       details: process.env.NODE_ENV === 'development' ? error.message : undefined

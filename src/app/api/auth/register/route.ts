@@ -74,7 +74,11 @@ export async function POST(req: Request) {
     const { password: _, password_plain: __, ...userWithoutPassword } = user;
     return NextResponse.json({ success: true, user: userWithoutPassword });
   } catch (error: any) {
-    console.error('Critical registration error:', error);
+    console.error('Critical registration error:', {
+      message: error.message,
+      stack: error.stack,
+      cause: error.cause
+    });
     return NextResponse.json({
       error: "An internal server error occurred",
       details: process.env.NODE_ENV === 'development' ? error.message : undefined
