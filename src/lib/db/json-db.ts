@@ -30,27 +30,49 @@ if (typeof window === 'undefined') {
       try {
         await fs.access(this.filePath);
       } catch {
-        await fs.mkdir(DATA_DIR, { recursive: true });
-        await fs.writeFile(this.filePath, JSON.stringify([]));
+        try {
+          await fs.mkdir(DATA_DIR, { recursive: true });
+          await fs.writeFile(this.filePath, JSON.stringify([]));
+        } catch (error) {
+          console.error(`Critical error ensuring database file ${this.filePath}:`, error);
+          throw error;
+        }
       }
     }
 
     async read(): Promise<any[]> {
-      await this.ensureFile();
-      const content = await fs.readFile(this.filePath, 'utf-8');
-      return JSON.parse(content);
+      try {
+        await this.ensureFile();
+        const content = await fs.readFile(this.filePath, 'utf-8');
+        if (!content || content.trim() === '') return [];
+        try {
+            return JSON.parse(content);
+        } catch (parseError) {
+            console.error(`Corrupted database file: ${this.filePath}. Manual recovery required.`);
+            throw parseError; // Re-throw to prevent overwriting with []
+        }
+      } catch (error: any) {
+        if (error.code === 'ENOENT') return [];
+        console.error(`Error reading ${this.filePath}:`, error);
+        throw error;
+      }
     }
 
     async write(data: any[]): Promise<void> {
-      await this.ensureFile();
-      const tempPath = `${this.filePath}.tmp`;
-      // Prevent DoS by limiting total file size to 100MB
-      const content = JSON.stringify(data, null, 2);
-      if (content.length > 100 * 1024 * 1024) {
-        throw new Error("Database size limit exceeded");
+      try {
+        await this.ensureFile();
+        const tempPath = `${this.filePath}.tmp`;
+        // Prevent DoS by limiting total file size to 100MB
+        const content = JSON.stringify(data, null, 2);
+        if (content.length > 100 * 1024 * 1024) {
+          throw new Error("Database size limit exceeded");
+        }
+        await fs.writeFile(tempPath, content);
+        await fs.rename(tempPath, this.filePath);
+      } catch (error) {
+        console.error(`Error writing to ${this.filePath}:`, error);
+        throw error;
       }
-      await fs.writeFile(tempPath, content);
-      await fs.rename(tempPath, this.filePath);
     }
 
     // Security Hardening: NoSQL Injection Protection
