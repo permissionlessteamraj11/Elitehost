@@ -1,27 +1,72 @@
-
-> elite-hosting@0.1.0 dev
-> next dev
-
+Already up to date
+Done in 584ms using pnpm v11.3.0
+$ next dev
    ▲ Next.js 15.1.7
    - Local:        http://localhost:3000
    - Network:      http://192.168.0.2:3000
 
  ✓ Starting...
- ✓ Ready in 1924ms
+ ✓ Ready in 1787ms
  ○ Compiling /auth/login ...
- ✓ Compiled /auth/login in 11.1s (1465 modules)
- GET /auth/login 200 in 12073ms
+ ✓ Compiled /auth/login in 9.4s (1465 modules)
+ GET /auth/login 200 in 10294ms
  ○ Compiling /src/middleware ...
- ✓ Compiled /src/middleware in 1060ms (159 modules)
- ○ Compiling /api/security/is-banned ...
 <w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (155kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
- ✓ Compiled /api/security/is-banned in 1866ms (1477 modules)
- GET /api/security/is-banned 200 in 2146ms
- GET /api/security/is-banned 200 in 2149ms
- GET /auth/login 200 in 422ms
+ ✓ Compiled /auth/register in 3.3s (1735 modules)
+ GET /auth/login 200 in 717ms
+ GET /auth/register 200 in 3707ms
  ○ Compiling /api/auth/me ...
- ✓ Compiled /api/auth/me in 1222ms (1527 modules)
- GET /api/auth/me 200 in 1695ms
- GET /auth/login 200 in 1885ms
- GET /api/security/is-banned 200 in 29ms
- GET /api/auth/me 401 in 19ms
+ ✓ Compiled /api/auth/me in 1037ms (1643 modules)
+WARNING: JWT_SECRET is missing or too short. Using a temporary insecure secret.
+ GET /api/auth/me 401 in 26ms
+WARNING: JWT_SECRET is missing or too short. Using a temporary insecure secret.
+ POST /auth/register 200 in 135ms
+ GET /auth/login 200 in 151ms
+ GET /api/auth/me 401 in 15ms
+ ✓ Compiled in 252ms (724 modules)
+ ✓ Compiled in 282ms (724 modules)
+ ✓ Compiled in 391ms (1802 modules)
+ ○ Compiling /test-ai ...
+ ✓ Compiled /test-ai in 1284ms (1735 modules)
+ GET /test-ai 200 in 1548ms
+WARNING: JWT_SECRET is missing or too short. Using a temporary insecure secret.
+ GET /api/auth/me 401 in 108ms
+ GET /api/auth/me 401 in 10ms
+ GET /test-ai 200 in 58ms
+ GET /api/auth/me 401 in 96ms
+ GET /api/auth/me 401 in 11ms
+ GET /test-ai 200 in 70ms
+ GET /api/auth/me 401 in 12ms
+ GET /test-ai 200 in 41ms
+ GET /api/auth/me 401 in 135ms
+ GET /api/auth/me 401 in 10ms
+ GET /test-ai 200 in 42ms
+ GET /api/auth/me 401 in 94ms
+ GET /api/auth/me 401 in 8ms
+ GET /test-ai 200 in 39ms
+ GET /api/auth/me 401 in 11ms
+ GET /test-ai 200 in 95ms
+ GET /api/auth/me 401 in 92ms
+ GET /api/auth/me 401 in 9ms
+ GET /test-ai 200 in 49ms
+ GET /api/auth/me 401 in 79ms
+ GET /api/auth/me 401 in 7ms
+ GET /test-ai 200 in 40ms
+ GET /api/auth/me 401 in 9ms
+ GET /test-ai 200 in 36ms
+ GET /api/auth/me 401 in 97ms
+ GET /api/auth/me 401 in 11ms
+ GET /test-ai 200 in 62ms
+ GET /api/auth/me 401 in 88ms
+ GET /api/auth/me 401 in 14ms
+ GET /test-ai 200 in 33ms
+ GET /api/auth/me 401 in 9ms
+ GET /test-ai 200 in 63ms
+ GET /api/auth/me 401 in 86ms
+ GET /api/auth/me 401 in 9ms
+ GET /test-ai 200 in 43ms
+ GET /api/auth/me 401 in 76ms
+ GET /api/auth/me 401 in 7ms
+ GET /test-ai 200 in 52ms
+ GET /api/auth/me 401 in 13ms
+ ✓ Compiled in 839ms (1031 modules)

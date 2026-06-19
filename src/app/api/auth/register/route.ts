@@ -3,6 +3,7 @@ import { hashPassword, createToken } from "@/lib/auth-service";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { registerSchema } from "@/lib/validation";
+import { getPlatformSetting } from "@/app/actions/platform";
 
 export async function POST(req: Request) {
   try {
@@ -41,6 +42,9 @@ export async function POST(req: Request) {
       }
     }
 
+    const freePlanEnabled = await getPlatformSetting('free_plan_enabled');
+    const initialCredits = freePlanEnabled === true ? 2 : 0;
+
     const user = await db.users.insert({
       email,
       mobile,
@@ -49,7 +53,7 @@ export async function POST(req: Request) {
       referral_code: userReferralCode,
       referrer_id: referrerId,
       role: "user",
-      credit_balance: 0,
+      credit_balance: initialCredits,
       paid_credits: 0,
       wallet_balance: 0,
     });

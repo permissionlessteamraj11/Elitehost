@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import {
-  Bot,
+  Sparkles,
   Terminal,
   Rocket,
   Code2,
@@ -37,6 +37,12 @@ const frameworks = [
   { id: "react", label: "React", icon: Boxes },
   { id: "node", label: "Node.js", icon: Terminal },
   { id: "python", label: "Python", icon: Code2 },
+];
+
+const quickTemplates = [
+  { label: "SaaS Dashboard", prompt: "Modern SaaS dashboard with Next.js 15, Tailwind CSS, and Lucide icons. Include stats cards and a responsive sidebar." },
+  { label: "AI Chatbot", prompt: "AI Chatbot interface with real-time messaging, streaming text effects, and a dark monochromatic theme." },
+  { label: "Portfolio", prompt: "Minimalist developer portfolio with smooth Framer Motion transitions, project grid, and contact form." },
 ];
 
 const models = [
@@ -113,14 +119,29 @@ export function AIStudio() {
           <div className="space-y-6 flex flex-col h-full">
             <div className="space-y-3 flex-1">
               <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] flex items-center gap-2">
-                <Bot className="w-3 h-3 text-white" /> System Objective
+                <Sparkles className="w-3 h-3 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" /> Project Objective
               </label>
               <textarea
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder="Describe project requirements (e.g. 'Highly advanced Ecommerce with framer-motion and zustand')..."
-                className="w-full h-48 bg-white/[0.07] border border-white/10 rounded-sm p-4 text-xs focus:outline-none focus:border-white/30 focus:shadow-[0_0_15px_rgba(255,255,255,0.05)] transition-all placeholder:text-zinc-700 font-mono resize-none"
+                className="w-full h-48 bg-white/[0.07] border border-white/10 rounded-sm p-4 text-xs focus:outline-none focus:border-white/30 focus:ring-2 focus:ring-white/20 focus:shadow-[0_0_15px_rgba(255,255,255,0.05)] transition-all placeholder:text-zinc-700 font-mono resize-none"
               />
+
+              <div className="space-y-2">
+                <label className="text-[9px] font-bold text-zinc-600 uppercase tracking-widest">Quick Start Templates</label>
+                <div className="flex flex-wrap gap-2">
+                  {quickTemplates.map((t) => (
+                    <button
+                      key={t.label}
+                      onClick={() => setPrompt(t.prompt)}
+                      className="px-2 py-1 rounded-sm bg-white/5 border border-white/5 hover:border-white/20 hover:bg-white/10 text-[9px] font-bold text-zinc-400 hover:text-white transition-all uppercase tracking-tighter"
+                    >
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
 
             <div className="space-y-3">

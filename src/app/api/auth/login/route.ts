@@ -19,7 +19,8 @@ export async function POST(req: Request) {
     const { identifier, password } = result.data;
 
     // Check for IP-based lockout (15 min window)
-    const attempts = await (db as any).admin_attempts?.find((a: any) => a.ip === ip && new Date(a.created_at) > new Date(Date.now() - 15 * 60 * 1000));
+    const dbTyped = db as any;
+    const attempts = dbTyped.admin_attempts ? await dbTyped.admin_attempts.find((a: any) => a.ip === ip && new Date(a.created_at) > new Date(Date.now() - 15 * 60 * 1000)) : [];
     if (attempts && attempts.length >= 5) {
       const { blockIP } = await import('@/app/actions/platform');
       await blockIP(ip);
@@ -29,7 +30,9 @@ export async function POST(req: Request) {
     const user = await db.users.findOne((u: any) => u.email === identifier || u.mobile === identifier);
 
     if (!user) {
-      await (db as any).admin_attempts?.insert({ ip, identifier, success: false });
+      if (dbTyped.admin_attempts) {
+        await dbTyped.admin_attempts.insert({ ip, identifier, success: false });
+      }
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
@@ -39,12 +42,16 @@ export async function POST(req: Request) {
 
     const isValid = await comparePassword(password, user.password);
     if (!isValid) {
-      await (db as any).admin_attempts?.insert({ ip, identifier, success: false });
+      if (dbTyped.admin_attempts) {
+        await dbTyped.admin_attempts.insert({ ip, identifier, success: false });
+      }
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
     // Clear failed attempts on success
-    await (db as any).admin_attempts?.delete((a: any) => a.ip === ip || a.identifier === identifier);
+    if (dbTyped.admin_attempts) {
+      await dbTyped.admin_attempts.delete((a: any) => a.ip === ip || a.identifier === identifier);
+    }
 
     const token = await createToken({ userId: user.id, email: user.email, role: user.role, is_banned: !!user.is_banned });
     (await cookies()).set("auth-token", token, {

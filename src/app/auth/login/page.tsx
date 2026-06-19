@@ -29,8 +29,7 @@ export default function LoginPage() {
       if (!res.ok) {
         setError(data.error || "Login failed");
       } else {
-        router.push("/dashboard");
-        router.refresh();
+        window.location.href = "/dashboard";
       }
     } catch (err) {
       setError("An error occurred. Please try again.");
