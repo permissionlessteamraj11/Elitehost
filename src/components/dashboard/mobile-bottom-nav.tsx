@@ -7,7 +7,7 @@ import {
   LayoutDashboard,
   Layers,
   PlusCircle,
-  Bot,
+  Sparkles,
   Settings
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -16,7 +16,7 @@ const navItems = [
   { icon: LayoutDashboard, label: "Home", href: "/dashboard" },
   { icon: Layers, label: "Deployments", href: "/dashboard/deployments" },
   { icon: PlusCircle, label: "New", href: "/dashboard/new", center: true },
-  { icon: Bot, label: "AI", href: "/dashboard/ai-studio" },
+  { icon: Sparkles, label: "AI", href: "/dashboard/ai-studio" },
   { icon: Settings, label: "Settings", href: "/dashboard/settings" },
 ];
 
@@ -44,7 +44,8 @@ export function MobileBottomNav() {
               <Link key={item.href} href={item.href} className="relative flex flex-col items-center justify-center px-2 py-1 transition-all active:scale-95">
                 <div className={cn(
                   "p-1.5 rounded-lg transition-colors relative z-10",
-                  isActive ? "text-primary" : "text-white/40 group-hover:text-white"
+                  isActive ? "text-primary" : "text-white/40 group-hover:text-white",
+                  item.label === "AI" && "text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]"
                 )}>
                   <item.icon className="w-5 h-5" strokeWidth={isActive ? 2.5 : 2} />
                 </div>

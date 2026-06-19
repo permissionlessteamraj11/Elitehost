@@ -7,7 +7,7 @@ import {
   LayoutDashboard,
   PlusCircle,
   Layers,
-  Bot,
+  Sparkles,
   Settings,
   HelpCircle,
   LogOut
@@ -19,7 +19,7 @@ const menuItems = [
   { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
   { icon: PlusCircle, label: "New Project", href: "/dashboard/new" },
   { icon: Layers, label: "Deployments", href: "/dashboard/deployments" },
-  { icon: Bot, label: "AI Studio", href: "/dashboard/ai-studio" },
+  { icon: Sparkles, label: "AI Studio", href: "/dashboard/ai-studio" },
   { icon: Settings, label: "Settings", href: "/dashboard/settings" },
 ];
 
@@ -52,7 +52,11 @@ export function Sidebar() {
                   : "text-zinc-500 hover:text-white hover:bg-white/5"
               )}
             >
-              <item.icon className={cn("w-4 h-4", isActive ? "text-black" : "group-hover:text-white")} />
+              <item.icon className={cn(
+                "w-4 h-4",
+                isActive ? "text-black" : "group-hover:text-white",
+                item.label === "AI Studio" && "text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]"
+              )} />
               <span>{item.label}</span>
             </Link>
           );
