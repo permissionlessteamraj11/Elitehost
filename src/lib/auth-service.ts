@@ -3,15 +3,19 @@ import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 import bcrypt from 'bcryptjs';
 
+const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build';
+const isProd = process.env.NODE_ENV === 'production';
+
 if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32) {
-  const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build';
-  if (process.env.NODE_ENV === 'production' && !isBuildPhase) {
+  if (isProd && !isBuildPhase) {
     throw new Error("JWT_SECRET environment variable is required and must be at least 32 characters in production.");
   }
-  console.warn("WARNING: JWT_SECRET is missing or too short. Using a temporary insecure secret.");
+  if (!isBuildPhase) {
+    console.warn("WARNING: JWT_SECRET is missing or too short. Using a temporary insecure secret.");
+  }
 }
 
-const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET || 'dev-only-insecure-secret-placeholder');
+const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET || 'dev-only-insecure-secret-placeholder-32chars-minimum');
 
 export async function hashPassword(password: string) {
   return await bcrypt.hash(password, 12);

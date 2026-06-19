@@ -87,12 +87,24 @@ export async function banUser(userId: string) {
 }
 
 export async function blockIP(ip: string) {
-    await db.banned_ips.insert({ ip, created_at: new Date().toISOString() });
+    const existing = await db.banned_ips.findOne((b: any) => b.ip === ip);
+    if (!existing) {
+        await db.banned_ips.insert({ ip, created_at: new Date().toISOString() });
+    }
     return { success: true };
 }
 
 export async function unbanUser(userId: string) {
     await db.users.update((u: any) => u.id === userId, { is_banned: false });
+    return { success: true };
+}
+
+export async function getBannedIPs() {
+    return await db.banned_ips.read();
+}
+
+export async function removeBannedIP(ip: string) {
+    await db.banned_ips.delete((b: any) => b.ip === ip);
     return { success: true };
 }
 
