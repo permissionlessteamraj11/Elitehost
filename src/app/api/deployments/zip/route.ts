@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db/json-db';
 import { getUser } from '@/lib/auth-service';
-import { scanForMaliciousCode } from '@/lib/security';
+import { scanForMaliciousCode, logSecurityEvent } from '@/lib/security';
 import { createDeploymentVersion } from '@/lib/db/versioning';
 import { buildQueue } from '@/services/queues/config';
 import fs from 'fs/promises';
@@ -42,6 +42,12 @@ export async function POST(request: Request) {
     // Security Scan on metadata
     const securityCheck = scanForMaliciousCode({ name, build_command: buildCommand, deploy_command: deployCommand, env_vars: envVars });
     if (!securityCheck.isSafe) {
+      const ip = request.headers.get('x-forwarded-for') || '127.0.0.1';
+      await logSecurityEvent(ip, 'MALICIOUS_ZIP_METADATA_ATTEMPT', {
+          userId: user.id,
+          pattern: securityCheck.pattern,
+          metadata: { name, buildCommand, deployCommand, envVars }
+      });
       return NextResponse.json({ error: securityCheck.reason }, { status: 403 });
     }
 

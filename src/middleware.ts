@@ -3,7 +3,7 @@ import { authRateLimit, generalRateLimit, aiRateLimit, uploadRateLimit } from '@
 import { jwtVerify } from 'jose'
 import { LRUCache } from 'lru-cache'
 
-const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET)
+const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET || 'dev-only-insecure-secret-placeholder-32chars-minimum')
 
 // In-memory rate limiting fallback using lru-cache
 const memoryCache = new LRUCache<string, { count: number; reset: number }>({
@@ -58,7 +58,7 @@ export async function middleware(request: NextRequest) {
         // Use a timeout to prevent hanging
         const banCheck = await fetch(new URL('/api/security/is-banned', request.url), {
           headers: { 'x-forwarded-for': ip },
-          signal: AbortSignal.timeout(2000)
+          signal: AbortSignal.timeout(1000) // Shorter timeout for ban check
         })
         if (banCheck.ok) {
           const { banned } = await banCheck.json()
@@ -66,9 +66,12 @@ export async function middleware(request: NextRequest) {
             return new NextResponse('Your access has been revoked.', { status: 403 })
           }
         }
-      } catch (e) {
-        // Silent error during build to avoid noise, but log in other environments
-        if (process.env.NODE_ENV !== 'production' || !String(e).includes('ECONNREFUSED')) {
+      } catch (e: any) {
+        // Gracefully handle network errors to avoid crashing the entire app
+        const errorMsg = String(e);
+        if (errorMsg.includes('ECONNREFUSED') || errorMsg.includes('fetch failed')) {
+          // Internal API not ready yet or unreachable, skip for now
+        } else {
           console.error('Ban check failed:', e instanceof Error ? e.message : e)
         }
       }

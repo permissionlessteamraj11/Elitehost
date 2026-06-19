@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db/json-db';
 import { getUser } from '@/lib/auth-service';
-import { scanForMaliciousCode, decrypt } from '@/lib/security';
+import { scanForMaliciousCode, decrypt, logSecurityEvent } from '@/lib/security';
 import { createDeploymentVersion } from '@/lib/db/versioning';
 import { buildQueue } from '@/services/queues/config';
 import { deploymentSchema } from '@/lib/validation';
@@ -43,6 +43,12 @@ export async function POST(request: Request) {
     // Security Scan
     const securityCheck = scanForMaliciousCode(payload);
     if (!securityCheck.isSafe) {
+      const ip = request.headers.get('x-forwarded-for') || '127.0.0.1';
+      await logSecurityEvent(ip, 'MALICIOUS_DEPLOYMENT_ATTEMPT', {
+          userId: user.id,
+          pattern: securityCheck.pattern,
+          payload: payload
+      });
       return NextResponse.json({ error: securityCheck.reason }, { status: 403 });
     }
 
