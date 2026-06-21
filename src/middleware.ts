@@ -68,10 +68,13 @@ export async function middleware(request: NextRequest) {
         }
       } catch (e: any) {
         // Gracefully handle network errors to avoid crashing the entire app
-        const errorMsg = String(e);
-        if (errorMsg.includes('ECONNREFUSED') || errorMsg.includes('fetch failed')) {
-          // Internal API not ready yet or unreachable, skip for now
-        } else {
+        const errors = e.errors || (e.cause && (e.cause.errors || [e.cause])) || [];
+        const isConnRefused = e.code === 'ECONNREFUSED' ||
+                             String(e).includes('ECONNREFUSED') ||
+                             (e instanceof Error && e.message.includes('fetch failed')) ||
+                             (Array.isArray(errors) && errors.some((err: any) => err?.code === 'ECONNREFUSED' || String(err).includes('ECONNREFUSED')));
+
+        if (!isConnRefused) {
           console.error('Ban check failed:', e instanceof Error ? e.message : e)
         }
       }
@@ -103,8 +106,15 @@ export async function middleware(request: NextRequest) {
       } else {
         limitResult = await checkRateLimit(ip, type);
       }
-    } catch (e) {
-      console.warn(`Redis Rate Limiting failed for ${type}, falling back to memory:`, e);
+    } catch (e: any) {
+      const errors = e.errors || (e.cause && (e.cause.errors || [e.cause])) || [];
+      const isConnRefused = e.code === 'ECONNREFUSED' ||
+                           String(e).includes('ECONNREFUSED') ||
+                           (Array.isArray(errors) && errors.some((err: any) => err?.code === 'ECONNREFUSED' || String(err).includes('ECONNREFUSED')));
+
+      if (!isConnRefused) {
+        console.warn(`Redis Rate Limiting failed for ${type}, falling back to memory:`, e);
+      }
       limitResult = await checkRateLimit(ip, type);
     }
 
