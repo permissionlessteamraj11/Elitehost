@@ -25,7 +25,7 @@ const footerLinks = {
     { label: "Docs", href: "/docs" },
     { label: "Changelog", href: "#" },
     { label: "Blog", href: "/blog" },
-    { label: "Support", href: "#" },
+    { label: "Support", href: "/dashboard/support" },
   ],
   company: [
     { label: "About", href: "#" },
@@ -116,10 +116,10 @@ export function Footer() {
             <div className="relative w-6 h-6 grayscale">
               <Image src="/logo.png" alt="Logo" fill className="object-contain" />
             </div>
-            <span className="text-xs font-bold tracking-widest text-zinc-500 uppercase">© 2026 ZynoCloud Inc.</span>
+            <span className="text-xs font-bold tracking-widest text-zinc-500 uppercase">© 2025 EliteHosting India.</span>
           </div>
           <div className="text-[10px] text-zinc-600 font-medium uppercase tracking-widest">
-            Made with ❤️ in India for the world 🌍
+            Elite Performance. Mumbai Edge Nodes. 🇮🇳
           </div>
         </div>
       </div>

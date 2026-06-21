@@ -56,7 +56,7 @@ export function Hero() {
               transition={{ delay: 0.2, duration: 0.8 }}
               className="bg-clip-text text-transparent bg-gradient-to-b from-white to-white/40"
             >
-              Deploy your code
+              #1 Telegram Bot Hosting
             </motion.span>
             <br />
             <motion.span
@@ -65,7 +65,7 @@ export function Hero() {
               transition={{ delay: 0.4, duration: 0.8 }}
               className="text-white drop-shadow-[0_0_40px_rgba(255,255,255,0.4)] bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-white/20"
             >
-              instantly. 🚀
+              in Mumbai. 🚀
             </motion.span>
           </h1>
           <motion.p
@@ -74,9 +74,8 @@ export function Hero() {
             transition={{ delay: 0.6, duration: 1 }}
             className="max-w-2xl mx-auto text-base md:text-lg text-zinc-400 mb-10 leading-relaxed aeo-answer"
           >
-            EliteHost provides the fastest <strong>Telegram bot hosting</strong> in India with a dedicated Mumbai edge network.
-            Experience professional-grade cloud infrastructure, enterprise security 🛡️, and
-            seamless scaling for your Python and Node.js bots. ⚡
+            EliteHost provides the fastest <strong>Telegram bot hosting in India</strong> with a dedicated <strong>Mumbai Edge</strong> network.
+            Deploy your Python and Node.js bots instantly on professional-grade cloud infrastructure with sub-5ms latency and 24/7 uptime guarantee. ⚡
           </motion.p>
 
           <motion.div

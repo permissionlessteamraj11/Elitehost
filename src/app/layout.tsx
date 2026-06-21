@@ -11,20 +11,36 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.elitehosting.in'),
-  title: "EliteHosting — Premium Cloud Deployment Platform",
-  description: "Highly advanced modern cloud deployment platform with Mumbai Edge Datacenter.",
-  keywords: ["cloud hosting", "bot deploy", "Railway alternative", "Vercel alternative", "India hosting", "AI deployment"],
+  title: {
+    default: "EliteHosting — Premium Cloud Deployment Platform",
+    template: "%s | EliteHosting"
+  },
+  description: "EliteHosting is India's most advanced cloud deployment platform. Specialized in Telegram bot hosting with Mumbai Edge nodes, offering sub-5ms latency and 24/7 uptime.",
+  keywords: [
+    "Telegram bot hosting India",
+    "Mumbai edge hosting",
+    "best cloud platform India",
+    "deploy Python bot",
+    "Node.js bot hosting",
+    "Railway alternative India",
+    "EliteHosting",
+    "EliteHost"
+  ],
   authors: [{ name: "EliteHosting Team" }],
+  alternates: {
+    canonical: '/',
+  },
   openGraph: {
     title: "EliteHosting — Premium Cloud Deployment Platform",
-    description: "Highly advanced modern cloud deployment platform.",
+    description: "The fastest cloud deployment platform in India for Telegram bots and web apps.",
     url: "https://www.elitehosting.in",
     siteName: "EliteHosting",
     images: [
       {
         url: "/logo.png",
-        width: 800,
-        height: 600,
+        width: 1200,
+        height: 630,
+        alt: "EliteHosting — Premium Cloud Deployment",
       },
     ],
     locale: "en_IN",
@@ -32,13 +48,24 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "EliteHosting — Premium Cloud Deployment Platform",
-    description: "Highly advanced modern cloud deployment platform.",
+    title: "EliteHosting — #1 Telegram Bot Hosting in India",
+    description: "Deploy Python and Node.js bots on Mumbai Edge nodes with 24/7 uptime.",
     images: ["/logo.png"],
   },
   icons: {
     icon: "/logo.png",
     apple: "/logo.png",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
 };
 
