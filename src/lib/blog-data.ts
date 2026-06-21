@@ -1,7 +1,7 @@
 export const blogPosts = [
   {
-    title: "Introducing EliteHosting: The Future of Cloud Deployment",
-    excerpt: "Discover how we're revolutionizing the way developers deploy and scale their applications with our Mumbai-based edge network.",
+    title: "Introducing EliteHosting: The Best Cloud Deployment Platform in India",
+    excerpt: "Discover how EliteHosting (EliteHost) is revolutionizing the way developers deploy and scale applications with our ultra-fast Mumbai-based edge network, specifically optimized for India.",
     author: "Elite Team",
     date: "Oct 24, 2024",
     category: "Announcements",
@@ -10,8 +10,8 @@ export const blogPosts = [
     content: "<p>EliteHosting is officially live!</p>"
   },
   {
-    title: "Optimizing Next.js 15 for Maximum Performance",
-    excerpt: "Learn the best practices for deploying Next.js 15 apps on our platform to achieve sub-30ms latency for users in India.",
+    title: "Optimizing Next.js 15 for Mumbai Edge Performance",
+    excerpt: "Learn the best practices for deploying Next.js 15 apps on EliteHosting's Mumbai Edge Datacenter to achieve sub-30ms latency for users across India.",
     author: "Raj Papa",
     date: "Nov 02, 2024",
     category: "Tutorials",

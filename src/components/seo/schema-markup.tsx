@@ -1,6 +1,43 @@
 import React from 'react';
 
 export function SchemaMarkup() {
+  const organizationSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "EliteHosting",
+    "url": "https://www.elitehosting.in",
+    "logo": "https://www.elitehosting.in/logo.png",
+    "sameAs": [
+      "https://twitter.com/elitehosting",
+      "https://github.com/elitehosting-in"
+    ],
+    "description": "Premium Cloud Deployment Platform specializing in Mumbai-based Edge hosting for Telegram bots and web applications."
+  };
+
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "url": "https://www.elitehosting.in",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://www.elitehosting.in/blog?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  };
+
+  const softwareAppSchema = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "EliteHosting Cloud Platform",
+    "operatingSystem": "Web",
+    "applicationCategory": "DeveloperApplication",
+    "offers": {
+      "@type": "Offer",
+      "price": "99.00",
+      "priceCurrency": "INR"
+    }
+  };
+
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -28,6 +65,14 @@ export function SchemaMarkup() {
           "@type": "Answer",
           "text": "Yes, EliteHost is highly secure for bot hosting. We use isolated containers and enterprise-grade encryption to protect your code and API tokens. Sensitive information like BOT_TOKEN should be stored in our secure Environment Variables section."
         }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I host Python and Node.js bots on EliteHost?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, EliteHost provides native support for both Python (python-telegram-bot, Aiogram) and Node.js (Telegraf, Grammy) with automated dependency installation and environment configuration."
+        }
       }
     ]
   };
@@ -40,12 +85,12 @@ export function SchemaMarkup() {
       {
         "@type": "HowToStep",
         "text": "Create an account on EliteHost.in",
-        "url": "https://elitehosting.in/auth/register"
+        "url": "https://www.elitehosting.in/auth/register"
       },
       {
         "@type": "HowToStep",
         "text": "Connect your GitHub repository or upload a ZIP file of your code.",
-        "url": "https://elitehosting.in/dashboard/new"
+        "url": "https://www.elitehosting.in/dashboard/new"
       },
       {
         "@type": "HowToStep",
@@ -63,28 +108,25 @@ export function SchemaMarkup() {
     "@type": "WebPage",
     "speakable": {
       "@type": "SpeakableSpecification",
-      "cssSelector": [".aeo-answer", "h1", "h2"]
+      "cssSelector": [".aeo-answer", "h1", "h2", "h3"]
     },
-    "url": "https://elitehosting.in"
-  };
-
-  const articleSchema = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    "headline": "How to host a Telegram bot 24/7 in 2025?",
-    "author": {
-      "@type": "Organization",
-      "name": "EliteHosting Team"
-    },
-    "datePublished": "2025-02-10",
-    "publisher": {
-      "@type": "Organization",
-      "name": "EliteHosting"
-    }
+    "url": "https://www.elitehosting.in"
   };
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareAppSchema) }}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
@@ -96,10 +138,6 @@ export function SchemaMarkup() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(speakableSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
       />
     </>
   );
