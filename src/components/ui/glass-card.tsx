@@ -31,14 +31,14 @@ export function GlassCard({
       onKeyDown={onKeyDown}
       role={onClick ? "button" : undefined}
       className={cn(
-        "glass-morphism rounded-sm overflow-hidden relative group",
-        glow && "neon-border",
+        "glass-morphism rounded-sm overflow-hidden relative group transition-all duration-300",
+        glow && "border-white/20 shadow-[0_0_30px_rgba(255,255,255,0.05)]",
         onClick && "cursor-pointer focus-ring",
         className
       )}
     >
       {glow && (
-        <div className="absolute -inset-px bg-gradient-to-r from-white/10 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10" />
+        <div className="absolute -inset-px bg-gradient-to-br from-white/10 via-transparent to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10" />
       )}
       <div className="relative z-10">
         {children}

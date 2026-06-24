@@ -38,8 +38,8 @@ export function FileManager() {
         >
           {item.type === "folder" ? (
             <>
-              {isExpanded ? <ChevronDown className="w-4 h-4 text-gray-500" /> : <ChevronRight className="w-4 h-4 text-gray-500" />}
-              <Folder className="w-4 h-4 text-[#00E5FF]" />
+              {isExpanded ? <ChevronDown className="w-4 h-4 text-zinc-500" /> : <ChevronRight className="w-4 h-4 text-zinc-500" />}
+              <Folder className="w-4 h-4 text-white" />
             </>
           ) : (
             <>
@@ -61,9 +61,9 @@ export function FileManager() {
   };
 
   return (
-    <div className="rounded-xl border border-white/5 bg-white/5 p-4 flex flex-col h-full">
+    <div className="rounded-sm border border-white/5 bg-white/5 p-4 flex flex-col h-full">
       <div className="flex items-center justify-between mb-4 px-2">
-        <h4 className="text-xs font-bold text-gray-500 uppercase tracking-widest">Files</h4>
+        <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Files</h4>
         <div className="flex gap-1">
           <button className="p-1.5 hover:bg-white/10 rounded"><Plus className="w-4 h-4" /></button>
           <button className="p-1.5 hover:bg-white/10 rounded"><Upload className="w-4 h-4" /></button>

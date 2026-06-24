@@ -45,7 +45,7 @@ export default function LoginPage() {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md relative z-10"
+        className="w-full max-w-[420px] relative z-10"
       >
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 mb-6 group">
@@ -124,9 +124,9 @@ export default function LoginPage() {
           </form>
 
           <div className="mt-8 pt-6 border-t border-white/10 text-center">
-            <p className="text-gray-500 text-sm">
+            <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest">
               New to EliteHosting?{" "}
-              <Link href="/auth/register" className="text-white font-semibold hover:text-[#00E5FF] transition-colors">
+              <Link href="/auth/register" className="text-white hover:underline transition-all">
                 Create free account
               </Link>
             </p>
