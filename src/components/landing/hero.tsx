@@ -49,12 +49,12 @@ export function Hero() {
             </span>
             EliteHost v15.0 — Premium Edition 💎
           </span>
-          <h1 className="text-5xl md:text-8xl font-bold mb-6 tracking-tighter leading-tight">
+          <h1 className="text-5xl md:text-8xl font-bold mb-6 tracking-[-0.05em] leading-[0.9]">
             <motion.span
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2, duration: 0.8 }}
-              className="bg-clip-text text-transparent bg-gradient-to-b from-white to-white/40"
+              className="bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-zinc-500"
             >
               #1 Telegram Bot Hosting
             </motion.span>
@@ -63,7 +63,7 @@ export function Hero() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4, duration: 0.8 }}
-              className="text-white drop-shadow-[0_0_40px_rgba(255,255,255,0.4)] bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-white/20"
+              className="text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.2)] bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-600"
             >
               in Mumbai. 🚀
             </motion.span>

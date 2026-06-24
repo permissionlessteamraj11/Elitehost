@@ -77,7 +77,7 @@ export function Pricing() {
               }`}
             >
               {tier.popular && (
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white text-black text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-tighter shadow-xl backdrop-blur-md bg-white/90">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white text-black text-[10px] font-bold px-3 py-1 rounded-sm uppercase tracking-[0.2em] shadow-[0_0_20px_rgba(255,255,255,0.3)]">
                   Most Popular 👑
                 </div>
               )}

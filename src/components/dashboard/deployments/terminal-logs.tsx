@@ -19,9 +19,9 @@ export function TerminalLogs({ logs }: TerminalLogsProps) {
     const term = new Terminal({
       theme: {
         background: "transparent",
-        foreground: "#00E5FF",
-        cursor: "#00E5FF",
-        selectionBackground: "rgba(0, 229, 255, 0.3)",
+        foreground: "#FFFFFF",
+        cursor: "#FFFFFF",
+        selectionBackground: "rgba(255, 255, 255, 0.1)",
       },
       fontFamily: "var(--font-geist-mono)",
       fontSize: 14,

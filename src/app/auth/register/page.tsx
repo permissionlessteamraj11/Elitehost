@@ -56,7 +56,7 @@ export default function RegisterPage() {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md relative z-10"
+        className="w-full max-w-[420px] relative z-10"
       >
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 mb-6 group">
@@ -186,9 +186,9 @@ export default function RegisterPage() {
           </div>
 
           <div className="mt-6 text-center">
-            <p className="text-gray-500 text-sm">
+            <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest">
               Already have an account?{" "}
-              <Link href="/auth/login" className="text-white font-semibold hover:text-[#00E5FF] transition-colors">
+              <Link href="/auth/login" className="text-white hover:underline transition-all">
                 Sign in
               </Link>
             </p>

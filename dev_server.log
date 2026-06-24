@@ -1,34 +1,22 @@
-
-> elite-hosting@0.1.0 dev
-> next dev
-
+Already up to date
+Done in 635ms using pnpm v11.3.0
+$ next dev
    ▲ Next.js 15.1.7
    - Local:        http://localhost:3000
    - Network:      http://192.168.0.2:3000
 
  ✓ Starting...
- ✓ Ready in 1818ms
+ ✓ Ready in 1902ms
  ○ Compiling / ...
- ✓ Compiled / in 8.5s (1526 modules)
- HEAD / 200 in 9073ms
- GET / 200 in 117ms
+ ✓ Compiled / in 12s (1526 modules)
+ GET / 200 in 13213ms
  ○ Compiling /src/middleware ...
-<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (155kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
- ✓ Compiled /blog in 3.6s (1697 modules)
- GET / 200 in 571ms
- GET /blog 200 in 3706ms
+ ✓ Compiled /src/middleware in 1321ms (159 modules)
  ○ Compiling /api/auth/me ...
- ✓ Compiled /api/auth/me in 1490ms (1607 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (155kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+ ✓ Compiled /auth/login in 3s (1603 modules)
 WARNING: JWT_SECRET is missing or too short. Using a temporary insecure secret.
- GET /api/auth/me 401 in 19ms
- ○ Compiling /blog/[slug] ...
- ✓ Compiled /blog/[slug] in 746ms (1640 modules)
- GET /blog/best-telegram-bot-hosting-2025 200 in 2543ms
-WARNING: JWT_SECRET is missing or too short. Using a temporary insecure secret.
- GET /api/auth/me 401 in 109ms
- GET / 200 in 114ms
- GET /api/auth/me 401 in 24ms
- GET /blog 200 in 89ms
- GET /api/auth/me 401 in 28ms
- GET /blog/best-telegram-bot-hosting-2025 200 in 82ms
- GET /api/auth/me 401 in 18ms
+ GET /api/auth/me 401 in 3217ms
+ GET / 200 in 446ms
+ GET /auth/login 200 in 1705ms
+ GET /api/auth/me 401 in 27ms
