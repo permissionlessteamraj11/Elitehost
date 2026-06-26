@@ -11,6 +11,17 @@ EliteHosting is a premium, high-performance cloud deployment platform inspired b
 - **Credit-Based Economy**: Transparent pricing starting at ₹99, with 2 free credits for every new user.
 - **Advanced Admin Panel**: System-wide monitoring and granular user/project management.
 
+## 🌍 Free Deployment Alternatives
+
+If you don't want to use Render or a VPS, you can deploy EliteHost or your hosted applications on these free platforms:
+
+1.  **Vercel:** Best for Next.js and frontend-heavy apps. Excellent free tier.
+2.  **Netlify:** Great for static sites and serverless functions.
+3.  **Railway:** Offers a trial credit ($5) which is enough for small bots for a few months.
+4.  **Koyeb:** Has a "Nano" instance that is free forever for one service.
+5.  **Fly.io:** Provides a small allowance of free resources (check their current pricing for "Hobby" plans).
+6.  **Hugging Face Spaces:** Surprisingly good for hosting Docker-based Python or Node.js apps for free.
+
 ## 🛠️ Tech Stack
 
 - **Frontend**: Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS 4, Framer Motion.
