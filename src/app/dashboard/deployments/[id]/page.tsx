@@ -166,9 +166,10 @@ export default function DeploymentDetailPage({ params }: { params: Promise<{ id:
             </GlassCard>
           ) : (
             <div className="space-y-6">
-              <h2 className="text-lg font-bold font-heading small-caps flex items-center gap-2">
-                <TerminalLogs logs={logs} />
-              </h2>
+              <div className="flex items-center gap-2 mb-4">
+                <h2 className="text-lg font-bold font-heading small-caps">Deployment Logs</h2>
+              </div>
+              <TerminalLogs logs={logs} />
             </div>
           )}
         </div>
