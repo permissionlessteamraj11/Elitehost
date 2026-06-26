@@ -40,6 +40,21 @@ COPY . .
 EXPOSE {{port}}
 CMD {{startCommand}}
 `,
+  nodejs: `
+FROM node:{{nodeVersion}}-alpine
+WORKDIR /app
+COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
+RUN \
+  if [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i --frozen-lockfile; \
+  elif [ -f yarn.lock ]; then yarn --frozen-lockfile; \
+  elif [ -f package-lock.json ]; then npm ci; \
+  else npm install; \
+  fi
+COPY . .
+{{buildCommand}}
+EXPOSE {{port}}
+CMD {{startCommand}}
+`,
   static: `
 FROM nginx:alpine
 COPY {{outputDirectory}} /usr/share/nginx/html
