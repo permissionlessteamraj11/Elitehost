@@ -71,7 +71,7 @@ export function AIStudio() {
     addLog(`[AI] Initializing production pipeline for: ${selectedFramework.toUpperCase()}`);
     addLog(`[AI] Loading intelligence model: ${selectedModel.toUpperCase()}`);
     try {
-      const generatedFiles = await generateCode(prompt, selectedFramework);
+      const generatedFiles = await generateCode(prompt, selectedFramework, selectedModel);
       setFiles(generatedFiles);
       setSelectedFile(generatedFiles[0]);
       addLog(`[AI] Generation successful. ${generatedFiles.length} files created.`);
@@ -88,7 +88,7 @@ export function AIStudio() {
     setIsDiagnosing(true);
     addLog(`[AI] Analyzing ${selectedFile.name} for architectural integrity...`);
     try {
-      const result = await diagnoseCode(selectedFile.content);
+      const result = await diagnoseCode(selectedFile.content, selectedFile.name);
       setDiagnosis(result);
       addLog(`[AI] Audit complete. Status: ${result.status.toUpperCase()}`);
     } catch (error) {

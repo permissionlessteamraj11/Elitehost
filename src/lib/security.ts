@@ -23,6 +23,8 @@ const MALICIOUS_PATTERNS = [
   '<script', 'javascript:', 'onload=', 'onerror=', 'eval(',
   // Dangerous commands
   'wget ', 'curl ', 'powershell', 'base64', 'chmod 777', 'chown root',
+  // Node.js specific dangerous modules/calls
+  'require("child_process")', 'require(\'child_process\')', 'require("fs/promises")', 'require(\'fs/promises\')', 'process.env',
   // AWS / Secret Leaks
   'AKIA', 'SECRET_KEY', 'AWS_ACCESS_KEY', 'xoxp-', 'xoxb-', 'ghp_', 'gho_', 'glpat-'
 ];
