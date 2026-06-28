@@ -1,41 +1,36 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Check, Star, Zap, Shield, Sparkles } from "lucide-react";
+import { Check, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { AnimatedButton } from "@/components/ui/animated-button";
 
 const tiers = [
   {
-    name: "Starter",
+    id: "basic",
+    name: "Basic",
     price: "99",
-    credits: "5 credits ⚡",
-    features: ["5 weeks of 1 app", "All frameworks", "Real-time logs", "Free SSL"],
-    button: "Get Started",
+    credits: "128MB RAM",
+    features: ["5% Shared CPU", "1GB NVMe Storage", "Auto-deploy", "Real-time logs"],
+    button: "Buy Plan",
     popular: false
   },
   {
-    name: "Developer",
-    price: "179",
-    credits: "10 credits 🚀",
-    features: ["10 weeks of 1 app", "Custom domain", "AI assistance", "Priority support"],
-    button: "Get Started",
-    popular: false
-  },
-  {
-    name: "Pro",
-    price: "399",
-    credits: "25 credits 💎",
-    features: ["25 weeks of 1 app", "Multiple apps", "Full AI credits", "Telegram bot"],
-    button: "Upgrade to Pro",
+    id: "standard",
+    name: "Standard",
+    price: "299",
+    credits: "512MB RAM",
+    features: ["20% Shared CPU", "5GB NVMe Storage", "Custom domain", "Priority support"],
+    button: "Buy Plan",
     popular: true
   },
   {
-    name: "Power",
-    price: "699",
-    credits: "50 credits 🔥",
-    features: ["50 weeks of 1 app", "Team features", "Admin dashboard", "SLA support"],
-    button: "Go Power",
+    id: "pro",
+    name: "Pro",
+    price: "599",
+    credits: "1GB RAM",
+    features: ["40% Shared CPU", "10GB NVMe Storage", "Dedicated port", "Enterprise SSL"],
+    button: "Buy Plan",
     popular: false
   }
 ];
@@ -53,15 +48,15 @@ export function Pricing() {
             viewport={{ once: true }}
             className="inline-flex items-center gap-2 px-3 py-1 mb-4 text-[10px] font-bold tracking-[0.2em] text-zinc-400 uppercase border border-white/10 rounded-sm small-caps"
           >
-            <Sparkles className="w-3 h-3" /> Professional Plans
+            <Sparkles className="w-3 h-3" /> Hosting Plans
           </motion.div>
-          <h2 className="text-3xl md:text-6xl font-bold mb-4 tracking-tighter">Simple Credit Pricing.</h2>
+          <h2 className="text-3xl md:text-6xl font-bold mb-4 tracking-tighter">Elite Performance.</h2>
           <p className="text-zinc-500 max-w-2xl mx-auto text-sm md:text-base">
-            1 credit = 1 week of enterprise hosting. No hidden charges. 💎
+            Isolated Docker environments with dedicated resource limits.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
           {tiers.map((tier, idx) => (
             <motion.div
               key={idx}
@@ -86,8 +81,9 @@ export function Pricing() {
                 <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-[0.2em] mb-4 small-caps">{tier.name}</h3>
                 <div className="flex items-baseline gap-1">
                   <span className="text-4xl font-bold tracking-tighter">₹{tier.price}</span>
-                  <span className="text-zinc-500 text-xs font-medium ml-1">/ {tier.credits}</span>
+                  <span className="text-zinc-500 text-xs font-medium ml-1">/ mo</span>
                 </div>
+                <div className="text-white/40 text-[10px] font-bold uppercase mt-2 tracking-widest">{tier.credits}</div>
               </div>
 
               <ul className="space-y-4 mb-10 flex-1">

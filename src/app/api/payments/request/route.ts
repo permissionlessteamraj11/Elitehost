@@ -16,7 +16,7 @@ export async function POST(req: Request) {
       transactionId: payload.transactionId,
       credits: payload.credits,
       customerName: payload.customerName || user.username,
-      customerContact: payload.customerContact || user.mobile || user.email,
+      customerContact: payload.customerContact || null || user.email,
       status: 'pending',
       created_at: new Date().toISOString()
     });

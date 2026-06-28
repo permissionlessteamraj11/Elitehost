@@ -27,7 +27,7 @@ export async function getMessages() {
 
 export async function getAdminChats() {
   const admin = await getUser();
-  if (!admin || admin.role !== "admin") return { success: false, error: "Unauthorized" };
+  if (!admin || admin.role !== "ADMIN") return { success: false, error: "Unauthorized" };
 
   const allMessages = await db.messages.read();
   // Filter only valid messages and unique userIds
@@ -58,7 +58,7 @@ export async function getAdminChats() {
 
 export async function getConversationForAdmin(userId: string) {
   const admin = await getUser();
-  if (!admin || admin.role !== "admin") return { success: false, error: "Unauthorized" };
+  if (!admin || admin.role !== "ADMIN") return { success: false, error: "Unauthorized" };
 
   // Mark messages as read
   await db.messages.update((m: any) => m.user_id === userId && m.sender === "user", { read: true });
@@ -69,7 +69,7 @@ export async function getConversationForAdmin(userId: string) {
 
 export async function adminReply(userId: string, content: string) {
   const admin = await getUser();
-  if (!admin || admin.role !== "admin") return { success: false, error: "Unauthorized" };
+  if (!admin || admin.role !== "ADMIN") return { success: false, error: "Unauthorized" };
 
   await db.messages.insert({
     user_id: userId,

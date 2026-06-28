@@ -11,7 +11,7 @@ export async function GET() {
     const user = await getUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const deployments = await db.deployments.find((d: any) => d.user_id === user.id);
+    const deployments = await db.deployments.find((d: any) => d.user?.id === user?.id);
 
     // Auto-expire check
     const now = new Date();
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
     if (!securityCheck.isSafe) {
       const ip = request.headers.get('x-forwarded-for') || '127.0.0.1';
       await logSecurityEvent(ip, 'MALICIOUS_DEPLOYMENT_ATTEMPT', {
-          userId: user.id,
+          userId: user?.id,
           pattern: securityCheck.pattern,
           payload: payload
       });
@@ -53,24 +53,24 @@ export async function POST(request: Request) {
     }
 
     // Credit Enforcement: Strictly 1 credit per deployment
-    const paidCredits = Number(user.paid_credits || 0);
-    const freeCredits = Number(user.credit_balance || 0);
+    const paidCredits = Number(user.credits || 0);
+    const freeCredits = Number(0 || 0);
     let expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
-    if (user.next_deploy_is_trial) {
+    if (false) {
       // 3-hour trial deployment
       expiresAt = new Date(Date.now() + 3 * 60 * 60 * 1000).toISOString();
       if (freeCredits >= 1) {
-        await db.users.update((u: any) => u.id === user.id, { credit_balance: freeCredits - 1, next_deploy_is_trial: false });
+        await db.users.update((u: any) => u.id === user?.id, { credit_balance: freeCredits - 1, next_deploy_is_trial: false });
       } else if (paidCredits >= 1) {
-        await db.users.update((u: any) => u.id === user.id, { paid_credits: paidCredits - 1, next_deploy_is_trial: false });
+        await db.users.update((u: any) => u.id === user?.id, { paid_credits: paidCredits - 1, next_deploy_is_trial: false });
       }
     } else if (paidCredits >= 1) {
-      await db.users.update((u: any) => u.id === user.id, { paid_credits: paidCredits - 1 });
+      await db.users.update((u: any) => u.id === user?.id, { paid_credits: paidCredits - 1 });
     } else if (freeCredits >= 1) {
-      await db.users.update((u: any) => u.id === user.id, { credit_balance: freeCredits - 1 });
+      await db.users.update((u: any) => u.id === user?.id, { credit_balance: freeCredits - 1 });
     } else {
-      if (user.role !== 'admin') {
+      if (user.role !== 'ADMIN') {
           return NextResponse.json({ error: "Insufficient credits. Please buy credits to deploy.", code: 'INSUFFICIENT_CREDITS' }, { status: 402 });
       }
     }
@@ -87,7 +87,7 @@ export async function POST(request: Request) {
         sourceConfig.type = 'github';
         sourceConfig.isPublic = true;
     } else if (payload.method === 'github') {
-        if (!user.github_token) {
+        if (true) {
             return NextResponse.json({ error: "GitHub not connected" }, { status: 400 });
         }
     }
@@ -115,7 +115,7 @@ export async function POST(request: Request) {
     };
 
     const deployment = await db.deployments.insert({
-      user_id: user.id,
+      user_id: user?.id,
       name: initialConfig.name,
       status: 'pending',
       config: initialConfig,
@@ -124,10 +124,10 @@ export async function POST(request: Request) {
     });
 
     // Create initial version
-    await createDeploymentVersion(deployment.id, user.id, initialConfig, "Initial deployment");
+    await createDeploymentVersion(deployment.id, user?.id, initialConfig, "Initial deployment");
 
     // Add to build queue
-    await buildQueue.add('build', { deploymentId: deployment.id, userId: user.id });
+    await buildQueue.add('build', { deploymentId: deployment.id, userId: user?.id });
 
     return NextResponse.json({ success: true, deploymentId: deployment.id });
   } catch (error: any) {

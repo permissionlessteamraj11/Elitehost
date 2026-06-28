@@ -1,0 +1,153 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum DeploymentStatus {
+  PENDING
+  BUILDING
+  READY
+  ERROR
+  STOPPED
+  SUSPENDED
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum PaymentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id              String       @id @default(uuid())
+  username        String       @unique
+  email           String       @unique
+  password        String
+  role            UserRole     @default(USER)
+  credits         Float        @default(0)
+  is_banned       Boolean      @default(false)
+  referral_code   String?      @unique
+  referred_by     String?
+  trial_claimed   Boolean      @default(false)
+  last_ip         String?
+  created_at      DateTime     @default(now())
+  updated_at      DateTime     @updatedAt
+
+  deployments     Deployment[]
+  tickets         Ticket[]
+  payments        Payment[]
+  audit_logs      AuditLog[]
+}
+
+model Plan {
+  id              String       @id @default(uuid())
+  name            String
+  price           Float
+  ram_mb          Int
+  cpu_percent     Float
+  storage_gb      Int
+  is_active       Boolean      @default(true)
+  created_at      DateTime     @default(now())
+  updated_at      DateTime     @updatedAt
+
+  deployments     Deployment[]
+}
+
+model Deployment {
+  id              String           @id @default(uuid())
+  name            String
+  subdomain       String           @unique
+  status          DeploymentStatus @default(PENDING)
+  container_id    String?
+  port            Int?
+  logs            String?          @db.Text
+  error_message   String?
+  config          Json
+  resource_usage  Json?
+  expires_at      DateTime?
+  deployed_at     DateTime?
+  created_at      DateTime         @default(now())
+  updated_at      DateTime         @updatedAt
+
+  user_id         String
+  user            User             @relation(fields: [user_id], references: [id])
+  plan_id         String
+  plan            Plan             @relation(fields: [plan_id], references: [id])
+}
+
+model Ticket {
+  id              String       @id @default(uuid())
+  subject         String
+  description     String       @db.Text
+  status          TicketStatus @default(OPEN)
+  created_at      DateTime     @default(now())
+  updated_at      DateTime     @updatedAt
+
+  user_id         String
+  user            User         @relation(fields: [user_id], references: [id])
+  messages        TicketMessage[]
+}
+
+model TicketMessage {
+  id              String       @id @default(uuid())
+  content         String       @db.Text
+  is_admin        Boolean      @default(false)
+  created_at      DateTime     @default(now())
+
+  ticket_id       String
+  ticket          Ticket       @relation(fields: [ticket_id], references: [id])
+}
+
+model Payment {
+  id              String        @id @default(uuid())
+  amount          Float
+  credits         Float
+  transaction_id  String        @unique
+  status          PaymentStatus @default(PENDING)
+  customer_name   String?
+  customer_contact String?
+  created_at      DateTime      @default(now())
+  updated_at      DateTime      @updatedAt
+
+  user_id         String
+  user            User          @relation(fields: [user_id], references: [id])
+}
+
+model AuditLog {
+  id              String       @id @default(uuid())
+  action          String
+  metadata        Json?
+  ip_address      String?
+  created_at      DateTime     @default(now())
+
+  user_id         String
+  user            User         @relation(fields: [user_id], references: [id])
+}
+
+model PlatformSetting {
+  key             String       @id
+  value           Json
+  updated_at      DateTime     @updatedAt
+}
+
+model BannedIP {
+  ip              String       @id
+  reason          String?
+  created_at      DateTime     @default(now())
+}

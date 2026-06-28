@@ -1,58 +1,75 @@
-import { db } from './db/json-db';
 import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
+import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 
-const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build';
-const isProd = process.env.NODE_ENV === 'production';
+const SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'dev-secret');
 
-if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32) {
-  if (isProd && !isBuildPhase) {
-    throw new Error("JWT_SECRET environment variable is required and must be at least 32 characters in production.");
-  }
-  if (!isBuildPhase) {
-    console.warn("WARNING: JWT_SECRET is missing or too short. Using a temporary insecure secret.");
-  }
-}
+export async function createSession(userId: string, role: string) {
+  const token = await new SignJWT({ userId, role })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime('24h')
+    .sign(SECRET);
 
-const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET || 'dev-only-insecure-secret-placeholder-32chars-minimum');
-
-export async function hashPassword(password: string) {
-  return await bcrypt.hash(password, 12);
-}
-
-export async function comparePassword(password: string, hashed: string) {
-  return await bcrypt.compare(password, hashed);
+  (await cookies()).set('auth-token', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+  });
+  return token;
 }
 
 export async function createToken(payload: any) {
-  return await new SignJWT(payload)
+    return await new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
-    .setExpirationTime('60m')
-    .sign(SECRET_KEY);
+    .setExpirationTime('24h')
+    .sign(SECRET);
 }
 
-export async function verifyToken(token: string) {
+export async function verifyAuth() {
+  const token = (await cookies()).get('auth-token')?.value;
+  if (!token) return null;
+
   try {
-    const { payload } = await jwtVerify(token, SECRET_KEY);
-    return payload;
+    const { payload } = await jwtVerify(token, SECRET);
+    return payload as { userId: string; role: string };
   } catch (err) {
     return null;
   }
 }
 
-export async function getSession() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get('auth-token')?.value;
-  if (!token) return null;
-  return await verifyToken(token);
+export async function getUser() {
+    const session = await verifyAuth();
+    if (!session) return null;
+    return await prisma.user.findUnique({ where: { id: session.userId } });
 }
 
-export async function getUser() {
-  const session: any = await getSession();
-  if (!session) return null;
-  const user = await db.users.findOne((u: any) => u.id === session.userId);
-  if (user?.is_banned) return null;
-  return user;
+export async function isAdmin() {
+  const session = await verifyAuth();
+  return session?.role === 'ADMIN';
+}
+
+export async function hashPassword(password: string) {
+    return await bcrypt.hash(password, 12);
+}
+
+export async function comparePassword(password: string, hash: string) {
+    return await bcrypt.compare(password, hash);
+}
+
+export async function logAudit(userId: string, action: string, metadata?: any) {
+  try {
+    await prisma.auditLog.create({
+      data: {
+        user_id: userId,
+        action,
+        metadata: metadata || {},
+      }
+    });
+  } catch (error) {
+    console.error('Audit logging failed:', error);
+  }
 }

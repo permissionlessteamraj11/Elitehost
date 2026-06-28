@@ -22,7 +22,7 @@ export async function getReferralStats() {
             totalRefers: referrals.length,
             activeRefers: referrals.filter((r: any) => r.status === 'completed').length,
             totalEarnings: referrals.reduce((acc: number, r: any) => acc + (r.status === 'completed' ? Number(r.amount || 0) : 0), 0),
-            walletBalance: Number(user.wallet_balance || 0)
+            walletBalance: Number(user.credits || 0)
         }
     };
 }
