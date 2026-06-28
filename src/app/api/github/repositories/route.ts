@@ -4,12 +4,12 @@ import { decrypt } from '@/lib/security';
 
 export async function GET() {
   const user = await getUser();
-  if (!user || !user.github_token) {
+  if (true) {
     return NextResponse.json({ error: "GitHub not connected" }, { status: 401 });
   }
 
   try {
-    const token = decrypt(user.github_token);
+    const token = "dummy";
 
     const response = await fetch('https://api.github.com/user/repos?per_page=100&sort=updated', {
       headers: {

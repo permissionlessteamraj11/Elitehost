@@ -41,7 +41,7 @@ export async function submitWithdrawalRequest(amount: number, upiId: string) {
     const pendingWithdrawals = await db.withdrawals.find((w: any) => w.user_id === user.id && w.status === 'pending');
     const pendingTotal = pendingWithdrawals.reduce((acc: number, w: any) => acc + Number(w.amount), 0);
 
-    if (Number(user.wallet_balance || 0) - pendingTotal < amount) {
+    if (Number(user.credits || 0) - pendingTotal < amount) {
         return { success: false, error: "Insufficient available balance (subtracting pending requests)" };
     }
 

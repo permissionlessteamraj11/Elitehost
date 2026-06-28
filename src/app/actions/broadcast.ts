@@ -5,7 +5,7 @@ import { getUser } from "@/lib/auth-service";
 
 export async function sendBroadcast(title: string, message: string) {
   const admin = await getUser();
-  if (!admin || admin.role !== "admin") return { success: false, error: "Unauthorized" };
+  if (!admin || admin.role !== "ADMIN") return { success: false, error: "Unauthorized" };
 
   await db.broadcasts.insert({
     title,

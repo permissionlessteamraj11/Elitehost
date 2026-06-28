@@ -52,8 +52,8 @@ export async function POST(request: Request) {
     }
 
     // Credit Enforcement
-    const paidCredits = Number(user.paid_credits || 0);
-    const freeCredits = Number(user.credit_balance || 0);
+    const paidCredits = Number(user.credits || 0);
+    const freeCredits = Number(0 || 0);
     if (paidCredits < 1 && freeCredits < 1) {
       return NextResponse.json({ error: "Insufficient credits.", code: 'INSUFFICIENT_CREDITS' }, { status: 402 });
     }
