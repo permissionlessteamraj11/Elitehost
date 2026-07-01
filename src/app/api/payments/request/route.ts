@@ -1,4 +1,4 @@
-import { db } from "@/lib/db/json-db";
+import { prisma } from "@/lib/prisma";
 import { getUser } from "@/lib/auth-service";
 import { NextResponse } from "next/server";
 
@@ -9,20 +9,21 @@ export async function POST(req: Request) {
 
     const payload = await req.json();
 
-    const request = await (db as any).payment_requests.insert({
-      user_id: user.id,
-      planId: payload.planId,
-      amount: payload.amount,
-      transactionId: payload.transactionId,
-      credits: payload.credits,
-      customerName: payload.customerName || user.username,
-      customerContact: payload.customerContact || null || user.email,
-      status: 'pending',
-      created_at: new Date().toISOString()
+    const request = await prisma.payment.create({
+      data: {
+        user_id: user.id,
+        amount: payload.amount,
+        transaction_id: payload.transactionId,
+        credits: payload.credits || Math.floor(payload.amount / 20),
+        customer_name: payload.customerName || user.username,
+        customer_contact: payload.customerContact || user.email,
+        status: 'PENDING',
+      }
     });
 
     return NextResponse.json({ success: true, requestId: request.id });
   } catch (error: any) {
+      console.error('Payment request error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

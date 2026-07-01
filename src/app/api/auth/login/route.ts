@@ -1,6 +1,5 @@
-import { db } from "@/lib/db/json-db";
-import { comparePassword, createToken } from "@/lib/auth-service";
-import { cookies } from "next/headers";
+import { prisma } from "@/lib/prisma";
+import { comparePassword, createSession, logAudit } from "@/lib/auth-service";
 import { NextResponse } from "next/server";
 import { loginSchema } from "@/lib/validation";
 
@@ -10,7 +9,6 @@ export async function POST(req: Request) {
     const body = await req.json();
     const result = loginSchema.safeParse(body);
     if (!result.success) {
-      console.error('Login validation failed:', result.error.format());
       return NextResponse.json({
         error: "Invalid input",
         details: result.error.issues.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')
@@ -19,20 +17,29 @@ export async function POST(req: Request) {
     const { identifier, password } = result.data;
 
     // Check for IP-based lockout (15 min window)
-    const dbTyped = db as any;
-    const attempts = dbTyped.admin_attempts ? await dbTyped.admin_attempts.find((a: any) => a.ip === ip && new Date(a.created_at) > new Date(Date.now() - 15 * 60 * 1000)) : [];
-    if (attempts && attempts.length >= 5) {
-      const { blockIP } = await import('@/app/actions/platform');
-      await blockIP(ip);
-      return NextResponse.json({ error: "Too many failed attempts. Your IP has been blocked for 15 minutes." }, { status: 429 });
+    const attempts = await prisma.adminAttempt.findMany({
+        where: {
+            ip,
+            success: false,
+            created_at: { gte: new Date(Date.now() - 15 * 60 * 1000) }
+        }
+    });
+
+    if (attempts.length >= 5) {
+        return NextResponse.json({ error: "Too many failed attempts. Your IP has been temporarily blocked." }, { status: 429 });
     }
 
-    const user = await db.users.findOne((u: any) => u.email === identifier || u.mobile === identifier);
+    const user = await prisma.user.findFirst({
+        where: {
+            OR: [
+                { email: identifier },
+                { username: identifier }
+            ]
+        }
+    });
 
     if (!user) {
-      if (dbTyped.admin_attempts) {
-        await dbTyped.admin_attempts.insert({ ip, identifier, success: false });
-      }
+      await prisma.adminAttempt.create({ data: { ip, identifier, success: false } });
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
@@ -42,36 +49,22 @@ export async function POST(req: Request) {
 
     const isValid = await comparePassword(password, user.password);
     if (!isValid) {
-      if (dbTyped.admin_attempts) {
-        await dbTyped.admin_attempts.insert({ ip, identifier, success: false });
-      }
+      await prisma.adminAttempt.create({ data: { ip, identifier, success: false } });
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
     // Clear failed attempts on success
-    if (dbTyped.admin_attempts) {
-      await dbTyped.admin_attempts.delete((a: any) => a.ip === ip || a.identifier === identifier);
-    }
+    await prisma.adminAttempt.deleteMany({ where: { OR: [{ ip }, { identifier }] } });
 
-    const token = await createToken({ userId: user.id, email: user.email, role: user.role, is_banned: !!user.is_banned });
-    (await cookies()).set("auth-token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 60 * 60 * 1, // 1 hour
-    });
+    await createSession(user.id, user.role, body.rememberMe);
+    await logAudit(user.id, 'LOGIN', { ip });
 
-    const { password: _, password_plain: __, ...userWithoutPassword } = user;
+    const { password: _, ...userWithoutPassword } = user;
     return NextResponse.json({ success: true, user: userWithoutPassword });
   } catch (error: any) {
-    console.error('Critical login error:', {
-      message: error.message,
-      stack: error.stack,
-      cause: error.cause
-    });
+    console.error('Critical login error:', error);
     return NextResponse.json({
       error: "An internal server error occurred",
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
     }, { status: 500 });
   }
 }

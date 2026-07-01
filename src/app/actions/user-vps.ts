@@ -1,111 +1,108 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { getUser } from "@/lib/auth-service";
 import { VPSManager } from "@/services/vps-manager";
+import { buildQueue } from "@/services/queues/config";
 import { revalidatePath } from "next/cache";
-import { verifyAuth } from "@/lib/auth-service";
 
-export async function purchasePlan(planId: string, subdomain: string, name: string) {
-  try {
-    const session = await verifyAuth();
-    if (!session) throw new Error("Unauthorized");
+export async function stopDeployment(id: string) {
+  const user = await getUser();
+  if (!user) throw new Error("Unauthorized");
 
-    const user = await prisma.user.findUnique({ where: { id: session.userId } });
-    const plan = await prisma.plan.findUnique({ where: { id: planId } });
+  const deployment = await prisma.deployment.findUnique({
+    where: { id, user_id: user.id }
+  });
 
-    if (!user || !plan) throw new Error("User or Plan not found");
-    if (user.credits < plan.price) throw new Error("Insufficient credits");
+  if (!deployment || !deployment.container_id) throw new Error("Deployment not found or not active");
 
-    const result = await prisma.$transaction(async (tx) => {
-      await tx.user.update({
-        where: { id: user.id },
-        data: { credits: { decrement: plan.price } }
-      });
+  await VPSManager.stopContainer(deployment.container_id);
+  await prisma.deployment.update({
+    where: { id },
+    data: { status: 'STOPPED' }
+  });
 
-      await tx.payment.create({
-        data: {
-          user_id: user.id,
-          amount: plan.price,
-          credits: 0,
-          transaction_id: `BUY-${Date.now()}`,
-          status: 'APPROVED',
-        }
-      });
-
-      const deployment = await tx.deployment.create({
-        data: {
-          user_id: user.id,
-          plan_id: plan.id,
-          name: name,
-          subdomain: subdomain,
-          status: 'PENDING',
-          config: {
-            image: 'nginx:alpine',
-            env: {}
-          },
-          expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-        }
-      });
-
-      return deployment;
-    });
-
-    revalidatePath('/dashboard');
-    return { success: true, deployment: result };
-  } catch (error: any) {
-    return { success: false, error: error.message };
-  }
+  revalidatePath('/dashboard/deployments');
+  return { success: true };
 }
 
-export async function deployApplication(deploymentId: string) {
-  try {
-    const session = await verifyAuth();
-    if (!session) throw new Error("Unauthorized");
+export async function startDeployment(id: string) {
+    const user = await getUser();
+    if (!user) throw new Error("Unauthorized");
 
     const deployment = await prisma.deployment.findUnique({
-      where: { id: deploymentId },
-      include: { plan: true }
+      where: { id, user_id: user.id }
     });
 
-    if (!deployment || deployment.user_id !== session.userId) throw new Error("Unauthorized");
-    if (deployment.status === 'READY') return { success: true, message: "Already deployed" };
+    if (!deployment || !deployment.container_id) throw new Error("Deployment not found or not active");
 
+    await VPSManager.startContainer(deployment.container_id);
     await prisma.deployment.update({
-      where: { id: deploymentId },
-      data: { status: 'BUILDING' }
-    });
-
-    const containerName = `elite-${deployment.subdomain}-${deployment.id.slice(0, 4)}`;
-
-    // Find an available port on the host
-    const port = await VPSManager.findAvailablePort(20000, 30000);
-
-    const containerId = await VPSManager.createContainer({
-      name: containerName,
-      image: (deployment.config as any).image || 'nginx:alpine',
-      memoryLimit: `${deployment.plan.ram_mb}m`,
-      cpuLimit: deployment.plan.cpu_percent,
-      ports: { container: 80, host: port },
-      env: (deployment.config as any).env
-    });
-
-    await prisma.deployment.update({
-      where: { id: deploymentId },
-      data: {
-        status: 'READY',
-        container_id: containerId,
-        port: port,
-        deployed_at: new Date()
-      }
+      where: { id },
+      data: { status: 'READY' }
     });
 
     revalidatePath('/dashboard/deployments');
-    return { success: true, containerId };
-  } catch (error: any) {
-    await prisma.deployment.update({
-      where: { id: deploymentId },
-      data: { status: 'ERROR', error_message: error.message }
+    return { success: true };
+}
+
+export async function restartDeployment(id: string) {
+    const user = await getUser();
+    if (!user) throw new Error("Unauthorized");
+
+    const deployment = await prisma.deployment.findUnique({
+      where: { id, user_id: user.id }
     });
-    return { success: false, error: error.message };
-  }
+
+    if (!deployment || !deployment.container_id) throw new Error("Deployment not found or not active");
+
+    await VPSManager.restartContainer(deployment.container_id);
+    await prisma.deployment.update({
+        where: { id },
+        data: { status: 'READY' }
+    });
+
+    revalidatePath('/dashboard/deployments');
+    return { success: true };
+}
+
+export async function deleteDeployment(id: string) {
+    const user = await getUser();
+    if (!user) throw new Error("Unauthorized");
+
+    const deployment = await prisma.deployment.findUnique({
+      where: { id, user_id: user.id }
+    });
+
+    if (!deployment) throw new Error("Deployment not found");
+
+    if (deployment.container_id) {
+        await VPSManager.deleteContainer(deployment.container_id);
+    }
+
+    await prisma.deployment.delete({ where: { id } });
+
+    revalidatePath('/dashboard/deployments');
+    return { success: true };
+}
+
+export async function redeploy(id: string) {
+    const user = await getUser();
+    if (!user) throw new Error("Unauthorized");
+
+    const deployment = await prisma.deployment.findUnique({
+      where: { id, user_id: user.id }
+    });
+
+    if (!deployment) throw new Error("Deployment not found");
+
+    await prisma.deployment.update({
+        where: { id },
+        data: { status: 'PENDING', logs: "" }
+    });
+
+    await buildQueue.add('build', { deploymentId: id, userId: user.id });
+
+    revalidatePath('/dashboard/deployments');
+    return { success: true };
 }

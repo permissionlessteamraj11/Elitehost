@@ -1,7 +1,7 @@
-import { cookies } from "next/headers";
+import { logout } from "@/lib/auth-service";
 import { NextResponse } from "next/server";
 
 export async function POST() {
-  (await cookies()).delete("auth-token");
+  await logout();
   return NextResponse.json({ success: true });
 }

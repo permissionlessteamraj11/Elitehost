@@ -1,7 +1,14 @@
-minimumReleaseAge: 0
-allowBuilds:
-  '@prisma/engines': true
-  msgpackr-extract: true
-  prisma: true
-  sharp: true
-  unrs-resolver: true
+packages:
+  - 'src/*'
+
+pnpm:
+  onlyBuiltDependencies:
+    - "@prisma/client"
+    - "@prisma/engines"
+    - "prisma"
+    - "bcryptjs"
+    - "sharp"
+    - "msgpackr-extract"
+    - "@swc/core"
+    - "esbuild"
+    - "unrs-resolver"

@@ -1,34 +1,33 @@
-import { db } from "@/lib/db/json-db";
-import { hashPassword, createToken } from "@/lib/auth-service";
-import { cookies } from "next/headers";
+import { prisma } from "@/lib/prisma";
+import { hashPassword, createSession } from "@/lib/auth-service";
 import { NextResponse } from "next/server";
 import { registerSchema } from "@/lib/validation";
-import { getPlatformSetting } from "@/app/actions/platform";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    // Zod Validation
     const result = registerSchema.safeParse(body);
     if (!result.success) {
-      console.error('Registration validation failed:', result.error.format());
       return NextResponse.json({
         error: "Invalid input",
         details: result.error.issues.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')
       }, { status: 400 });
     }
 
-    const { email, mobile, password, username, referralCode } = result.data;
+    const { email, password, username, referralCode } = result.data;
 
-    const existingEmail = await db.users.findOne((u: any) => u.email === email);
-    if (existingEmail) {
-      return NextResponse.json({ error: "Email already exists" }, { status: 400 });
-    }
+    const existingUser = await prisma.user.findFirst({
+        where: {
+            OR: [
+                { email },
+                { username }
+            ]
+        }
+    });
 
-    const existingUser = await db.users.findOne((u: any) => u.username === username);
     if (existingUser) {
-      return NextResponse.json({ error: "Username already exists" }, { status: 400 });
+      return NextResponse.json({ error: "Email or username already exists" }, { status: 400 });
     }
 
     const hashed = await hashPassword(password);
@@ -36,56 +35,46 @@ export async function POST(req: Request) {
 
     let referrerId = null;
     if (referralCode) {
-      const referrer = await db.users.findOne((u: any) => u.referral_code === referralCode);
+      const referrer = await prisma.user.findUnique({ where: { referral_code: referralCode } });
       if (referrer) {
         referrerId = referrer.id;
       }
     }
 
-    const freePlanEnabled = await getPlatformSetting('free_plan_enabled');
+    const freePlanSetting = await prisma.platformSetting.findUnique({ where: { key: 'free_plan_enabled' } });
+    const freePlanEnabled = freePlanSetting ? JSON.parse(freePlanSetting.value as string) : true;
     const initialCredits = freePlanEnabled === true ? 2 : 0;
 
-    const user = await db.users.insert({
-      email,
-      mobile,
-      password: hashed,
-      username,
-      referral_code: userReferralCode,
-      referrer_id: referrerId,
-      role: "user",
-      credit_balance: initialCredits,
-      paid_credits: 0,
-      wallet_balance: 0,
+    const user = await prisma.user.create({
+      data: {
+        email,
+        password: hashed,
+        username,
+        referral_code: userReferralCode,
+        referred_by: referrerId,
+        credits: initialCredits,
+      }
     });
 
     if (referrerId) {
-      await db.referrals.insert({
-        referrer_id: referrerId,
-        referred_user_id: user.id,
-        status: 'pending',
-        amount: 0
+      await prisma.referral.create({
+        data: {
+          referrer_id: referrerId,
+          referred_user_id: user.id,
+          status: 'pending',
+          amount: 0
+        }
       });
     }
 
-    const token = await createToken({ userId: user.id, email: user.email, role: user.role, is_banned: false });
-    (await cookies()).set("auth-token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 60 * 60 * 1, // 1 hour
-    });
+    await createSession(user.id, user.role);
 
-    const { password: _, password_plain: __, ...userWithoutPassword } = user;
+    const { password: _, ...userWithoutPassword } = user;
     return NextResponse.json({ success: true, user: userWithoutPassword });
   } catch (error: any) {
-    console.error('Critical registration error:', {
-      message: error.message,
-      stack: error.stack,
-      cause: error.cause
-    });
+    console.error('Critical registration error:', error);
     return NextResponse.json({
       error: "An internal server error occurred",
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
     }, { status: 500 });
   }
 }

@@ -157,14 +157,14 @@ export default function AdminDashboard() {
   };
 
   const handleWithdrawal = async (id: string, status: 'approved' | 'rejected') => {
-    const res = await updateWithdrawalStatus(id, status);
+    const res = await updateWithdrawalStatus(id, status.toUpperCase() as any);
     if (res.success) {
       setWithdrawals(prev => prev.filter(w => w.id !== id));
     }
   };
 
   const handleUpdateCredits = async (userId: string) => {
-    const res = await updateUserCredits(userId, creditAmount, creditExpiry);
+    const res = await updateUserCredits(userId, creditAmount);
     if (res.success) {
       setUsers(prev => prev.map(u => u.id === userId ? { ...u, paid_credits: res.newBalance } : u));
       setCreditAmount(1);
