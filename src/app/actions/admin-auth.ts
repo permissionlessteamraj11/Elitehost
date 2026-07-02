@@ -1,42 +1,35 @@
 "use server";
 
 import { headers } from "next/headers";
-import { db } from "@/lib/db/json-db";
+import { prisma } from "@/lib/prisma";
 import { blockIP } from "./platform";
 
 export async function validateAdminPassword(password: string) {
   const headerList = await headers();
   const ip = headerList.get("x-forwarded-for") || "127.0.0.1";
 
-  // Check if IP is already banned
-  const isBanned = await db.banned_ips.findOne((b: any) => b.ip === ip);
+  const isBanned = await prisma.bannedIP.findUnique({ where: { ip } });
   if (isBanned) {
-    return { success: false, error: "Your device has been banned due to multiple failed attempts." };
+    return { success: false, error: "Your device has been banned." };
   }
 
-  // In a real production environment, this would check against process.env.ADMIN_PASSWORD
   const masterPassword = process.env.ADMIN_PASSWORD || "28@RajPapa";
 
   if (password === masterPassword) {
-    // Reset attempts on successful login
-    await db.admin_attempts.delete((a: any) => a.ip === ip);
+    await prisma.adminAttempt.deleteMany({ where: { ip } });
     return { success: true };
   }
 
-  // Track failed attempts
-  const attempt = await db.admin_attempts.findOne((a: any) => a.ip === ip);
-  const count = (attempt?.count || 0) + 1;
+  const attempts = await prisma.adminAttempt.findMany({
+      where: { ip, created_at: { gte: new Date(Date.now() - 15 * 60 * 1000) } }
+  });
+  const count = attempts.length + 1;
+
+  await prisma.adminAttempt.create({ data: { ip, success: false } });
 
   if (count >= 3) {
-    await blockIP(ip);
-    await db.admin_attempts.delete((a: any) => a.ip === ip);
+    await blockIP(ip, "Too many admin login attempts");
     return { success: false, error: "Too many failed attempts. Your device has been banned." };
-  }
-
-  if (attempt) {
-    await db.admin_attempts.update((a: any) => a.ip === ip, { count, last_attempt: new Date().toISOString() });
-  } else {
-    await db.admin_attempts.insert({ ip, count, last_attempt: new Date().toISOString() });
   }
 
   return { success: false, error: `Invalid master password. ${3 - count} attempts remaining.` };

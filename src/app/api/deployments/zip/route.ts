@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/db/json-db';
+import { prisma } from '@/lib/prisma';
 import { getUser } from '@/lib/auth-service';
 import { scanForMaliciousCode, logSecurityEvent } from '@/lib/security';
-import { createDeploymentVersion } from '@/lib/db/versioning';
 import { buildQueue } from '@/services/queues/config';
 import fs from 'fs/promises';
 import path from 'path';
@@ -52,18 +51,15 @@ export async function POST(request: Request) {
     }
 
     // Credit Enforcement
-    const paidCredits = Number(user.credits || 0);
-    const freeCredits = Number(0 || 0);
-    if (paidCredits < 1 && freeCredits < 1) {
+    if (user.credits < 1 && user.role !== 'ADMIN') {
       return NextResponse.json({ error: "Insufficient credits.", code: 'INSUFFICIENT_CREDITS' }, { status: 402 });
     }
 
     // Deduct credit
-    if (paidCredits >= 1) {
-      await db.users.update((u: any) => u.id === user.id, { paid_credits: paidCredits - 1 });
-    } else {
-      await db.users.update((u: any) => u.id === user.id, { credit_balance: freeCredits - 1 });
-    }
+    await prisma.user.update({
+        where: { id: user.id },
+        data: { credits: { decrement: 1 } }
+    });
 
     // Save File
     await fs.mkdir(UPLOAD_DIR, { recursive: true });
@@ -83,31 +79,41 @@ export async function POST(request: Request) {
       },
       build: {
         command: buildCommand || null,
-        installCommand: null,
-        outputDir: null
       },
       start: {
         command: deployCommand || null,
-        healthCheckPath: "/",
         port: 3000
       },
       env: {
         public: envVars.reduce((acc: any, curr: any) => ({ ...acc, [curr.key]: curr.value }), {}),
-        secret: {}
       }
     };
 
-    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
-    const deployment = await db.deployments.insert({
-      user_id: user.id,
-      name: initialConfig.name,
-      status: 'pending',
-      config: initialConfig,
-      expires_at: expiresAt,
-      is_free: false,
+    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+    const plan = await prisma.plan.findFirst();
+    if (!plan) return NextResponse.json({ error: "No plans available" }, { status: 500 });
+
+    const deployment = await prisma.deployment.create({
+      data: {
+        user_id: user.id,
+        name: initialConfig.name,
+        subdomain: `${initialConfig.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${Math.random().toString(36).substring(2, 6)}`,
+        status: 'PENDING',
+        config: JSON.stringify(initialConfig),
+        expires_at: expiresAt,
+        plan_id: plan.id,
+      }
     });
 
-    await createDeploymentVersion(deployment.id, user.id, initialConfig, "Initial ZIP upload");
+    await prisma.deploymentVersion.create({
+        data: {
+            deployment_id: deployment.id,
+            version: 1,
+            config: JSON.stringify(initialConfig),
+            changes: "Initial ZIP upload"
+        }
+    });
+
     await buildQueue.add('build', { deploymentId: deployment.id, userId: user.id });
 
     return NextResponse.json({ success: true, deploymentId: deployment.id });

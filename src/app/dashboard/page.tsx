@@ -8,7 +8,6 @@ import { GlassCard } from "@/components/ui/glass-card";
 import { AnimatedButton } from "@/components/ui/animated-button";
 import Link from "next/link";
 import { useAuthStore } from "@/hooks/use-auth";
-import { claimTrial } from "@/app/actions/credits";
 import { useState } from "react";
 
 const stats = [
@@ -39,15 +38,15 @@ export default function DashboardPage() {
 
   const handleClaimTrial = async () => {
     setClaiming(true);
-    const res = await claimTrial();
-    if (res.success) {
-      alert("Success! 1 Credit (3-hour deploy) added to your account.");
-      // Refresh profile to update UI balance
+    const res = await fetch('/api/auth/claim-trial', { method: 'POST' });
+    const data = await res.json();
+    if (res.ok) {
+      alert("Success! 2 Credits (3-hour deploy) added to your account.");
       const userRes = await fetch('/api/auth/me');
       const userData = await userRes.json();
       if (userData.user) setProfile(userData.user);
     } else {
-      alert(res.error || "Failed to claim trial.");
+      alert(data.error || "Failed to claim trial.");
     }
     setClaiming(false);
   };

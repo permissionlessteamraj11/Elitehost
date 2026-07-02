@@ -1,31 +1,33 @@
 "use server";
 
-import { db } from "@/lib/db/json-db";
+import { prisma } from "@/lib/prisma";
 import { getUser } from "@/lib/auth-service";
 
 export async function processCreditPurchase(userId: string, amount: number, credits: number) {
-  const user = await db.users.findOne((u: any) => u.id === userId);
+  const user = await prisma.user.findUnique({ where: { id: userId } });
 
   if (!user) return { success: false, error: "User not found" };
 
-  await db.users.update((u: any) => u.id === userId, {
-    paid_credits: Number(user.paid_credits || 0) + credits
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+        paid_credits: { increment: credits },
+        credits: { increment: credits }
+    }
   });
 
-  if (user.referrer_id) {
-    // 30% commission added to wallet_balance
+  if (user.referred_by) {
     const commission = amount * 0.30;
-
-    const referrer = await db.users.findOne((u: any) => u.id === user.referrer_id);
+    const referrer = await prisma.user.findUnique({ where: { id: user.referred_by } });
     if (referrer) {
-        await db.users.update((u: any) => u.id === user.referrer_id, {
-            wallet_balance: Number(referrer.wallet_balance || 0) + commission
+        await prisma.user.update({
+            where: { id: user.referred_by },
+            data: { wallet_balance: { increment: commission } }
         });
 
-        // Record the referral event
-        await db.referrals.update((r: any) => r.referred_user_id === userId, {
-            status: 'completed',
-            amount: commission
+        await prisma.referral.updateMany({
+            where: { referred_user_id: userId },
+            data: { status: 'completed', amount: commission }
         });
     }
   }
@@ -37,44 +39,28 @@ export async function submitWithdrawalRequest(amount: number, upiId: string) {
     const user = await getUser();
     if (!user) return { success: false, error: "User not found" };
 
-    // Calculate pending withdrawals to check actual available balance
-    const pendingWithdrawals = await db.withdrawals.find((w: any) => w.user_id === user.id && w.status === 'pending');
-    const pendingTotal = pendingWithdrawals.reduce((acc: number, w: any) => acc + Number(w.amount), 0);
+    const pendingWithdrawals = await prisma.withdrawal.findMany({
+        where: { user_id: user.id, status: 'PENDING' }
+    });
+    const pendingTotal = pendingWithdrawals.reduce((acc, w) => acc + w.amount, 0);
 
-    if (Number(user.credits || 0) - pendingTotal < amount) {
-        return { success: false, error: "Insufficient available balance (subtracting pending requests)" };
+    if (user.wallet_balance - pendingTotal < amount) {
+        return { success: false, error: "Insufficient available balance" };
     }
 
     if (amount < 100) {
         return { success: false, error: "Minimum withdrawal is ₹100" };
     }
 
-    await db.withdrawals.insert({
-        user_id: user.id,
-        amount,
-        upi_id: upiId,
-        status: 'pending'
+    await prisma.withdrawal.create({
+        data: {
+            user_id: user.id,
+            amount,
+            method: 'UPI',
+            details: JSON.stringify({ upi_id: upiId }),
+            status: 'PENDING'
+        }
     });
 
     return { success: true };
-}
-
-export async function claimTrial() {
-  const user = await getUser();
-  if (!user) return { success: false, error: "Unauthorized" };
-
-  const dbUser = await db.users.findOne((u: any) => u.id === user.id);
-  if (!dbUser) return { success: false, error: "User not found" };
-
-  if (dbUser.trial_claimed) {
-    return { success: false, error: "Trial already claimed" };
-  }
-
-  await db.users.update((u: any) => u.id === user.id, {
-    credit_balance: (Number(dbUser.credit_balance) || 0) + 1,
-    trial_claimed: true,
-    next_deploy_is_trial: true
-  });
-
-  return { success: true };
 }

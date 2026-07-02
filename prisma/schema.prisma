@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 enum UserRole {
@@ -19,6 +19,7 @@ enum DeploymentStatus {
   ERROR
   STOPPED
   SUSPENDED
+  EXPIRED
 }
 
 enum TicketStatus {
@@ -34,25 +35,70 @@ enum PaymentStatus {
   REJECTED
 }
 
+enum TransactionType {
+  CREDIT_PURCHASE
+  REFERRAL_BONUS
+  TRIAL_CLAIM
+  DEPLOYMENT_COST
+  REFUND
+}
+
+enum WithdrawalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model User {
   id              String       @id @default(uuid())
   username        String       @unique
   email           String       @unique
   password        String
-  role            UserRole     @default(USER)
+  role            String       @default("USER")
   credits         Float        @default(0)
+  paid_credits    Float        @default(0)
+  wallet_balance  Float        @default(0)
   is_banned       Boolean      @default(false)
   referral_code   String?      @unique
   referred_by     String?
   trial_claimed   Boolean      @default(false)
   last_ip         String?
+  github_token    String?
+  email_verified  DateTime?
+  reset_token     String?      @unique
+  reset_expires   DateTime?
   created_at      DateTime     @default(now())
   updated_at      DateTime     @updatedAt
 
   deployments     Deployment[]
+  projects        Project[]
   tickets         Ticket[]
   payments        Payment[]
   audit_logs      AuditLog[]
+  sessions        Session[]
+  api_keys        ApiKey[]
+  github_accounts GithubAccount[]
+  transactions    Transaction[]
+  notifications   Notification[]
+  activities      Activity[]
+  withdrawals     Withdrawal[]
+  referrals       Referral[]   @relation("Referrer")
+  referred_users  Referral[]   @relation("ReferredUser")
+  security_logs   SecurityLog[]
+  messages        Message[]
+  trial_claims    TrialClaim[]
+}
+
+model Project {
+  id              String       @id @default(uuid())
+  name            String
+  description     String?
+  created_at      DateTime     @default(now())
+  updated_at      DateTime     @updatedAt
+
+  user_id         String
+  user            User         @relation(fields: [user_id], references: [id])
+  deployments     Deployment[]
 }
 
 model Plan {
@@ -73,13 +119,14 @@ model Deployment {
   id              String           @id @default(uuid())
   name            String
   subdomain       String           @unique
-  status          DeploymentStatus @default(PENDING)
+  status          String           @default("PENDING")
   container_id    String?
   port            Int?
-  logs            String?          @db.Text
+  logs            String?
   error_message   String?
-  config          Json
-  resource_usage  Json?
+  config          String
+  resource_usage  String?
+  is_free         Boolean          @default(false)
   expires_at      DateTime?
   deployed_at     DateTime?
   created_at      DateTime         @default(now())
@@ -89,13 +136,127 @@ model Deployment {
   user            User             @relation(fields: [user_id], references: [id])
   plan_id         String
   plan            Plan             @relation(fields: [plan_id], references: [id])
+  project_id      String?
+  project         Project?         @relation(fields: [project_id], references: [id])
+  versions        DeploymentVersion[]
+}
+
+model DeploymentVersion {
+  id              String       @id @default(uuid())
+  version         Int
+  config          String
+  changes         String?
+  created_at      DateTime     @default(now())
+
+  deployment_id   String
+  deployment      Deployment   @relation(fields: [deployment_id], references: [id])
+}
+
+model Session {
+  id              String       @id @default(uuid())
+  token           String       @unique
+  refresh_token   String?      @unique
+  expires_at      DateTime
+  created_at      DateTime     @default(now())
+
+  user_id         String
+  user            User         @relation(fields: [user_id], references: [id])
+}
+
+model ApiKey {
+  id              String       @id @default(uuid())
+  key             String       @unique
+  name            String
+  last_used_at    DateTime?
+  created_at      DateTime     @default(now())
+
+  user_id         String
+  user            User         @relation(fields: [user_id], references: [id])
+}
+
+model GithubAccount {
+  id              String       @id @default(uuid())
+  github_id       String       @unique
+  username        String
+  avatar_url      String?
+  access_token    String
+  created_at      DateTime     @default(now())
+
+  user_id         String
+  user            User         @relation(fields: [user_id], references: [id])
+}
+
+model Transaction {
+  id              String          @id @default(uuid())
+  amount          Float
+  type            String
+  description     String?
+  created_at      DateTime        @default(now())
+
+  user_id         String
+  user            User            @relation(fields: [user_id], references: [id])
+}
+
+model Notification {
+  id              String       @id @default(uuid())
+  title           String
+  content         String
+  is_read         Boolean      @default(false)
+  created_at      DateTime     @default(now())
+
+  user_id         String
+  user            User         @relation(fields: [user_id], references: [id])
+}
+
+model Activity {
+  id              String       @id @default(uuid())
+  action          String
+  metadata        String?
+  created_at      DateTime     @default(now())
+
+  user_id         String
+  user            User         @relation(fields: [user_id], references: [id])
+}
+
+model TrialClaim {
+  id              String       @id @default(uuid())
+  claimed_at      DateTime     @default(now())
+  expires_at      DateTime
+
+  user_id         String
+  user            User         @relation(fields: [user_id], references: [id])
+}
+
+model Withdrawal {
+  id              String           @id @default(uuid())
+  amount          Float
+  status          String           @default("PENDING")
+  method          String?
+  details         String?
+  created_at      DateTime         @default(now())
+  updated_at      DateTime         @updatedAt
+
+  user_id         String
+  user            User             @relation(fields: [user_id], references: [id])
+}
+
+model Referral {
+  id              String       @id @default(uuid())
+  status          String       @default("pending")
+  amount          Float        @default(0)
+  created_at      DateTime     @default(now())
+
+  referrer_id     String
+  referrer        User         @relation("Referrer", fields: [referrer_id], references: [id])
+  referred_user_id String
+  referred_user   User         @relation("ReferredUser", fields: [referred_user_id], references: [id])
 }
 
 model Ticket {
   id              String       @id @default(uuid())
   subject         String
-  description     String       @db.Text
-  status          TicketStatus @default(OPEN)
+  description     String
+  status          String       @default("OPEN")
   created_at      DateTime     @default(now())
   updated_at      DateTime     @updatedAt
 
@@ -106,7 +267,7 @@ model Ticket {
 
 model TicketMessage {
   id              String       @id @default(uuid())
-  content         String       @db.Text
+  content         String
   is_admin        Boolean      @default(false)
   created_at      DateTime     @default(now())
 
@@ -114,12 +275,29 @@ model TicketMessage {
   ticket          Ticket       @relation(fields: [ticket_id], references: [id])
 }
 
+model Message {
+  id              String       @id @default(uuid())
+  content         String
+  is_from_admin   Boolean      @default(false)
+  created_at      DateTime     @default(now())
+
+  user_id         String
+  user            User         @relation(fields: [user_id], references: [id])
+}
+
+model Broadcast {
+  id              String       @id @default(uuid())
+  title           String
+  content         String
+  created_at      DateTime     @default(now())
+}
+
 model Payment {
   id              String        @id @default(uuid())
   amount          Float
   credits         Float
   transaction_id  String        @unique
-  status          PaymentStatus @default(PENDING)
+  status          String        @default("PENDING")
   customer_name   String?
   customer_contact String?
   created_at      DateTime      @default(now())
@@ -132,7 +310,7 @@ model Payment {
 model AuditLog {
   id              String       @id @default(uuid())
   action          String
-  metadata        Json?
+  metadata        String?
   ip_address      String?
   created_at      DateTime     @default(now())
 
@@ -140,14 +318,33 @@ model AuditLog {
   user            User         @relation(fields: [user_id], references: [id])
 }
 
+model SecurityLog {
+  id              String       @id @default(uuid())
+  ip              String
+  event_type      String
+  details         String?
+  created_at      DateTime     @default(now())
+
+  user_id         String?
+  user            User?        @relation(fields: [user_id], references: [id])
+}
+
 model PlatformSetting {
   key             String       @id
-  value           Json
+  value           String
   updated_at      DateTime     @updatedAt
 }
 
 model BannedIP {
   ip              String       @id
   reason          String?
+  created_at      DateTime     @default(now())
+}
+
+model AdminAttempt {
+  id              String       @id @default(uuid())
+  ip              String
+  identifier      String?
+  success         Boolean
   created_at      DateTime     @default(now())
 }

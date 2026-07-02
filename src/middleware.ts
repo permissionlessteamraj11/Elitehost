@@ -1,15 +1,22 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { jwtVerify } from 'jose'
 
-const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET || 'dev-secret')
+const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET || 'dev-secret-at-least-32-chars-long-12345')
 
 export async function middleware(request: NextRequest) {
-  const ip = request.headers.get('x-forwarded-for') ?? '127.0.0.1'
   const path = request.nextUrl.pathname
   const token = request.cookies.get('auth-token')?.value
 
+  // Security Headers
+  const response = NextResponse.next()
+  response.headers.set('X-Frame-Options', 'DENY')
+  response.headers.set('X-Content-Type-Options', 'nosniff')
+  response.headers.delete('X-Powered-By')
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+  response.headers.set('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; frame-ancestors 'none'")
+
   // Protected routes check
-  if (path.startsWith('/dashboard') || path.startsWith('/admin') || path.startsWith('/api/deployments')) {
+  if (path.startsWith('/dashboard') || path.startsWith('/admin')) {
     if (!token) {
       return NextResponse.redirect(new URL('/auth/login', request.url))
     }
@@ -25,26 +32,6 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/auth/login', request.url))
     }
   }
-
-  const response = NextResponse.next()
-
-  // Security Headers
-  response.headers.set('X-Frame-Options', 'DENY')
-  response.headers.set('X-Content-Type-Options', 'nosniff')
-  response.headers.delete('X-Powered-By')
-  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
-
-  // CSP (Minimal for now to avoid breaking dashboard)
-  const csp = [
-    "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-    "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: blob:",
-    "font-src 'self' data:",
-    "connect-src 'self'",
-    "frame-ancestors 'none'",
-  ].join('; ')
-  response.headers.set('Content-Security-Policy', csp)
 
   return response
 }

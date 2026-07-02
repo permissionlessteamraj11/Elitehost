@@ -1,22 +1,25 @@
 "use server";
 
-import { db } from "@/lib/db/json-db";
+import { prisma } from "@/lib/prisma";
 import { getUser } from "@/lib/auth-service";
 
-export async function sendBroadcast(title: string, message: string) {
+export async function sendBroadcast(title: string, content: string) {
   const admin = await getUser();
   if (!admin || admin.role !== "ADMIN") return { success: false, error: "Unauthorized" };
 
-  await db.broadcasts.insert({
-    title,
-    message,
-    timestamp: new Date().toISOString(),
+  await prisma.broadcast.create({
+    data: {
+      title,
+      content,
+    }
   });
 
   return { success: true };
 }
 
 export async function getBroadcasts() {
-  const broadcasts = await db.broadcasts.read();
-  return { success: true, broadcasts: broadcasts.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()) };
+  const broadcasts = await prisma.broadcast.findMany({
+    orderBy: { created_at: 'desc' }
+  });
+  return { success: true, broadcasts };
 }

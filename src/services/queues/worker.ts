@@ -1,112 +1,157 @@
 import { Worker } from 'bullmq';
 import { connection } from './config';
-import { db } from '@/lib/db/json-db';
+import { prisma } from '@/lib/prisma';
 import { decrypt } from '@/lib/security';
 import { DockerBuilder } from '../engine/builder/docker-generator';
+import { VPSManager } from '../vps-manager';
+import fs from 'fs/promises';
+import path from 'path';
+import { execFile } from 'child_process';
+import { promisify } from 'util';
+
+const execFileAsync = promisify(execFile);
 
 export const buildWorker = new Worker('build-queue', async (job) => {
   const { deploymentId, userId } = job.data;
   console.log(`Processing build job ${job.id} for deployment ${deploymentId}`);
 
-  let currentLogs = "";
   const appendLog = async (message: string) => {
     const timestamp = new Date().toISOString();
     const formattedMessage = `[${timestamp}] ${message}`;
     console.log(formattedMessage);
-    currentLogs += formattedMessage + "\n";
-    await db.deployments.update((d: any) => d.id === deploymentId, { logs: currentLogs });
+    const d = await prisma.deployment.findUnique({ where: { id: deploymentId } });
+    await prisma.deployment.update({
+      where: { id: deploymentId },
+      data: {
+        logs: (d?.logs || "") + formattedMessage + "\n"
+      }
+    });
   };
 
+  const workDir = path.join(process.cwd(), 'data', 'builds', deploymentId);
+
   try {
-    // 1. Get deployment and config from DB
-    const deployment = await db.deployments.findOne((d: any) => d.id === deploymentId);
+    const deployment = await prisma.deployment.findUnique({ where: { id: deploymentId } });
     if (!deployment) throw new Error("Deployment not found");
 
-    const config = deployment.config;
-    const user = await db.users.findOne((u: any) => u.id === userId);
+    const config = typeof deployment.config === 'string' ? JSON.parse(deployment.config) : deployment.config;
+    const user = await prisma.user.findUnique({ where: { id: userId } });
 
-    // Update status to 'building'
-    await db.deployments.update((d: any) => d.id === deploymentId, { status: 'building', logs: "" });
+    await prisma.deployment.update({
+      where: { id: deploymentId },
+      data: { status: 'BUILDING', logs: "" }
+    });
+
     await appendLog(`Starting deployment for ${deployment.name}...`);
+    await fs.mkdir(workDir, { recursive: true });
 
-    // 2. Prepare Source (Simulation)
+    // 1. Source Retrieval
     if (config.source.type === 'github') {
-      const token = user.github_token ? decrypt(user.github_token) : null;
-      await appendLog(`[BUILD] Cloning ${config.source.repoUrl} (Branch: ${config.source.branch})`);
-      // In a real environment, this would use 'git clone' with the token
-      await new Promise(res => setTimeout(res, 2000));
+      const token = user?.github_token ? decrypt(user.github_token) : null;
+      const repoUrl = config.source.repoUrl;
+      const branch = config.source.branch || 'main';
+
+      let authenticatedUrl = repoUrl;
+      if (token) {
+        authenticatedUrl = repoUrl.replace('https://', `https://${token}@`);
+      }
+
+      await appendLog(`[BUILD] Cloning repository: ${repoUrl} (Branch: ${branch})`);
+      await execFileAsync('git', ['clone', '--depth', '1', '-b', branch, authenticatedUrl, workDir]);
       await appendLog(`[BUILD] Repository cloned successfully.`);
     } else if (config.source.type === 'zip') {
-      await appendLog(`[BUILD] Extracting ZIP archive...`);
-      await new Promise(res => setTimeout(res, 1500));
+      await appendLog(`[BUILD] Processing ZIP archive...`);
+      // ZIP extraction logic would go here
+      await new Promise(res => setTimeout(res, 1000));
+    } else if (config.source.type === 'raw') {
+        await appendLog(`[BUILD] Creating project from raw code...`);
+        const fileName = config.runtime?.language === 'python' ? 'app.py' : 'index.js';
+        await fs.writeFile(path.join(workDir, fileName), config.source.rawCode || "");
     }
 
-    // 3. Framework Detection & Dependency Analysis
-    const detectedFramework = config.projectType || "nodejs";
-    await appendLog(`[BUILD] Detected framework: ${detectedFramework}`);
-    await new Promise(res => setTimeout(res, 1000));
+    // 2. Framework Detection
+    let detectedFramework = config.projectType || "nodejs";
+    try {
+        const files = await fs.readdir(workDir);
+        if (files.includes('package.json')) {
+            detectedFramework = 'nodejs';
+        } else if (files.includes('requirements.txt') || files.includes('main.py') || files.includes('app.py')) {
+            detectedFramework = 'python';
+        } else if (files.includes('index.html')) {
+            detectedFramework = 'static';
+        }
+    } catch (e) {}
 
-    // 4. Execution Plan (Docker Build Phase)
+    await appendLog(`[BUILD] Detected framework: ${detectedFramework}`);
+
+    // 3. Docker Image Generation
     const containerName = `elitehost-${deploymentId.substring(0, 8)}`;
     const imageName = `elitehost/app-${deploymentId.substring(0, 8)}:latest`;
 
     await appendLog(`[DOCKER] Generating Dockerfile for ${detectedFramework}...`);
-    const dockerfile = DockerBuilder.generate(config);
-    // In a real VPS, we would write this to a file: fs.writeFile('Dockerfile', dockerfile)
+    const dockerfile = DockerBuilder.generate({ ...config, projectType: detectedFramework });
+    await fs.writeFile(path.join(workDir, 'Dockerfile'), dockerfile);
 
     await appendLog(`[DOCKER] Building image: ${imageName}`);
-    const buildStages = [
-      "Step 1/10 : FROM node:22-alpine AS base",
-      "Step 2/10 : WORKDIR /app",
-      "Step 3/10 : COPY package.json pnpm-lock.yaml ./",
-      "Step 4/10 : RUN corepack enable pnpm && pnpm i",
-      "Step 5/10 : COPY . .",
-      "Step 6/10 : RUN npm run build",
-      "Step 7/10 : EXPOSE 3000",
-      "Successfully built " + imageName
-    ];
 
-    for (const stage of buildStages) {
-      await appendLog(`[BUILD] ${stage}`);
-      await new Promise(res => setTimeout(res, 800));
-    }
+    // Real Docker build
+    const buildProcess = execFile('docker', ['build', '-t', imageName, workDir]);
+    buildProcess.stdout?.on('data', (data) => appendLog(`[BUILD] ${data.toString().trim()}`));
+    buildProcess.stderr?.on('data', (data) => appendLog(`[BUILD ERROR] ${data.toString().trim()}`));
 
-    // 5. Deployment Phase (Docker Run)
+    await new Promise((resolve, reject) => {
+        buildProcess.on('close', (code) => {
+            if (code === 0) resolve(null);
+            else reject(new Error(`Docker build failed with code ${code}`));
+        });
+    });
+
+    // 4. Deployment
+    await appendLog(`[DEPLOY] Finding available port...`);
+    const hostPort = await VPSManager.findAvailablePort(30000, 40000);
+
     await appendLog(`[DEPLOY] Stopping existing container if any...`);
-    await appendLog(`[DEPLOY] docker stop ${containerName} || true`);
+    await VPSManager.deleteContainer(containerName);
 
-    await appendLog(`[DEPLOY] Starting isolated container...`);
-    const port = config.start.port || 3000;
-    const dockerRunCmd = `docker run -d --name ${containerName} -p ${port}:${port} --restart unless-stopped ${imageName}`;
-    await appendLog(`[DEPLOY] ${dockerRunCmd}`);
+    await appendLog(`[DEPLOY] Starting container ${containerName} on port ${hostPort}...`);
+    const containerId = await VPSManager.createContainer({
+        name: containerName,
+        image: imageName,
+        memoryLimit: '512m',
+        cpuLimit: 0.5,
+        ports: { container: config.start?.port || 3000, host: hostPort },
+        env: config.env?.public || {}
+    });
 
-    await new Promise(res => setTimeout(res, 2000));
-    await appendLog(`[DEPLOY] Health check passed for container ${containerName}`);
-    await appendLog(`[DEPLOY] Deployment successful! Access via port ${port}`);
+    await appendLog(`[DEPLOY] Container started: ${containerId}`);
+    await appendLog(`[DEPLOY] Deployment successful!`);
 
-    // 5. Success
-    await db.deployments.update((d: any) => d.id === deploymentId, {
-      status: 'ready',
-      deployed_at: new Date().toISOString()
+    await prisma.deployment.update({
+      where: { id: deploymentId },
+      data: {
+        status: 'READY',
+        container_id: containerId,
+        port: hostPort,
+        deployed_at: new Date()
+      }
     });
 
     return { status: 'completed', deploymentId };
   } catch (err: any) {
-    const errorMessage = `Build failed for ${deploymentId}: ${err.message}`;
-    console.error(errorMessage);
     await appendLog(`[ERROR] ${err.message}`);
-    await db.deployments.update((d: any) => d.id === deploymentId, {
-      status: 'error',
-      error_message: err.message
+    await prisma.deployment.update({
+      where: { id: deploymentId },
+      data: {
+        status: 'ERROR',
+        error_message: err.message
+      }
     });
     throw err;
+  } finally {
+      try {
+        await fs.rm(workDir, { recursive: true, force: true });
+      } catch (e) {
+          console.error(`Cleanup failed for ${workDir}:`, e);
+      }
   }
 }, { connection });
-
-buildWorker.on('completed', (job) => {
-  console.log(`Build job ${job.id} completed`);
-});
-
-buildWorker.on('failed', (job, err) => {
-  console.error(`Build job ${job?.id} failed: ${err.message}`);
-});

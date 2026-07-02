@@ -1,6 +1,5 @@
 import crypto from 'crypto';
-
-import { db } from './db/json-db';
+import { prisma } from './prisma';
 
 /**
  * Security utility for scanning deployment payloads for malicious patterns.
@@ -31,15 +30,13 @@ const MALICIOUS_PATTERNS = [
 
 export async function logSecurityEvent(ip: string, eventType: string, details: any) {
     try {
-        const dbTyped = db as any;
-        if (dbTyped.security_logs) {
-            await dbTyped.security_logs.insert({
+        await prisma.securityLog.create({
+            data: {
                 ip,
-                eventType,
-                details,
-                timestamp: new Date().toISOString()
-            });
-        }
+                event_type: eventType,
+                details: details ? JSON.stringify(details) : null,
+            }
+        });
     } catch (error) {
         console.error('Failed to log security event:', error);
     }
@@ -86,11 +83,16 @@ const ALGORITHM = 'aes-256-cbc';
 const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY;
 const IV_LENGTH = 16;
 
+if (!ENCRYPTION_KEY && process.env.NODE_ENV === 'production') {
+    throw new Error("ENCRYPTION_KEY environment variable is missing");
+}
+
+const keyBuffer = Buffer.from((ENCRYPTION_KEY || 'dev-secret-key-32-chars-long-12345').substring(0, 32));
+
 export function encrypt(text: string): string {
   if (!text) return '';
-  if (!ENCRYPTION_KEY) throw new Error("ENCRYPTION_KEY not set");
   const iv = crypto.randomBytes(IV_LENGTH);
-  const cipher = crypto.createCipheriv(ALGORITHM, Buffer.from(ENCRYPTION_KEY), iv);
+  const cipher = crypto.createCipheriv(ALGORITHM, keyBuffer, iv);
   let encrypted = cipher.update(text);
   encrypted = Buffer.concat([encrypted, cipher.final()]);
   return iv.toString('hex') + ':' + encrypted.toString('hex');
@@ -98,11 +100,10 @@ export function encrypt(text: string): string {
 
 export function decrypt(text: string): string {
   if (!text) return '';
-  if (!ENCRYPTION_KEY) throw new Error("ENCRYPTION_KEY not set");
   const textParts = text.split(':');
   const iv = Buffer.from(textParts.shift()!, 'hex');
   const encryptedText = Buffer.from(textParts.join(':'), 'hex');
-  const decipher = crypto.createDecipheriv(ALGORITHM, Buffer.from(ENCRYPTION_KEY), iv);
+  const decipher = crypto.createDecipheriv(ALGORITHM, keyBuffer, iv);
   let decrypted = decipher.update(encryptedText);
   decrypted = Buffer.concat([decrypted, decipher.final()]);
   return decrypted.toString();

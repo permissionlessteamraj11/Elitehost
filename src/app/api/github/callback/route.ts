@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/db/json-db';
+import { prisma } from '@/lib/prisma';
 import { encrypt } from '@/lib/security';
 
 export async function GET(request: Request) {
@@ -31,17 +31,41 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: data.error_description }, { status: 400 });
     }
 
-    // Encrypt token before storing
     const encryptedToken = encrypt(data.access_token);
 
-    // Update user with GitHub token
-    await db.users.update((u: any) => u.id === state, {
-      github_token: encryptedToken,
-      github_connected_at: new Date().toISOString()
+    // Get GitHub user profile
+    const userRes = await fetch('https://api.github.com/user', {
+        headers: { Authorization: `Bearer ${data.access_token}` }
+    });
+    const githubUser = await userRes.json();
+
+    await prisma.user.update({
+      where: { id: state },
+      data: {
+        github_token: encryptedToken,
+      }
     });
 
-    return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/dashboard/settings?github=connected`);
+    await prisma.githubAccount.upsert({
+        where: { github_id: githubUser.id.toString() },
+        update: {
+            access_token: encryptedToken,
+            username: githubUser.login,
+            avatar_url: githubUser.avatar_url
+        },
+        create: {
+            user_id: state,
+            github_id: githubUser.id.toString(),
+            username: githubUser.login,
+            avatar_url: githubUser.avatar_url,
+            access_token: encryptedToken
+        }
+    });
+
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    return NextResponse.redirect(`${appUrl}/dashboard/settings?github=connected`);
   } catch (error: any) {
+    console.error('GitHub Callback Error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

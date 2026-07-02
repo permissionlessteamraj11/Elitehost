@@ -1,26 +1,17 @@
-import { NextResponse } from 'next/server';
-import { db } from '@/lib/db/json-db';
-import { getUser } from '@/lib/auth-service';
-import { scanForMaliciousCode, decrypt, logSecurityEvent } from '@/lib/security';
-import { createDeploymentVersion } from '@/lib/db/versioning';
-import { buildQueue } from '@/services/queues/config';
-import { deploymentSchema } from '@/lib/validation';
+import { prisma } from "@/lib/prisma";
+import { getUser } from "@/lib/auth-service";
+import { NextResponse } from "next/server";
+import { deploymentSchema } from "@/lib/validation";
 
 export async function GET() {
   try {
     const user = await getUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const deployments = await db.deployments.find((d: any) => d.user?.id === user?.id);
-
-    // Auto-expire check
-    const now = new Date();
-    for (const d of deployments) {
-      if (d.status === 'ready' && d.expires_at && new Date(d.expires_at) < now) {
-        await db.deployments.update((item: any) => item.id === d.id, { status: 'expired' });
-        d.status = 'expired';
-      }
-    }
+    const deployments = await prisma.deployment.findMany({
+        where: { user_id: user.id },
+        orderBy: { created_at: 'desc' }
+    });
 
     return NextResponse.json({ success: true, deployments });
   } catch (error: any) {
@@ -40,39 +31,17 @@ export async function POST(request: Request) {
     }
     const payload = result.data;
 
-    // Security Scan
-    const securityCheck = scanForMaliciousCode(payload);
-    if (!securityCheck.isSafe) {
-      const ip = request.headers.get('x-forwarded-for') || '127.0.0.1';
-      await logSecurityEvent(ip, 'MALICIOUS_DEPLOYMENT_ATTEMPT', {
-          userId: user?.id,
-          pattern: securityCheck.pattern,
-          payload: payload
-      });
-      return NextResponse.json({ error: securityCheck.reason }, { status: 403 });
+    // Credit Enforcement
+    if (user.credits < 1 && user.role !== 'ADMIN') {
+        return NextResponse.json({ error: "Insufficient credits. Please claim trial or buy credits.", code: 'INSUFFICIENT_CREDITS' }, { status: 402 });
     }
 
-    // Credit Enforcement: Strictly 1 credit per deployment
-    const paidCredits = Number(user.credits || 0);
-    const freeCredits = Number(0 || 0);
-    let expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
-
-    if (false) {
-      // 3-hour trial deployment
-      expiresAt = new Date(Date.now() + 3 * 60 * 60 * 1000).toISOString();
-      if (freeCredits >= 1) {
-        await db.users.update((u: any) => u.id === user?.id, { credit_balance: freeCredits - 1, next_deploy_is_trial: false });
-      } else if (paidCredits >= 1) {
-        await db.users.update((u: any) => u.id === user?.id, { paid_credits: paidCredits - 1, next_deploy_is_trial: false });
-      }
-    } else if (paidCredits >= 1) {
-      await db.users.update((u: any) => u.id === user?.id, { paid_credits: paidCredits - 1 });
-    } else if (freeCredits >= 1) {
-      await db.users.update((u: any) => u.id === user?.id, { credit_balance: freeCredits - 1 });
-    } else {
-      if (user.role !== 'ADMIN') {
-          return NextResponse.json({ error: "Insufficient credits. Please buy credits to deploy.", code: 'INSUFFICIENT_CREDITS' }, { status: 402 });
-      }
+    // Deduct Credit
+    if (user.role !== 'ADMIN') {
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { credits: { decrement: 1 } }
+        });
     }
 
     // Source Configuration
@@ -80,19 +49,9 @@ export async function POST(request: Request) {
         type: payload.method || "github",
         repoUrl: payload.repoUrl || "",
         branch: payload.branch || "main",
-        autoDeploy: payload.method === 'github'
+        rawCode: payload.rawCode || "",
     };
 
-    if (payload.method === 'github_public') {
-        sourceConfig.type = 'github';
-        sourceConfig.isPublic = true;
-    } else if (payload.method === 'github') {
-        if (true) {
-            return NextResponse.json({ error: "GitHub not connected" }, { status: 400 });
-        }
-    }
-
-    // Default configuration from payload
     const initialConfig = {
       name: payload.name || "My Awesome App",
       projectType: payload.framework?.toLowerCase() || "nodejs",
@@ -100,34 +59,36 @@ export async function POST(request: Request) {
       source: sourceConfig,
       build: {
         command: payload.build_command || null,
-        installCommand: null,
-        outputDir: null
       },
       start: {
         command: payload.deploy_command || null,
-        healthCheckPath: "/",
         port: 3000
       },
       env: {
         public: (payload.env_vars || []).reduce((acc: any, curr: any) => ({ ...acc, [curr.key]: curr.value }), {}),
-        secret: {}
       }
     };
 
-    const deployment = await db.deployments.insert({
-      user_id: user?.id,
-      name: initialConfig.name,
-      status: 'pending',
-      config: initialConfig,
-      expires_at: expiresAt,
-      is_free: false,
+    const plan = await prisma.plan.findFirst();
+    if (!plan) return NextResponse.json({ error: "No plans available" }, { status: 500 });
+
+    const deployment = await prisma.deployment.create({
+      data: {
+        user_id: user.id,
+        name: initialConfig.name,
+        subdomain: `${payload.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${Math.random().toString(36).substring(2, 6)}`,
+        status: 'PENDING',
+        config: JSON.stringify(initialConfig),
+        plan_id: plan.id,
+      }
     });
 
-    // Create initial version
-    await createDeploymentVersion(deployment.id, user?.id, initialConfig, "Initial deployment");
-
-    // Add to build queue
-    await buildQueue.add('build', { deploymentId: deployment.id, userId: user?.id });
+    try {
+        const { buildQueue } = await import("@/services/queues/config");
+        await buildQueue.add('build', { deploymentId: deployment.id, userId: user.id });
+    } catch (queueError) {
+        console.error("Failed to add to build queue:", queueError);
+    }
 
     return NextResponse.json({ success: true, deploymentId: deployment.id });
   } catch (error: any) {

@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/db/json-db';
+import { prisma } from '@/lib/prisma';
 import { getUser } from '@/lib/auth-service';
-import { createDeploymentVersion, rollbackDeployment, getDeploymentVersions } from '@/lib/db/versioning';
 import { buildQueue } from '@/services/queues/config';
 
 export async function GET(
@@ -13,13 +12,14 @@ export async function GET(
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const { id: deploymentId } = await params;
-    const deployment = await db.deployments.findOne((d: any) => d.id === deploymentId && d.user_id === user.id);
+    const deployment = await prisma.deployment.findUnique({
+        where: { id: deploymentId, user_id: user.id },
+        include: { versions: true }
+    });
 
     if (!deployment) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-    const versions = await getDeploymentVersions(deploymentId);
-
-    return NextResponse.json({ success: true, deployment, versions });
+    return NextResponse.json({ success: true, deployment, versions: deployment.versions });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
@@ -36,16 +36,25 @@ export async function PATCH(
     const { id: deploymentId } = await params;
     const { config, changes } = await request.json();
 
-    const deployment = await db.deployments.findOne((d: any) => d.id === deploymentId && d.user_id === user.id);
+    const deployment = await prisma.deployment.findUnique({ where: { id: deploymentId, user_id: user.id } });
     if (!deployment) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-    // Create new version
-    const newVersion = await createDeploymentVersion(deploymentId, user.id, config, changes);
+    const existingVersions = await prisma.deploymentVersion.count({ where: { deployment_id: deploymentId } });
 
-    // Update main deployment config
-    await db.deployments.update((d: any) => d.id === deploymentId, {
-      config: newVersion.config,
-      updated_at: new Date().toISOString()
+    const newVersion = await prisma.deploymentVersion.create({
+        data: {
+            deployment_id: deploymentId,
+            version: existingVersions + 1,
+            config: typeof config === 'string' ? config : JSON.stringify(config),
+            changes
+        }
+    });
+
+    await prisma.deployment.update({
+      where: { id: deploymentId },
+      data: {
+        config: typeof config === 'string' ? config : JSON.stringify(config),
+      }
     });
 
     return NextResponse.json({ success: true, version: newVersion });
@@ -66,11 +75,19 @@ export async function POST(
     const { action, version } = await request.json();
 
     if (action === 'rollback') {
-      const restored = await rollbackDeployment(deploymentId, version);
-      await buildQueue.add('redeploy', { deploymentId, userId: user.id });
-      return NextResponse.json({ success: true, config: restored.config });
+      const versionRecord = await prisma.deploymentVersion.findFirst({
+          where: { deployment_id: deploymentId, version }
+      });
+      if (!versionRecord) return NextResponse.json({ error: "Version not found" }, { status: 404 });
+
+      await prisma.deployment.update({
+          where: { id: deploymentId },
+          data: { config: versionRecord.config }
+      });
+      await buildQueue.add('build', { deploymentId, userId: user.id });
+      return NextResponse.json({ success: true, config: versionRecord.config });
     } else if (action === 'redeploy') {
-      await buildQueue.add('redeploy', { deploymentId, userId: user.id });
+      await buildQueue.add('build', { deploymentId, userId: user.id });
       return NextResponse.json({ success: true });
     }
 

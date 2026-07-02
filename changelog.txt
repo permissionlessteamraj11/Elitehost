@@ -1,0 +1,42 @@
+# EliteHosting Complete Audit & Repair Changelog
+
+## Database & Persistence
+- Migrated from legacy JSON-based database (JsonDB) to Prisma ORM.
+- Configured SQLite for the current environment with support for PostgreSQL in production.
+- Defined models for: User, Project, Plan, Deployment, DeploymentVersion, Session, ApiKey, GithubAccount, Transaction, Notification, Activity, TrialClaim, Withdrawal, Referral, Ticket, TicketMessage, Message, Broadcast, Payment, AuditLog, SecurityLog, PlatformSetting, BannedIP, and AdminAttempt.
+- Implemented database migrations and a comprehensive seed script.
+- Removed all `JsonDB` related files and legacy `supabase.ts` mock.
+
+## Authentication & Security
+- Refactored Login, Register, and Logout routes to use Prisma and secure sessions.
+- Implemented Refresh Token logic and JWT Rotation.
+- Hardened security with HttpOnly, Secure, and SameSite=Lax cookies.
+- Added persistent "Remember Me" sessions (30 days).
+- Implemented Role-Based Access Control (RBAC) for Admin routes.
+- Added Update Password functionality with current password verification.
+- Added IP-based lockout for login and admin access.
+- Implemented Security Headers (CSP, X-Frame-Options, X-Content-Type-Options) in Middleware.
+- Added malicious code scanning for deployments.
+
+## Deployment Engine
+- Implemented real BullMQ-based background worker logic.
+- Added support for GitHub repository cloning with OAuth tokens.
+- Implemented Framework Detection (Node.js, Python, Static).
+- Integrated `VPSManager` for real Docker lifecycle management (Start, Stop, Restart, Delete).
+- Added support for Raw Code deployments.
+- Implemented deployment versioning and rollback functionality.
+
+## GitHub Integration
+- Finalized GitHub OAuth flow (Connect/Callback).
+- Securely store encrypted GitHub access tokens.
+- Link GitHub accounts to platform users.
+
+## Trial & Credits System
+- Implemented functional 3-Hour Trial claim system (2 credits, one-time use).
+- Added background automation for cleaning up expired trial and regular deployments.
+- Migrated credit processing and referral commission logic to Prisma.
+
+## Admin & Dashboard
+- Refactored all Dashboard and Admin Panel actions to fetch real data from Prisma.
+- Fixed multiple TypeScript and Build errors related to prop types and API responses.
+- Cleaned up mock data and placeholders across the application.

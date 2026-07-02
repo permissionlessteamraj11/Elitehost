@@ -1,0 +1,50 @@
+
+> elite-hosting@0.1.0 dev
+> next dev
+
+   ▲ Next.js 15.1.7
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.0.2:3000
+   - Environments: .env
+
+ ✓ Starting...
+ ✓ Ready in 3s
+ ○ Compiling /auth/login ...
+ ✓ Compiled /auth/login in 5s (1442 modules)
+ HEAD /auth/login 200 in 5916ms
+ ✓ Compiled in 1263ms (715 modules)
+ ✓ Compiled in 474ms (715 modules)
+ ✓ Compiled in 452ms (715 modules)
+ ✓ Compiled in 233ms (715 modules)
+ ✓ Compiled in 469ms (715 modules)
+ ✓ Compiled in 436ms (715 modules)
+ ✓ Compiled in 407ms (715 modules)
+ ✓ Compiled in 207ms (715 modules)
+ ✓ Compiled in 186ms (715 modules)
+ ✓ Compiled in 472ms (715 modules)
+ ✓ Compiled in 214ms (715 modules)
+ ✓ Compiled in 351ms (715 modules)
+ ✓ Compiled in 448ms (715 modules)
+ ✓ Compiled in 470ms (715 modules)
+ ✓ Compiled in 196ms (715 modules)
+ ✓ Compiled in 142ms (701 modules)
+ ✓ Compiled in 189ms (715 modules)
+ ✓ Compiled in 440ms (715 modules)
+ ✓ Compiled in 430ms (715 modules)
+ ✓ Compiled in 369ms (715 modules)
+ ✓ Compiled in 251ms (715 modules)
+ ✓ Compiled in 501ms (715 modules)
+ ✓ Compiled in 379ms (715 modules)
+ ✓ Compiled in 4.5s (715 modules)
+ ✓ Compiled in 608ms (715 modules)
+ ✓ Compiled in 544ms (701 modules)
+ ✓ Compiled in 358ms (715 modules)
+ ✓ Compiled in 217ms (715 modules)
+ ✓ Compiled in 131ms (701 modules)
+ ✓ Compiled in 185ms (715 modules)
+ ✓ Compiled in 185ms (715 modules)
+ ✓ Compiled in 158ms (701 modules)
+ ✓ Compiled in 483ms (715 modules)
+ ✓ Compiled in 229ms (715 modules)
+ ✓ Compiled in 461ms (715 modules)
+ ✓ Compiled in 403ms (715 modules)

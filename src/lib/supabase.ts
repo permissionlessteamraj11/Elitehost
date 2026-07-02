@@ -1,7 +1,6 @@
-import { db, JsonDB } from './db/json-db';
+import { prisma } from './prisma';
 
-// Mock Supabase client that uses JsonDB
-// We only expose a limited set of functions to the client
+// Mock Supabase client that uses Prisma
 export const supabase = {
   auth: {
     getUser: async () => {
@@ -15,27 +14,20 @@ export const supabase = {
     }
   },
   from: (collection: string) => {
-    if (typeof window !== 'undefined') {
-        return {
+    // This is a very basic mock to prevent breaking frontend if it still uses supabase.from()
+    return {
+        select: async () => ({ data: [], error: null }),
+        eq: () => ({
+            single: () => ({ data: null, error: null }),
             select: async () => ({ data: [], error: null }),
             eq: () => ({
-                single: () => ({ data: null, error: null }),
-                select: async () => ({ data: [], error: null }),
-                eq: () => ({
-                    single: () => ({ data: null, error: null })
-                })
-            }),
-            insert: async () => ({ data: null, error: null }),
-            update: () => ({ eq: async () => ({ data: [], error: null }) }),
-            upsert: async () => ({ data: null, error: null })
-        };
-    }
-
-    const table = (db as any)[collection];
-    if (table) {
-      return table.from();
-    }
-    return new JsonDB(collection).from();
+                single: () => ({ data: null, error: null })
+            })
+        }),
+        insert: async () => ({ data: null, error: null }),
+        update: () => ({ eq: async () => ({ data: [], error: null }) }),
+        upsert: async () => ({ data: null, error: null })
+    };
   },
   removeChannel: (channel: any) => {},
   channel: (name: string) => ({

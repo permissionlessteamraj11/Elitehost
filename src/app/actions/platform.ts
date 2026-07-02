@@ -1,129 +1,139 @@
 "use server";
 
-import { db } from "@/lib/db/json-db";
+import { prisma } from "@/lib/prisma";
 
 export async function getPlatformSetting(key: string) {
-  const { data } = await db.platform_settings.from()
-    .eq('key', key);
+  const setting = await prisma.platformSetting.findUnique({
+    where: { key }
+  });
 
-  const setting = data[0];
   if (!setting) return null;
-  return setting.value;
+  return JSON.parse(setting.value as string);
 }
 
 export async function updatePlatformSetting(key: string, value: any) {
-  await db.platform_settings.from()
-    .upsert({ key, value, updated_at: new Date().toISOString() });
+  await prisma.platformSetting.upsert({
+    where: { key },
+    update: { value: JSON.stringify(value), updated_at: new Date() },
+    create: { key, value: JSON.stringify(value), updated_at: new Date() }
+  });
 
   return { success: true };
 }
 
 export async function getPendingWithdrawals() {
-    const { data } = await db.withdrawals.from()
-        .eq('status', 'pending');
-
-    const users = await db.users.read();
-    return data.map((w: any) => ({
-        ...w,
-        users: users.find((u: any) => u.id === w.user_id)
-    }));
+    return await prisma.withdrawal.findMany({
+        where: { status: 'PENDING' },
+        include: { user: true }
+    });
 }
 
-export async function updateWithdrawalStatus(id: string, status: 'approved' | 'rejected') {
-    if (status === 'approved') {
-        const withdrawal = await db.withdrawals.findOne((w: any) => w.id === id);
+export async function updateWithdrawalStatus(id: string, status: 'APPROVED' | 'REJECTED') {
+    if (status === 'APPROVED') {
+        const withdrawal = await prisma.withdrawal.findUnique({ where: { id } });
         if (withdrawal) {
-            const user = await db.users.findOne((u: any) => u.id === withdrawal.user_id);
+            const user = await prisma.user.findUnique({ where: { id: withdrawal.user_id } });
             if (user) {
-                if (Number(user.wallet_balance) < Number(withdrawal.amount)) {
+                if (user.wallet_balance < withdrawal.amount) {
                     return { success: false, error: "User has insufficient balance now." };
                 }
-                await db.users.update((u: any) => u.id === user.id, {
-                    wallet_balance: Number(user.wallet_balance) - Number(withdrawal.amount)
+                await prisma.user.update({
+                    where: { id: user.id },
+                    data: {
+                        wallet_balance: user.wallet_balance - withdrawal.amount
+                    }
                 });
             }
         }
     }
 
-    await db.withdrawals.update((w: any) => w.id === id, { status });
+    await prisma.withdrawal.update({
+        where: { id },
+        data: { status }
+    });
 
     return { success: true };
 }
 
 export async function getAdminData() {
-    const users = await db.users.read();
-    const projects = await db.projects.read();
-    const deployments = await db.deployments.read();
-    const paymentRequests = await (db as any).payment_requests?.read() || [];
+    const [users, projects, deployments, payments] = await Promise.all([
+        prisma.user.findMany(),
+        prisma.project.findMany(),
+        prisma.deployment.findMany(),
+        prisma.payment.findMany()
+    ]);
 
     return {
         users,
         projects,
-        paymentRequests,
+        paymentRequests: payments,
         userCount: users.length,
         projectCount: projects.length,
-        deployCount: deployments.filter((d: any) => d.status === 'ready').length,
+        deployCount: deployments.filter((d: any) => d.status === 'READY').length,
     };
 }
 
-export async function updateUserCredits(userId: string, amount: number, expiresAt?: string) {
-    const user = await db.users.findOne((u: any) => u.id === userId);
-    if (!user) return { success: false, error: "User not found" };
-
-    // Admin added credits are considered paid credits
-    const newBalance = (Number(user.paid_credits) || 0) + amount;
-    const updateData: any = { paid_credits: newBalance };
-    if (expiresAt) {
-        updateData.credits_expiry = expiresAt;
-    }
-
-    await db.users.update((u: any) => u.id === userId, updateData);
-    return { success: true, newBalance };
+export async function updateUserCredits(userId: string, amount: number) {
+    const user = await prisma.user.update({
+        where: { id: userId },
+        data: {
+            paid_credits: { increment: amount },
+            credits: { increment: amount }
+        }
+    });
+    return { success: true, newBalance: user.credits };
 }
 
 export async function banUser(userId: string) {
-    await db.users.update((u: any) => u.id === userId, { is_banned: true });
+    await prisma.user.update({
+        where: { id: userId },
+        data: { is_banned: true }
+    });
     return { success: true };
 }
 
-export async function blockIP(ip: string) {
-    const existing = await db.banned_ips.findOne((b: any) => b.ip === ip);
-    if (!existing) {
-        await db.banned_ips.insert({ ip, created_at: new Date().toISOString() });
-    }
+export async function blockIP(ip: string, reason?: string) {
+    await prisma.bannedIP.upsert({
+        where: { ip },
+        update: { reason },
+        create: { ip, reason }
+    });
     return { success: true };
 }
 
 export async function unbanUser(userId: string) {
-    await db.users.update((u: any) => u.id === userId, { is_banned: false });
+    await prisma.user.update({
+        where: { id: userId },
+        data: { is_banned: false }
+    });
     return { success: true };
 }
 
 export async function getBannedIPs() {
-    return await db.banned_ips.read();
+    return await prisma.bannedIP.findMany();
 }
 
 export async function removeBannedIP(ip: string) {
-    await db.banned_ips.delete((b: any) => b.ip === ip);
+    await prisma.bannedIP.delete({ where: { ip } });
     return { success: true };
 }
 
 import { processCreditPurchase } from "./credits";
 
 export async function approvePaymentRequest(requestId: string) {
-    const dbTyped = db as any;
-    const request = await dbTyped.payment_requests.findOne((r: any) => r.id === requestId);
+    const request = await prisma.payment.findUnique({ where: { id: requestId } });
     if (!request) return { success: false, error: "Request not found" };
 
-    const user = await db.users.findOne((u: any) => u.id === request.user_id);
-    if (!user) return { success: false, error: "User not found" };
+    if (request.status !== 'PENDING') return { success: false, error: "Request already processed" };
 
-    // Use processCreditPurchase to handle balance and referrals (commission)
     const creditsToAdd = request.credits || Math.floor(request.amount / 20);
-    const res = await processCreditPurchase(user.id, request.amount, creditsToAdd);
+    const res = await processCreditPurchase(request.user_id, request.amount, creditsToAdd);
 
     if (res.success) {
-        await dbTyped.payment_requests.update((r: any) => r.id === requestId, { status: 'approved' });
+        await prisma.payment.update({
+            where: { id: requestId },
+            data: { status: 'APPROVED' }
+        });
         return { success: true };
     }
 

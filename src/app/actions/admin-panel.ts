@@ -15,7 +15,7 @@ export async function toggleUserBan(userId: string, isBanned: boolean) {
       data: {
         action: isBanned ? 'UNBAN_USER' : 'BAN_USER',
         user_id: userId, // In a real app, this should be the admin's ID
-        metadata: { target_user_id: userId }
+        metadata: JSON.stringify({ target_user_id: userId })
       }
     });
 
@@ -37,7 +37,7 @@ export async function adjustUserCredits(userId: string, amount: number) {
       data: {
         action: 'ADJUST_CREDITS',
         user_id: userId,
-        metadata: { amount }
+        metadata: JSON.stringify({ amount })
       }
     });
 

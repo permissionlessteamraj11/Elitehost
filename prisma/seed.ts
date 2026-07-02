@@ -1,5 +1,7 @@
-import { prisma } from '@/lib/prisma';
+import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+
+const prisma = new PrismaClient();
 
 async function main() {
   // Seed Plans
@@ -51,6 +53,21 @@ async function main() {
       credits: 9999
     }
   });
+
+  // Seed Platform Settings
+  const settings = [
+    { key: 'free_plan_enabled', value: JSON.stringify(true) },
+    { key: 'maintenance_mode', value: JSON.stringify(false) },
+    { key: 'registration_enabled', value: JSON.stringify(true) },
+  ];
+
+  for (const setting of settings) {
+    await prisma.platformSetting.upsert({
+      where: { key: setting.key },
+      update: setting,
+      create: setting,
+    });
+  }
 
   console.log('Database seeded successfully');
 }
