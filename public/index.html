@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EliteHosting | Deploy Anything. Instantly.</title>
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="/" class="logo">ELITEHOSTING.</a>
+            <div class="nav-links">
+                <a href="/login.html">LOGIN</a>
+                <a href="/register.html" class="btn btn-primary">START FREE TRIAL</a>
+            </div>
+        </div>
+    </nav>
+
+    <header style="padding: 100px 0; text-align: center;">
+        <div class="container">
+            <h1 id="hero-title" style="font-size: 64px; min-height: 160px; margin-bottom: 10px;"></h1>
+            <p class="text-muted" style="font-size: 20px; margin-bottom: 40px;">Mini-Render Clone with GitHub, ZIP, and Raw Code support.</p>
+            <div style="display: flex; gap: 20px; justify-content: center;">
+                <a href="/register.html" class="btn btn-primary">START FREE TRIAL</a>
+                <a href="/login.html" class="btn btn-outline">DASHBOARD</a>
+            </div>
+        </div>
+    </header>
+
+    <section style="padding: 60px 0;">
+        <div class="container">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px;">
+                <div class="panel">
+                    <h3>GITHUB DEPLOY</h3>
+                    <p class="text-muted">Directly connect your public repositories and deploy in seconds.</p>
+                </div>
+                <div class="panel">
+                    <h3>ZIP UPLOAD</h3>
+                    <p class="text-muted">Drag and drop your project ZIP file for instant hosting.</p>
+                </div>
+                <div class="panel">
+                    <h3>FILE DEPLOY</h3>
+                    <p class="text-muted">Single file hosting for Node.js, Python, or PHP scripts.</p>
+                </div>
+                <div class="panel">
+                    <h3>RAW CODE</h3>
+                    <p class="text-muted">Paste your code snippets and see them running live immediately.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section style="padding: 60px 0; border-top: 1px solid var(--border-color);">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: 40px;">PRICING PLANS</h2>
+            <div id="pricing-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px;">
+                <!-- Dynamically loaded from plans.json maybe, or static -->
+                <div class="panel" style="text-align: center;">
+                    <h3>FREE TRIAL</h3>
+                    <p style="font-size: 32px; font-weight: bold; margin: 20px 0;">₹0</p>
+                    <p class="text-muted">3-hour trial, 1 deployment</p>
+                    <a href="/register.html" class="btn btn-outline" style="width: 100%; margin-top: 20px;">GET STARTED</a>
+                </div>
+                <div class="panel" style="text-align: center; border-color: #fff;">
+                    <h3>STARTER</h3>
+                    <p style="font-size: 32px; font-weight: bold; margin: 20px 0;">₹199</p>
+                    <p class="text-muted">20 credits, basic support</p>
+                    <a href="/register.html" class="btn btn-primary" style="width: 100%; margin-top: 20px;">BUY NOW</a>
+                </div>
+                <div class="panel" style="text-align: center;">
+                    <h3>PRO</h3>
+                    <p style="font-size: 32px; font-weight: bold; margin: 20px 0;">₹499</p>
+                    <p class="text-muted">60 credits, priority support</p>
+                    <a href="/register.html" class="btn btn-outline" style="width: 100%; margin-top: 20px;">UPGRADE</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer style="padding: 40px 0; border-top: 1px solid var(--border-color); text-align: center;">
+        <div class="container">
+            <p class="text-muted">© 2024 ELITEHOSTING. BUILT FOR SCALE.</p>
+        </div>
+    </footer>
+
+    <script>
+        const title = "DEPLOY ANYTHING.\nINSTANTLY.";
+        let i = 0;
+        const el = document.getElementById('hero-title');
+
+        function typeWriter() {
+            if (i < title.length) {
+                if (title.charAt(i) === '\n') {
+                    el.innerHTML += '<br>';
+                } else {
+                    el.innerHTML += title.charAt(i);
+                }
+                i++;
+                setTimeout(typeWriter, 100);
+            } else {
+                el.style.borderRight = 'none';
+            }
+        }
+
+        el.style.borderRight = '4px solid #fff';
+        typeWriter();
+    </script>
+</body>
+</html>
