@@ -6,13 +6,13 @@ module.exports = (req, res, next) => {
   const token = req.headers['x-admin-token'] || req.headers['authorization']?.split(' ')[1];
   const adminUsername = req.headers['x-admin-username'];
 
-  if (!token || adminUsername !== 'Raj') {
+  if (!token || adminUsername !== 'rajpapa') {
     return res.status(403).json({ success: false, error: 'Admin access denied', code: 'FORBIDDEN' });
   }
 
   try {
     const decoded = jwt.verify(token, ADMIN_JWT_SECRET);
-    if (decoded.username !== 'Raj') {
+    if (decoded.username !== 'rajpapa') {
       return res.status(403).json({ success: false, error: 'Forbidden', code: 'FORBIDDEN' });
     }
     req.admin = decoded;

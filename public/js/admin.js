@@ -50,10 +50,39 @@ async function loadUsers() {
                 <td>${u.username}</td>
                 <td>${u.email}</td>
                 <td>${u.credits}</td>
-                <td>₹${u.wallet}</td>
-                <td><button class="btn btn-outline btn-sm" onclick="editCredits('${u.id}')">EDIT</button></td>
+                <td>₹${u.wallet.toFixed(2)}</td>
+                <td><span class="badge ${u.isBanned ? 'badge-error' : 'badge-success'}">${u.isBanned ? 'BANNED' : 'ACTIVE'}</span></td>
+                <td>
+                    <button class="btn btn-outline btn-sm" onclick="editCredits('${u.id}')">CREDITS</button>
+                    <button class="btn btn-outline btn-sm" onclick="adjustBalance('${u.id}')">BALANCE</button>
+                    ${u.isBanned ?
+                        `<button class="btn btn-primary btn-sm" onclick="toggleBan('${u.id}', false)">UNBAN</button>` :
+                        `<button class="btn btn-outline btn-sm" onclick="toggleBan('${u.id}', true)" style="color:red; border-color:red;">BAN</button>`
+                    }
+                </td>
             </tr>
         `).join('');
+    }
+}
+
+async function toggleBan(id, shouldBan) {
+    const action = shouldBan ? 'ban' : 'unban';
+    if (confirm(`Are you sure you want to ${action} this user?`)) {
+        const res = await auth.fetchAdmin(`/api/admin/users/${id}/${action}`, { method: 'POST' });
+        if (res.success) loadUsers();
+    }
+}
+
+async function adjustBalance(id) {
+    const action = prompt('Type "add" to add money, or "remove" to deduct money:');
+    if (action !== 'add' && action !== 'remove') return;
+    const amount = prompt(`Enter amount to ${action}:`);
+    if (amount) {
+        const res = await auth.fetchAdmin(`/api/admin/users/${id}/balance`, {
+            method: 'POST',
+            body: JSON.stringify({ amount: parseFloat(amount), action })
+        });
+        if (res.success) loadUsers();
     }
 }
 

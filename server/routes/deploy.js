@@ -9,6 +9,7 @@ const AdmZip = require('adm-zip');
 const auth = require('../middleware/auth');
 const { deductCredits, getCreditsCost } = require('../utils/credits');
 const { checkAndStartTrial } = require('../utils/trial');
+const { spawn } = require('child_process');
 
 const DEPLOYMENTS_PATH = path.join(__dirname, '../db/deployments.json');
 const UPLOADS_PATH = path.join(__dirname, '../../uploads');
@@ -37,6 +38,7 @@ const createDeployment = async (req, type, source) => {
   const deployments = JSON.parse(fs.readFileSync(DEPLOYMENTS_PATH, 'utf8'));
   const userId = req.user.userId;
   const cost = getCreditsCost(type);
+  const { buildCommand, deployCommand, githubToken, envVars } = req.body;
 
   let isTrial = false;
   let trialExpiresAt = null;
@@ -60,33 +62,104 @@ const createDeployment = async (req, type, source) => {
     { from: 'system', text: `Initialising ${type} deployment...`, timestamp: new Date().toISOString() }
   ];
 
-  // Simulated Execution Engine
+  // Actual Execution Engine
   setTimeout(async () => {
-    try {
-        if (type === 'github') {
-            logs.push({ from: 'system', text: `Cloning repository: ${source}...`, timestamp: new Date().toISOString() });
-            // In a real production env: await simpleGit().clone(source, path.join(UPLOADS_PATH, deployId));
-            logs.push({ from: 'system', text: 'Fetching dependencies...', timestamp: new Date().toISOString() });
-            logs.push({ from: 'system', text: 'Build optimized.', timestamp: new Date().toISOString() });
-        } else if (type === 'zip') {
-            logs.push({ from: 'system', text: `Extracting ${source}...`, timestamp: new Date().toISOString() });
-            // const zip = new AdmZip(path.join(UPLOADS_PATH, source));
-            // zip.extractAllTo(path.join(UPLOADS_PATH, deployId), true);
-            logs.push({ from: 'system', text: 'Analyzing package.json...', timestamp: new Date().toISOString() });
-        } else if (type === 'rawcode') {
-            logs.push({ from: 'system', text: 'Compiling source code...', timestamp: new Date().toISOString() });
-        }
+    const deployDir = path.join(UPLOADS_PATH, deployId);
+    if (!fs.existsSync(deployDir)) fs.mkdirSync(deployDir, { recursive: true });
 
-        logs.push({ from: 'system', text: 'Starting application process...', timestamp: new Date().toISOString() });
-        logs.push({ from: 'system', text: 'Deployment successful!', timestamp: new Date().toISOString() });
-
-        // Persist final logs
+    const addLog = (text) => {
+        logs.push({ from: 'system', text, timestamp: new Date().toISOString() });
         const currentDeploys = JSON.parse(fs.readFileSync(DEPLOYMENTS_PATH, 'utf8'));
         const idx = currentDeploys.findIndex(d => d.id === deployId);
         if (idx !== -1) {
-            currentDeploys[idx].logs = [...currentDeploys[idx].logs, ...logs.slice(1)];
+            currentDeploys[idx].logs = [...logs];
             fs.writeFileSync(DEPLOYMENTS_PATH, JSON.stringify(currentDeploys, null, 2));
         }
+    };
+
+    const updatePID = (pid) => {
+        const currentDeploys = JSON.parse(fs.readFileSync(DEPLOYMENTS_PATH, 'utf8'));
+        const idx = currentDeploys.findIndex(d => d.id === deployId);
+        if (idx !== -1) {
+            currentDeploys[idx].pid = pid;
+            fs.writeFileSync(DEPLOYMENTS_PATH, JSON.stringify(currentDeploys, null, 2));
+        }
+    };
+
+    try {
+        if (envVars && Object.keys(envVars).length > 0) {
+            addLog(`Loading environment variables: ${Object.keys(envVars).join(', ')}`);
+        }
+
+        if (type === 'github') {
+            let cloneUrl = source;
+            if (githubToken) {
+                cloneUrl = source.replace('https://', `https://${githubToken}@`);
+            }
+            addLog(`Cloning repository: ${source}...`);
+            await simpleGit().clone(cloneUrl, deployDir);
+            addLog('Clone successful.');
+
+            const finalBuildCmd = buildCommand || (fs.existsSync(path.join(deployDir, 'requirements.txt')) ? 'pip install -r requirements.txt' : null);
+            if (finalBuildCmd) {
+                addLog(`Running build: ${finalBuildCmd}`);
+                await new Promise((resolve, reject) => {
+                    const [cmd, ...args] = finalBuildCmd.split(' ');
+                    const proc = spawn(cmd, args, { cwd: deployDir, env: { ...process.env, ...envVars } });
+                    proc.stdout.on('data', (data) => addLog(data.toString()));
+                    proc.stderr.on('data', (data) => addLog(`Stderr: ${data.toString()}`));
+                    proc.on('close', (code) => code === 0 ? resolve() : reject(new Error(`Exit code ${code}`)));
+                });
+            }
+
+            const finalDeployCmd = deployCommand || (fs.existsSync(path.join(deployDir, 'main.py')) ? 'python3 main.py' : null);
+            if (finalDeployCmd) {
+                addLog(`Starting application: ${finalDeployCmd}`);
+                const [cmd, ...args] = finalDeployCmd.split(' ');
+                const proc = spawn(cmd, args, { cwd: deployDir, env: { ...process.env, ...envVars } });
+                updatePID(proc.pid);
+                proc.stdout.on('data', (data) => addLog(data.toString()));
+                proc.stderr.on('data', (data) => addLog(`Runtime Stderr: ${data.toString()}`));
+                proc.on('error', (err) => addLog(`Runtime Error: ${err.message}`));
+            }
+
+        } else if (type === 'zip') {
+            const zipPath = path.join(UPLOADS_PATH, source);
+            addLog(`Extracting ZIP: ${source}...`);
+            const zip = new AdmZip(zipPath);
+            zip.extractAllTo(deployDir, true);
+            addLog('Extraction complete.');
+
+            if (buildCommand) {
+                addLog(`Running build: ${buildCommand}`);
+                await new Promise((resolve, reject) => {
+                    const [cmd, ...args] = buildCommand.split(' ');
+                    const proc = spawn(cmd, args, { cwd: deployDir, env: { ...process.env, ...envVars } });
+                    proc.stdout.on('data', (data) => addLog(data.toString()));
+                    proc.on('close', (code) => resolve());
+                });
+            }
+            if (deployCommand) {
+                addLog(`Starting application: ${deployCommand}`);
+                const [cmd, ...args] = deployCommand.split(' ');
+                const proc = spawn(cmd, args, { cwd: deployDir, env: { ...process.env, ...envVars } });
+                updatePID(proc.pid);
+            }
+
+        } else if (type === 'file') {
+            const filePath = path.join(UPLOADS_PATH, source);
+            addLog(`Deploying single file: ${source}`);
+            fs.copyFileSync(filePath, path.join(deployDir, source));
+            const cmdStr = source.endsWith('.py') ? `python3 ${source}` : (source.endsWith('.js') ? `node ${source}` : null);
+            if (cmdStr) {
+                addLog(`Running: ${cmdStr}`);
+                const [cmd, ...args] = cmdStr.split(' ');
+                const proc = spawn(cmd, args, { cwd: deployDir, env: { ...process.env, ...envVars } });
+                updatePID(proc.pid);
+            }
+        }
+
+        addLog('Deployment setup completed.');
     } catch (e) {
         console.error('Deployment execution failed', e);
     }
@@ -165,6 +238,16 @@ router.post('/:id/stop', auth, (req, res) => {
     const deployments = JSON.parse(fs.readFileSync(DEPLOYMENTS_PATH, 'utf8'));
     const index = deployments.findIndex(d => d.id === req.params.id && d.userId === req.user.userId);
     if (index === -1) return res.status(404).json({ success: false, error: 'Deployment not found' });
+
+    const pid = deployments[index].pid;
+    if (pid) {
+        try {
+            process.kill(pid, 'SIGTERM');
+            deployments[index].logs.push({ from: 'system', text: `Terminated process (PID: ${pid})`, timestamp: new Date().toISOString() });
+        } catch (e) {
+            console.error(`Failed to kill process ${pid}:`, e);
+        }
+    }
 
     deployments[index].status = 'stopped';
     deployments[index].logs.push({ from: 'system', text: 'Deployment stopped by user.', timestamp: new Date().toISOString() });

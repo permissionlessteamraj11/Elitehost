@@ -3,17 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EliteHosting | Deploy Anything. Instantly.</title>
+    <title>EliteHosting | High-Performance Cloud Deployment Platform</title>
+    <meta name="description" content="EliteHosting provides instant deployment for GitHub repositories, ZIP files, and raw code. Scale your applications with ease on our elite infrastructure.">
+    <meta name="keywords" content="hosting, deployment, cloud, github deploy, python hosting, nodejs hosting, elitehosting">
     <link rel="stylesheet" href="/css/main.css">
 </head>
 <body>
     <nav>
         <div class="container">
-            <a href="/" class="logo">ELITEHOSTING.</a>
-            <div class="nav-links">
-                <a href="/login.html">LOGIN</a>
-                <a href="/register.html" class="btn btn-primary">START FREE TRIAL</a>
+            <a href="/" class="logo">
+                <span style="font-weight: 800; letter-spacing: -1px;">ELITEHOSTING</span>
+            </a>
+
+            <div class="nav-right">
+                <div class="nav-links desktop-only">
+                    <a href="/login.html">LOGIN</a>
+                    <a href="/register.html" class="btn btn-primary">START FREE TRIAL</a>
+                </div>
+                <div class="menu-toggle" onclick="toggleMenu()">
+                    <div class="hamburger">
+                        <span>_</span>
+                        <span>-</span>
+                        <span>_</span>
+                    </div>
+                </div>
             </div>
+        </div>
+        <div id="mobile-menu" class="mobile-nav">
+            <a href="/blogs.html">BLOGS</a>
+            <a href="/terms.html">TERMS & CONDITIONS</a>
+            <a href="/privacy.html">PRIVACY POLICY</a>
+            <hr style="border-color: var(--border-color); margin: 10px 0;">
+            <a href="/login.html">LOGIN</a>
+            <a href="/register.html">REGISTER</a>
         </div>
     </nav>
 
@@ -78,13 +100,41 @@
         </div>
     </section>
 
-    <footer style="padding: 40px 0; border-top: 1px solid var(--border-color); text-align: center;">
+    <footer style="padding: 60px 0; border-top: 1px solid var(--border-color);">
         <div class="container">
-            <p class="text-muted">© 2024 ELITEHOSTING. BUILT FOR SCALE.</p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; text-align: left; margin-bottom: 40px;">
+                <div>
+                    <h4 style="margin-bottom: 20px;">ELITEHOSTING</h4>
+                    <p class="text-muted" style="font-size: 12px;">Elite infrastructure for modern developers. Deploy anything, instantly.</p>
+                </div>
+                <div>
+                    <h4 style="margin-bottom: 20px;">PLATFORM</h4>
+                    <ul style="list-style: none; font-size: 12px; line-height: 2;">
+                        <li><a href="/login.html" class="text-muted">Dashboard</a></li>
+                        <li><a href="/register.html" class="text-muted">Start Trial</a></li>
+                        <li><a href="/blogs.html" class="text-muted">Blogs</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="margin-bottom: 20px;">LEGAL</h4>
+                    <ul style="list-style: none; font-size: 12px; line-height: 2;">
+                        <li><a href="/terms.html" class="text-muted">Terms & Conditions</a></li>
+                        <li><a href="/privacy.html" class="text-muted">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <p class="text-muted" style="font-size: 12px; text-align: center; padding-top: 40px; border-top: 1px solid var(--border-color);">
+                © 2024 ELITEHOSTING. BUILT FOR SCALE. ALL RIGHTS RESERVED.
+            </p>
         </div>
     </footer>
 
     <script>
+        function toggleMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('active');
+        }
+
         const title = "DEPLOY ANYTHING.\nINSTANTLY.";
         let i = 0;
         const el = document.getElementById('hero-title');

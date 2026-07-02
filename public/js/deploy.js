@@ -62,6 +62,8 @@ async function handleDeploy(e) {
     deployBtn.innerText = 'DEPLOYING...';
 
     const name = document.getElementById('projectName').value;
+    const buildCommand = document.getElementById('buildCommand').value;
+    const deployCommand = document.getElementById('deployCommand').value;
     const envVars = {};
     document.querySelectorAll('#envVarsList > div').forEach(div => {
         const key = div.querySelector('.env-key').value;
@@ -73,13 +75,16 @@ async function handleDeploy(e) {
         let res;
         if (activeTab === 'github') {
             const repoUrl = document.getElementById('repoUrl').value;
+            const githubToken = document.getElementById('githubToken').value;
             res = await auth.fetch('/api/deploy/github', {
                 method: 'POST',
-                body: JSON.stringify({ name, repoUrl, envVars })
+                body: JSON.stringify({ name, repoUrl, githubToken, buildCommand, deployCommand, envVars })
             });
         } else if (activeTab === 'zip' || activeTab === 'file') {
             const formData = new FormData();
             formData.append('name', name);
+            formData.append('buildCommand', buildCommand);
+            formData.append('deployCommand', deployCommand);
             formData.append('envVars', JSON.stringify(envVars));
             const fileInput = document.getElementById(activeTab === 'zip' ? 'zipFile' : 'sourceFile');
             formData.append('file', fileInput.files[0]);
@@ -95,7 +100,7 @@ async function handleDeploy(e) {
             const language = document.getElementById('rawLanguage').value;
             res = await auth.fetch('/api/deploy/rawcode', {
                 method: 'POST',
-                body: JSON.stringify({ name, code, language, envVars })
+                body: JSON.stringify({ name, code, language, buildCommand, deployCommand, envVars })
             });
         }
 

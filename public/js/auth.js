@@ -32,7 +32,7 @@ const auth = {
         const token = this.getAdminToken();
         const headers = {
             'Content-Type': 'application/json',
-            'x-admin-username': 'Raj',
+            'x-admin-username': 'rajpapa',
             'x-admin-token': token,
             ...options.headers
         };

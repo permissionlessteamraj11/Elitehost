@@ -10,16 +10,42 @@ const DEPLOYMENTS_PATH = path.join(__dirname, '../db/deployments.json');
 const WITHDRAWALS_PATH = path.join(__dirname, '../db/withdrawals.json');
 const PLANS_PATH = path.join(__dirname, '../db/plans.json');
 const CHATS_PATH = path.join(__dirname, '../db/chats.json');
+const BANS_PATH = path.join(__dirname, '../db/bans.json');
 
 const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'raj-papa-secret-key';
 
+let failedAttempts = {};
+const getBans = () => {
+    if (!fs.existsSync(BANS_PATH)) return [];
+    return JSON.parse(fs.readFileSync(BANS_PATH, 'utf8'));
+};
+
 router.post('/login', (req, res) => {
     const { username, password } = req.body;
-    if (username === 'Raj' && password === '28@RajPapa') {
-        const token = jwt.sign({ username: 'Raj', role: 'admin' }, ADMIN_JWT_SECRET, { expiresIn: '12h' });
+    const clientIp = req.ip;
+
+    const bans = getBans();
+    if (bans.includes(clientIp)) {
+        return res.status(403).json({ success: false, error: 'Device permanently banned from admin access.' });
+    }
+
+    if (username === 'rajpapa' && password === '28@RajPapa') {
+        delete failedAttempts[clientIp];
+        const token = jwt.sign({ username: 'rajpapa', role: 'admin' }, ADMIN_JWT_SECRET, { expiresIn: '12h' });
         return res.json({ success: true, data: { token } });
     }
-    res.status(401).json({ success: false, error: 'Invalid admin credentials' });
+
+    failedAttempts[clientIp] = (failedAttempts[clientIp] || 0) + 1;
+    if (failedAttempts[clientIp] >= 3) {
+        const bans = getBans();
+        if (!bans.includes(clientIp)) {
+            bans.push(clientIp);
+            fs.writeFileSync(BANS_PATH, JSON.stringify(bans, null, 2));
+        }
+        return res.status(403).json({ success: false, error: 'Too many attempts. Device banned.' });
+    }
+
+    res.status(401).json({ success: false, error: `Invalid credentials. Attempt ${failedAttempts[clientIp]}/3` });
 });
 
 router.get('/stats', adminAuth, (req, res) => {
@@ -122,6 +148,41 @@ router.post('/deployments/:id/stop', adminAuth, (req, res) => {
         return res.json({ success: true, message: 'Deployment stopped' });
     }
     res.status(404).json({ success: false, error: 'Deployment not found' });
+});
+
+router.post('/users/:id/ban', adminAuth, (req, res) => {
+    const users = JSON.parse(fs.readFileSync(USERS_PATH, 'utf8'));
+    const index = users.findIndex(u => u.id === req.params.id);
+    if (index !== -1) {
+        users[index].isBanned = true;
+        fs.writeFileSync(USERS_PATH, JSON.stringify(users, null, 2));
+        return res.json({ success: true, message: 'User banned' });
+    }
+    res.status(404).json({ success: false, error: 'User not found' });
+});
+
+router.post('/users/:id/unban', adminAuth, (req, res) => {
+    const users = JSON.parse(fs.readFileSync(USERS_PATH, 'utf8'));
+    const index = users.findIndex(u => u.id === req.params.id);
+    if (index !== -1) {
+        users[index].isBanned = false;
+        fs.writeFileSync(USERS_PATH, JSON.stringify(users, null, 2));
+        return res.json({ success: true, message: 'User unbanned' });
+    }
+    res.status(404).json({ success: false, error: 'User not found' });
+});
+
+router.post('/users/:id/balance', adminAuth, (req, res) => {
+    const { amount, action } = req.body;
+    const users = JSON.parse(fs.readFileSync(USERS_PATH, 'utf8'));
+    const index = users.findIndex(u => u.id === req.params.id);
+    if (index !== -1) {
+        if (action === 'add') users[index].wallet += parseFloat(amount);
+        else if (action === 'remove') users[index].wallet -= parseFloat(amount);
+        fs.writeFileSync(USERS_PATH, JSON.stringify(users, null, 2));
+        return res.json({ success: true, message: `Balance ${action}ed` });
+    }
+    res.status(404).json({ success: false, error: 'User not found' });
 });
 
 module.exports = router;
