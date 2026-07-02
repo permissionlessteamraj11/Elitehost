@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard | EliteHosting</title>
+    <title>Settings | EliteHosting</title>
     <link rel="stylesheet" href="/css/main.css">
 </head>
 <body>
@@ -31,52 +31,41 @@
         </div>
     </nav>
 
-    <div class="container" style="padding-top: 40px; padding-bottom: 100px;">
-        <h2 id="welcomeText">WELCOME BACK, ...</h2>
+    <div class="container" style="padding-top: 40px; padding-bottom: 120px;">
+        <h2>SETTINGS</h2>
 
-        <div class="stats-grid">
-            <div class="panel stat-card">
-                <div class="value" id="creditsBalance">0</div>
-                <div class="label">CREDITS BALANCE</div>
+        <div class="panel" style="margin-bottom: 20px;">
+            <h3>REFERRAL PROGRAM</h3>
+            <p class="text-muted" style="margin-bottom: 20px;">Share your link and earn 30% commission on every purchase!</p>
+            <div class="form-group">
+                <label>Your Referral Code</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="myReferralCode" readonly>
+                    <button class="btn btn-outline" onclick="copyReferral()">COPY</button>
+                </div>
             </div>
-            <div class="panel stat-card">
-                <div class="value" id="walletBalance">₹0.00</div>
-                <div class="label">WALLET BALANCE</div>
-            </div>
-            <div class="panel stat-card">
-                <div class="value" id="activeDeploys">0</div>
-                <div class="label">ACTIVE DEPLOYMENTS</div>
-            </div>
-            <div class="panel stat-card">
-                <div class="value" id="trialStatus">NONE</div>
-                <div class="label">TRIAL STATUS</div>
-            </div>
+            <p id="refStats" class="text-success" style="font-size: 12px;"></p>
         </div>
 
-        <div class="panel" style="margin-bottom: 40px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h3>RECENT DEPLOYMENTS</h3>
-                <a href="/deploy.html" class="btn btn-primary btn-sm">+ NEW DEPLOY</a>
+        <div class="panel" style="margin-bottom: 20px;">
+            <h3>SUPPORT CHAT</h3>
+            <div id="chatWindow" class="chat-container" style="height: 300px; border: 1px solid var(--border-color); border-radius: 4px; margin-bottom: 10px;">
+                <div id="chatMessages" class="chat-messages"></div>
             </div>
-            <table id="recentDeploymentsTable">
-                <thead>
-                    <tr>
-                        <th>NAME</th>
-                        <th>TYPE</th>
-                        <th>STATUS</th>
-                        <th>CREATED</th>
-                        <th>ACTIONS</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Loaded via JS -->
-                </tbody>
-            </table>
+            <form id="chatForm" class="chat-input" style="padding: 0; border: none;">
+                <input type="text" id="chatInput" placeholder="How can we help?" required>
+                <button type="submit" class="btn btn-primary">SEND</button>
+            </form>
+        </div>
+
+        <div class="panel">
+            <h3>ACCOUNT</h3>
+            <button class="btn btn-outline" style="width: 100%; border-color: var(--error); color: var(--error);" onclick="logout()">LOGOUT FROM DEVICE</button>
         </div>
     </div>
 
     <div class="bottom-nav">
-        <a href="/dashboard.html" class="nav-item active">
+        <a href="/dashboard.html" class="nav-item">
             <div class="nav-icon">H</div>
             <span>Home</span>
         </a>
@@ -92,19 +81,26 @@
             <div class="nav-icon">A</div>
             <span>AI</span>
         </a>
-        <a href="/settings.html" class="nav-item">
+        <a href="/settings.html" class="nav-item active">
             <div class="nav-icon">S</div>
             <span>Settings</span>
         </a>
     </div>
 
+    <script src="/socket.io/socket.io.js"></script>
     <script src="/js/auth.js"></script>
     <script>
         function toggleMenu() {
             const menu = document.getElementById('mobile-menu');
             menu.classList.toggle('active');
         }
+        function copyReferral() {
+            const code = document.getElementById('myReferralCode');
+            code.select();
+            document.execCommand('copy');
+            alert('Referral link copied!');
+        }
     </script>
-    <script src="/js/dashboard.js"></script>
+    <script src="/js/settings.js"></script>
 </body>
 </html>
