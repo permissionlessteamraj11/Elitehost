@@ -1,0 +1,18 @@
+[
+  {
+    "id": "20c78725-268c-48a4-9a4d-5bf863143177",
+    "username": "testuser",
+    "email": "test@example.com",
+    "passwordHash": "$2a$10$kMIErZRWExtJGujpU0ZkueHBzdmDgPZn.7D7aLrlFmCciRWGLeXcS",
+    "credits": 0,
+    "wallet": 0,
+    "referralCode": "W6RTUF",
+    "referredBy": null,
+    "plan": "free",
+    "trialUsed": false,
+    "trialStartedAt": null,
+    "trialEndsAt": null,
+    "createdAt": "2026-07-02T04:02:36.917Z",
+    "isAdmin": false
+  }
+]

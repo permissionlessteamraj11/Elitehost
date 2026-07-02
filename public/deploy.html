@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Deployment | EliteHosting</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/dracula.min.css">
+    <style>
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 15px; background: var(--bg-secondary); border: 1px solid var(--border-color); cursor: pointer; color: var(--text-muted); text-transform: uppercase; font-weight: bold; }
+        .tab-btn.active { background: var(--glass-bg); border-color: var(--text-primary); color: var(--text-primary); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .CodeMirror { height: 300px; border-radius: 4px; border: 1px solid var(--border-color); }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="/dashboard.html" class="logo">ELITEHOSTING.</a>
+            <div class="nav-links">
+                <a href="/dashboard.html">DASHBOARD</a>
+                <a href="/deploy.html">DEPLOY</a>
+                <a href="/deployments.html">DEPLOYMENTS</a>
+                <a href="/logout" onclick="logout()">LOGOUT</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" style="padding-top: 40px; max-width: 800px;">
+        <div id="trialBanner" class="panel" style="margin-bottom: 20px; border-color: var(--success); display: none;">
+            <p class="text-success">FREE TRIAL AVAILABLE: Your first deployment is free for 3 hours!</p>
+        </div>
+
+        <h2>NEW DEPLOYMENT</h2>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('github')">GITHUB</button>
+            <button class="tab-btn" onclick="showTab('zip')">ZIP FILE</button>
+            <button class="tab-btn" onclick="showTab('file')">SINGLE FILE</button>
+            <button class="tab-btn" onclick="showTab('rawcode')">RAW CODE</button>
+        </div>
+
+        <div class="panel">
+            <form id="deployForm">
+                <div class="form-group">
+                    <label>Project Name</label>
+                    <input type="text" id="projectName" required placeholder="my-awesome-app">
+                </div>
+
+                <div id="github-content" class="tab-content active">
+                    <div class="form-group">
+                        <label>GitHub Repo URL</label>
+                        <input type="url" id="repoUrl" placeholder="https://github.com/user/repo">
+                    </div>
+                </div>
+
+                <div id="zip-content" class="tab-content">
+                    <div class="form-group">
+                        <label>ZIP Archive</label>
+                        <input type="file" id="zipFile" accept=".zip">
+                    </div>
+                </div>
+
+                <div id="file-content" class="tab-content">
+                    <div class="form-group">
+                        <label>Source File (.js, .py, .php)</label>
+                        <input type="file" id="sourceFile" accept=".js,.py,.php">
+                    </div>
+                </div>
+
+                <div id="rawcode-content" class="tab-content">
+                    <div class="form-group">
+                        <label>Language</label>
+                        <select id="rawLanguage">
+                            <option value="nodejs">Node.js</option>
+                            <option value="python">Python</option>
+                            <option value="php">PHP</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Source Code</label>
+                        <textarea id="rawCodeEditor"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Environment Variables</label>
+                    <div id="envVarsList">
+                        <!-- Dynamic inputs here -->
+                    </div>
+                    <button type="button" class="btn btn-outline" style="font-size: 12px; margin-top: 10px;" onclick="addEnvVar()">+ ADD VARIABLE</button>
+                </div>
+
+                <div style="margin-top: 30px; display: flex; justify-content: space-between; align-items: center;">
+                    <p class="text-muted">Estimated Cost: <span id="costDisplay">2</span> Credits</p>
+                    <button type="submit" class="btn btn-primary" id="deployBtn">DEPLOY NOW</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/deploy.js"></script>
+</body>
+</html>

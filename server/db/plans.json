@@ -1,0 +1,6 @@
+[
+  { "id": "free", "name": "Free Trial", "price": 0, "credits": 0, "description": "3-hour trial, 1 deployment" },
+  { "id": "starter", "name": "Starter", "price": 199, "credits": 20, "description": "20 credits, basic support" },
+  { "id": "pro", "name": "Pro", "price": 499, "credits": 60, "description": "60 credits, priority support" },
+  { "id": "enterprise", "name": "Enterprise", "price": 999, "credits": 150, "description": "150 credits, dedicated support, custom domain" }
+]
