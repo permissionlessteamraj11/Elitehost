@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Login — EliteHost</title>
+  <link rel="stylesheet" href="/css/main.css">
+</head>
+<body style="display: flex; align-items: center; justify-content: center; min-height: 100vh;">
+  <div class="glass-card" style="width: 100%; max-width: 400px;">
+    <div style="text-align: center; margin-bottom: 32px;">
+      <h2 style="font-size: 24px; font-weight: 700;">EliteHost Admin</h2>
+    </div>
+    <form id="adminLoginForm">
+      <div class="input-group">
+        <label>Username</label>
+        <input type="text" id="username" required>
+      </div>
+      <div class="input-group">
+        <label>Password</label>
+        <input type="password" id="password" required>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width: 100%;">Access Admin Panel</button>
+    </form>
+  </div>
+  <script>
+    document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await res.json();
+      if (data.success) {
+        window.location.href = '/raj/dashboard';
+      } else {
+        alert(data.message);
+      }
+    });
+  </script>
+</body>
+</html>

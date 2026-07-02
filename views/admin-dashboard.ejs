@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard — EliteHost</title>
+  <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+  <div class="container" style="padding-top: 40px;">
+    <h1>Admin Overview</h1>
+    <div class="grid-3 mt-4">
+      <div class="glass-card">
+        <div class="text-secondary">Total Users</div>
+        <div id="totalUsers" style="font-size: 24px; font-weight: 700;">0</div>
+      </div>
+      <div class="glass-card">
+        <div class="text-secondary">Active Bots</div>
+        <div id="activeBots" style="font-size: 24px; font-weight: 700;">0</div>
+      </div>
+    </div>
+
+    <h2 class="mt-4">Users</h2>
+    <div class="glass-card mt-4">
+      <table style="width: 100%; text-align: left; border-collapse: collapse;">
+        <thead>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <th style="padding: 12px;">Name</th>
+            <th style="padding: 12px;">Email</th>
+            <th style="padding: 12px;">Plan</th>
+            <th style="padding: 12px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="userTable">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    async function loadStats() {
+      const res = await fetch('/api/admin/stats');
+      const data = await res.json();
+      if (data.success) {
+        document.getElementById('totalUsers').innerText = data.data.totalUsers;
+        document.getElementById('activeBots').innerText = data.data.activeBots;
+      }
+    }
+
+    async function loadUsers() {
+      const res = await fetch('/api/admin/users');
+      const data = await res.json();
+      if (data.success) {
+        const tbody = document.getElementById('userTable');
+        tbody.innerHTML = '';
+        data.data.forEach(u => {
+          const tr = document.createElement('tr');
+          tr.style.borderBottom = '1px solid var(--border)';
+          tr.innerHTML = `
+            <td style="padding: 12px;">${u.name}</td>
+            <td style="padding: 12px;">${u.email}</td>
+            <td style="padding: 12px;">${u.plan.name}</td>
+            <td style="padding: 12px;">
+              <button class="btn btn-outline" style="font-size: 11px;" onclick="manageUser('${u._id}', '${u.isBanned ? 'unban' : 'ban'}')">${u.isBanned ? 'Unban' : 'Ban'}</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+    }
+
+    async function manageUser(userId, action) {
+      const res = await fetch('/api/admin/users/manage', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, action })
+      });
+      const data = await res.json();
+      if (data.success) loadUsers();
+    }
+
+    loadStats();
+    loadUsers();
+  </script>
+</body>
+</html>

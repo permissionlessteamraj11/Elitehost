@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
-Disallow: /admin
-Disallow: /dashboard/settings
+Disallow: /dashboard
+Disallow: /raj
+Disallow: /api
 
-Sitemap: https://www.elitehosting.in/sitemap.xml
+Sitemap: https://elitehost.in/sitemap.xml
