@@ -3,52 +3,110 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EliteHost — Professional Bot Hosting | Black Edition</title>
-  <meta name="description" content="India's fastest Telegram bot hosting with Mumbai edge nodes. High-performance, 24/7 uptime, Black Edition design.">
+  <title>EliteHost — Advanced Telegram Bot & Python Hosting</title>
+  <meta name="description" content="India's most advanced hosting platform for Telegram bots and Python scripts. Mumbai edge nodes, sub-5ms latency, Black Edition UI.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/main.css">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
   <style>
-    /* Additional 3D specific landing styles */
-    .hero-image-3d {
+    /* Hero specific 3D element */
+    .hero-viz {
       width: 100%;
-      max-width: 800px;
-      height: 400px;
-      background: linear-gradient(135deg, #1a1a1a, #000);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 20px;
-      margin-top: 60px;
-      transform: rotateX(20deg) rotateY(-10deg) rotateZ(5deg);
-      box-shadow: -20px 40px 60px rgba(0,0,0,0.8), inset 0 0 100px rgba(255,255,255,0.05);
+      max-width: 900px;
+      height: 450px;
+      background: rgba(255, 255, 255, 0.01);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 32px;
+      margin-top: 80px;
+      position: relative;
+      overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
-      position: relative;
+      transform: rotateX(15deg) rotateY(-5deg);
+      box-shadow:
+        0 50px 100px rgba(0,0,0,0.8),
+        inset 0 0 80px rgba(255,255,255,0.02);
+      backdrop-filter: blur(10px);
     }
-    .hero-image-3d::after {
-      content: "DASHBOARD PREVIEW";
-      font-weight: 900;
-      letter-spacing: 0.5em;
-      opacity: 0.2;
+
+    .hero-viz-grid {
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+      transform: perspective(500px) rotateX(60deg);
+      animation: grid-move 20s linear infinite;
+      top: -50%;
+    }
+
+    @keyframes grid-move {
+      0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
+      100% { transform: perspective(500px) rotateX(60deg) translateY(40px); }
+    }
+
+    .hero-viz-content {
+      position: relative;
+      z-index: 2;
+      font-family: monospace;
+      color: #fff;
+      text-align: left;
+      background: rgba(0,0,0,0.6);
+      padding: 24px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+      max-width: 80%;
+      font-size: 13px;
+    }
+
+    .terminal-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 6px;
     }
   </style>
 </head>
 <body>
+  <nav class="bottom-nav">
+    <a href="/" class="nav-item active">
+      <i data-lucide="home"></i>
+      <span>Home</span>
+    </a>
+    <a href="/dashboard" class="nav-item">
+      <i data-lucide="layers"></i>
+      <span>Manage</span>
+    </a>
+    <a href="/deploy" class="nav-item">
+      <i data-lucide="zap"></i>
+      <span>Deploy</span>
+    </a>
+    <a href="/settings" class="nav-item">
+      <i data-lucide="settings"></i>
+      <span>Settings</span>
+    </a>
+  </nav>
+
   <header class="main-header">
     <div class="container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-      <a href="/" class="logo-container" style="display: flex; align-items: center; gap: 12px;">
+      <a href="/" class="logo-container" style="display: flex; align-items: center; gap: 14px;">
         <div class="logo-square">E</div>
         <div>
           <div class="brand-name">ELITE<span>HOST</span></div>
-          <div style="font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;">Black Edition</div>
+          <div style="font-size: 10px; color: #666; font-weight: 800; text-transform: uppercase; letter-spacing: 0.2em;">Black Edition</div>
         </div>
       </a>
 
-      <div class="nav-right" style="display: flex; gap: 12px;">
-        <button class="btn btn-outline desktop-only" onclick="location.href='/login.html'">Login</button>
-        <button class="btn btn-primary" onclick="location.href='/register.html'">Join Elite</button>
+      <div class="nav-right desktop-only" style="display: flex; gap: 16px;">
+        <a href="/login.html" class="btn btn-outline" style="padding: 10px 20px;">Login</a>
+        <a href="/register.html" class="btn btn-primary" style="padding: 10px 20px;">Join Elite</a>
       </div>
     </div>
   </header>
@@ -57,69 +115,129 @@
     <section class="hero">
       <div class="hero-glow"></div>
       <div class="container">
-        <div class="badge floating">⚡ Mumbai Edge Nodes — Sub-5ms</div>
-        <h1>Powering the Next<br><span class="gradient-text">Elite Generation.</span></h1>
-        <p>Ultra-minimal, ultra-fast. Deploy your Python and Node.js bots on India's most powerful infrastructure. No fluff, just pure performance.</p>
-        <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
-          <button class="btn btn-primary" onclick="location.href='/register.html'">Start Deploying</button>
-          <button class="btn btn-outline">Explore Plans</button>
+        <div class="badge floating">
+           <span style="color: var(--success); margin-right: 8px;">●</span> Mumbai Edge — Sub-5ms Latency
+        </div>
+        <h1>Elevate Your Bot<br><span class="gradient-text">To Elite Status.</span></h1>
+        <p>Experience the pinnacle of Telegram bot hosting. Ultra-fast Mumbai nodes, automated GitHub deployments, and an interface built for precision.</p>
+
+        <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+          <button class="btn btn-primary" onclick="location.href='/register.html'">
+            Start Deploying <i data-lucide="arrow-right"></i>
+          </button>
+          <button class="btn btn-outline">
+            View Pricing
+          </button>
         </div>
 
         <div style="display: flex; justify-content: center;">
-          <div class="hero-image-3d floating">
-             <div style="position: absolute; width: 100%; height: 100%; background: repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(255,255,255,0.03) 1px, rgba(255,255,255,0.03) 20px);"></div>
+          <div class="hero-viz floating">
+             <div class="hero-viz-grid"></div>
+             <div class="hero-viz-content">
+                <div style="margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
+                   <span class="terminal-dot" style="background: #ff5f56;"></span>
+                   <span class="terminal-dot" style="background: #ffbd2e;"></span>
+                   <span class="terminal-dot" style="background: #27c93f;"></span>
+                </div>
+                <div style="color: #888;">$ git push elite main</div>
+                <div style="color: #fff;">> Initializing Mumbai-01 cluster...</div>
+                <div style="color: #fff;">> Building Python environment...</div>
+                <div style="color: #00ff88;">> Deployment Successful [0.8s]</div>
+                <div style="color: #fff; margin-top: 8px;">Bot Status: <span style="background: rgba(0,255,136,0.2); color: #00ff88; padding: 2px 6px; border-radius: 4px;">ACTIVE</span></div>
+             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section style="padding: 120px 0;">
-      <div class="container">
-        <div class="grid-3">
-          <div class="glass-card card-3d">
-            <h3 style="margin-bottom: 12px; font-weight: 800;">AUTO-DEPLOY</h3>
-            <p class="text-secondary">Push to GitHub. We handle the rest. Continuous delivery for elite developers.</p>
-          </div>
-          <div class="glass-card card-3d" style="background: white; color: black;">
-            <h3 style="margin-bottom: 12px; font-weight: 800;">24/7 UPTIME</h3>
-            <p style="color: #444;">Your bots never sleep. Guaranteed 99.9% uptime on Mumbai-based edge nodes.</p>
-          </div>
-          <div class="glass-card card-3d">
-            <h3 style="margin-bottom: 12px; font-weight: 800;">RECURRING</h3>
-            <p class="text-secondary">Earn 30% lifetime commission on every referral. The most rewarding partner program.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section style="padding: 100px 0; background: #080808;">
+    <section style="padding: 120px 0; position: relative;">
+      <div class="glow-bg-purple" style="top: 0; left: 0;"></div>
       <div class="container">
         <div style="text-align: center; margin-bottom: 80px;">
-          <h2 style="font-size: 40px; font-weight: 900;">SYSTEM ARCHITECTURE</h2>
+           <h2 style="font-size: 48px; font-weight: 900; letter-spacing: -0.04em;">PRO-GRADE FEATURES</h2>
+           <p style="color: var(--text-secondary); margin-top: 16px;">Engineered for scale, optimized for speed.</p>
         </div>
         <div class="grid-3">
-            <div style="text-align: center;">
-                <div style="font-size: 48px; font-weight: 900; margin-bottom: 10px;">99.9%</div>
-                <div class="text-muted">UPTIME</div>
+          <div class="glass-card card-3d">
+            <div class="feature-icon"><i data-lucide="github"></i></div>
+            <h3 style="margin: 20px 0 12px; font-weight: 900;">AUTO-DEPLOY</h3>
+            <p class="text-secondary">Push to GitHub, we handle the rest. Continuous delivery has never been this seamless.</p>
+          </div>
+          <div class="glass-card card-3d" style="background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.2);">
+            <div class="feature-icon"><i data-lucide="shield-check"></i></div>
+            <h3 style="margin: 20px 0 12px; font-weight: 900;">SECURE VAULT</h3>
+            <p class="text-secondary">Your API tokens are encrypted with military-grade AES-256. Security is our first priority.</p>
+          </div>
+          <div class="glass-card card-3d">
+            <div class="feature-icon"><i data-lucide="trending-up"></i></div>
+            <h3 style="margin: 20px 0 12px; font-weight: 900;">SMART SCALE</h3>
+            <p class="text-secondary">Bots scale automatically based on demand. Pay only for what you use, when you use it.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section style="padding: 100px 0; background: #050505; border-top: 1px solid var(--border);">
+      <div class="glow-bg-blue" style="bottom: 0; right: 0;"></div>
+      <div class="container">
+        <div class="grid-3">
+            <div class="stat-card">
+                <div class="stat-value">99.9%</div>
+                <div style="font-weight: 800; letter-spacing: 0.1em; color: #666;">UPTIME</div>
             </div>
-            <div style="text-align: center;">
-                <div style="font-size: 48px; font-weight: 900; margin-bottom: 10px;">&lt;5ms</div>
-                <div class="text-muted">LATENCY</div>
+            <div class="stat-card">
+                <div class="stat-value">&lt;5ms</div>
+                <div style="font-weight: 800; letter-spacing: 0.1em; color: #666;">LATENCY</div>
             </div>
-            <div style="text-align: center;">
-                <div style="font-size: 48px; font-weight: 900; margin-bottom: 10px;">10k+</div>
-                <div class="text-muted">REQUESTS/SEC</div>
+            <div class="stat-card">
+                <div class="stat-value">24/7</div>
+                <div style="font-weight: 800; letter-spacing: 0.1em; color: #666;">SUPPORT</div>
             </div>
         </div>
       </div>
+    </section>
+
+    <section style="padding: 140px 0; text-align: center;">
+       <div class="container">
+          <div class="glass-card" style="padding: 80px 40px; max-width: 800px; margin: 0 auto;">
+             <h2 style="font-size: 40px; font-weight: 900; margin-bottom: 24px;">READY TO JOIN THE ELITE?</h2>
+             <p style="color: var(--text-secondary); margin-bottom: 40px; font-size: 18px;">Join 5,000+ developers hosting their high-performance bots on India's best infrastructure.</p>
+             <button class="btn btn-primary btn-lg" onclick="location.href='/register.html'" style="padding: 18px 40px; font-size: 16px;">
+                CREATE FREE ACCOUNT
+             </button>
+          </div>
+       </div>
     </section>
   </main>
 
-  <footer style="padding: 80px 0; border-top: 1px solid var(--border);">
+  <footer style="padding: 80px 0; border-top: 1px solid var(--border); background: #000;">
     <div class="container" style="text-align: center;">
-      <div class="logo-square" style="margin: 0 auto 24px;">E</div>
-      <p class="text-muted">ELITEHOST © 2025. BORN IN INDIA. BUILT FOR THE WORLD.</p>
+      <div class="logo-square" style="margin: 0 auto 32px;">E</div>
+      <div style="display: flex; gap: 32px; justify-content: center; margin-bottom: 40px; font-weight: 700; font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 0.1em;">
+         <a href="/terms.html">Terms</a>
+         <a href="/privacy.html">Privacy</a>
+         <a href="/support.html">Support</a>
+         <a href="/blog.html">Blog</a>
+      </div>
+      <p style="color: #444; font-size: 12px; font-weight: 600;">ELITEHOST © 2025. CRAFTED IN MUMBAI FOR THE NEXT GENERATION.</p>
     </div>
   </footer>
+
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Scroll Header Effect
+    window.addEventListener('scroll', () => {
+      const header = document.querySelector('header');
+      if (window.scrollY > 50) {
+        header.style.background = 'rgba(0,0,0,0.9)';
+        header.style.height = '70px';
+      } else {
+        header.style.background = 'rgba(0,0,0,0.7)';
+        header.style.height = '80px';
+      }
+    });
+  </script>
 </body>
 </html>
