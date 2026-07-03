@@ -14,15 +14,24 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Connect to MongoDB
+if (!process.env.MONGODB_URI) {
+  console.error('❌ ERROR: MONGODB_URI is not defined in .env file');
+  process.exit(1);
+}
+
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('MongoDB connection error:', err));
 
 // Passport GitHub Strategy
+if (!process.env.GITHUB_CLIENT_ID || !process.env.GITHUB_CLIENT_SECRET) {
+  console.warn('⚠️ WARNING: GitHub OAuth credentials missing. GitHub login will not work.');
+}
+
 passport.use(new GitHubStrategy({
-    clientID: process.env.GITHUB_CLIENT_ID,
-    clientSecret: process.env.GITHUB_CLIENT_SECRET,
-    callbackURL: process.env.GITHUB_CALLBACK_URL
+    clientID: process.env.GITHUB_CLIENT_ID || 'placeholder',
+    clientSecret: process.env.GITHUB_CLIENT_SECRET || 'placeholder',
+    callbackURL: process.env.GITHUB_CALLBACK_URL || 'http://localhost:3000/api/auth/github/callback'
   },
   async (accessToken, refreshToken, profile, done) => {
     try {
