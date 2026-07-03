@@ -1,92 +1,57 @@
-# EliteHosting v14.0 — Ultra Advanced Cloud Deployment Platform
+# EliteHost — Black Edition ♠️
 
-EliteHosting is a premium, high-performance cloud deployment platform inspired by Vercel, Railway, and Render, specifically optimized for Indian developers.
+Ultra-advanced, high-performance Telegram bot and Python hosting platform. Optimized for elite developers in India.
 
-## 🚀 Key Features
+## 🚀 Quick Setup Guide
 
-- **Multi-Method Deployment**: Import from GitHub, upload ZIP files, paste raw source code, or use `elitehosting.json`.
-- **Intelligent Engine**: Auto-detects frameworks (Next.js, Python, Node, Static) and generates optimized Dockerfiles.
-- **Mumbai Edge Datacenter**: Ultra-low latency (<30ms) for users in India.
-- **Premium Dashboard**: Glassmorphic UI with real-time deployment logs, resource monitoring (CPU/RAM/Bandwidth), and a built-in Cloud Editor.
-- **Credit-Based Economy**: Transparent pricing starting at ₹99, with 2 free credits for every new user.
-- **Advanced Admin Panel**: System-wide monitoring and granular user/project management.
+Follow these steps to get your own EliteHost instance running:
 
-## 🌍 Free Deployment Alternatives
+### 1. Prerequisites
+- **Node.js 22+**
+- **pnpm** (Recommended)
+- **MongoDB** (Local or Atlas)
 
-If you don't want to use Render or a VPS, you can deploy EliteHost or your hosted applications on these free platforms:
-
-1.  **Vercel:** Best for Next.js and frontend-heavy apps. Excellent free tier.
-2.  **Netlify:** Great for static sites and serverless functions.
-3.  **Railway:** Offers a trial credit ($5) which is enough for small bots for a few months.
-4.  **Koyeb:** Has a "Nano" instance that is free forever for one service.
-5.  **Fly.io:** Provides a small allowance of free resources (check their current pricing for "Hobby" plans).
-6.  **Hugging Face Spaces:** Surprisingly good for hosting Docker-based Python or Node.js apps for free.
-
-## 🛠️ Tech Stack
-
-- **Frontend**: Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS 4, Framer Motion.
-- **Backend**: Supabase (Database, Auth, Realtime), BullMQ + Redis (Queues), Node.js workers.
-- **Infrastructure**: Docker-based build system, Monaco Editor, xterm.js logs.
-- **Security**: Rate limiting (Upstash), RLS policies, input sanitization.
-
-## 🏁 Getting Started
-
-### Prerequisites
-
-- Node.js 22+
-- pnpm 10+
-- Redis (for queues and rate limiting)
-- Supabase Project
-
-### Environment Setup
-
-Create a `.env.local` file in the root:
+### 2. Environment Configuration
+Create a `.env` file in the root directory (use `.env.example` as a template):
 
 ```env
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
-
-# Redis (Queues)
-REDIS_URL=redis://localhost:6379
-
-# Upstash (Security/Rate Limiting)
-UPSTASH_REDIS_REST_URL=your_upstash_url
-UPSTASH_REDIS_REST_TOKEN=your_upstash_token
+MONGODB_URI=your_mongodb_connection_string
+GITHUB_CLIENT_ID=your_github_client_id
+GITHUB_CLIENT_SECRET=your_github_client_secret
+GITHUB_CALLBACK_URL=http://localhost:3000/api/auth/github/callback
+SESSION_SECRET=your_random_session_secret
+JWT_SECRET=your_jwt_secret
+ENCRYPTION_KEY=32_characters_long_random_string
+PORT=3000
 ```
 
-### Installation
-
+### 3. Installation
 ```bash
 pnpm install
 ```
 
-### Development
-
+### 4. Start the Engine
+**Development Mode:**
 ```bash
 pnpm dev
 ```
 
-### Production Build
-
+**Production Mode:**
 ```bash
-pnpm build
 pnpm start
 ```
 
-## 🏗️ Architecture
+## 🎨 Design Philosophy
+EliteHost Black Edition uses a high-contrast **Black & White** design system with:
+- **3D Glassmorphism**: Cards that react to your movement.
+- **Mobile-First Core**: A fixed bottom navigation bar for a native app-like experience.
+- **Precision Typography**: Using the 'Inter' typeface for maximum readability.
 
-- `/src/app`: Routes and page components.
-- `/src/components`: Reusable UI components (landing, dashboard, admin).
-- `/src/lib`: Core utilities, clients, and Zod schemas.
-- `/src/services`: Deployment engine, Docker templates, and BullMQ workers.
-- `/supabase/migrations`: PostgreSQL schema and RLS policies.
-- `/legacy`: Original static site files for reference.
-
-## 🛡️ Security
-
-The platform implements sliding-window rate limiting on all API routes, strict Content Security Policy (CSP), and Row Level Security (RLS) on all database tables to ensure user data isolation.
+## 🛠️ Features
+- **Mumbai Edge Datacenter**: Ultra-low latency for Indian users.
+- **GitHub Auto-Deploy**: Push code, and we handle the rest.
+- **30% Referral Rewards**: Industry-leading commission for growing the network.
+- **Python Microservice**: Specialized backend for syntax validation and advanced processing.
 
 ---
-Made with ❤️ by EliteHosting India.
+Built with intensity by EliteHost.
